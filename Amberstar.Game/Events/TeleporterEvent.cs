@@ -3,7 +3,7 @@ using Amberstar.GameData.Events;
 
 namespace Amberstar.Game.Events
 {
-	internal class TeleporterEvent(ITeleporterEvent @event) : Event(@event), ITeleporterEvent
+	internal class TeleporterEvent(ITeleporterEvent @event) : Event(@event), ITeleporterEvent, ITeleportEvent
 	{
 		public byte X => @event.X;
 
