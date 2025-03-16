@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum Skill
+public enum Skill : byte
 {
 	Attack,
 	Parry,

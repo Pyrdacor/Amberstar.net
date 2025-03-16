@@ -692,7 +692,14 @@ internal class Map3DScreen : Screen
 
 	public override void KeyDown(Key key, KeyModifiers keyModifiers)
 	{
-		CheckMove();
+        if (key >= Key.F1 && key <= Key.F6)
+        {
+            game!.State.CurrentInventoryIndex = key - Key.F1;
+            game.ScreenHandler.PushScreen(ScreenType.Conversation);
+			return;
+        }
+
+        CheckMove();
 	}
 
 	public override void MouseDown(Position position, MouseButtons buttons, KeyModifiers keyModifiers)

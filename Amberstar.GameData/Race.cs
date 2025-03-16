@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum Race
+public enum Race : byte
 {
 	Human,
 	Elf,

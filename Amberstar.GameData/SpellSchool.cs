@@ -4,7 +4,7 @@ public enum SpellSchool
 {
 	None,
 	White,
-	Grey,
+	Gray,
 	Black,
 	Unused4,
 	Unused5,
@@ -12,12 +12,22 @@ public enum SpellSchool
 	Special,
 }
 
+[Flags]
+public enum SpellSchoolFlags : byte
+{
+    None = 0,
+    White = 1 << SpellSchool.White,
+    Gray = 1 << SpellSchool.Gray,
+    Black = 1 << SpellSchool.Black,
+    Special = 1 << SpellSchool.Special,
+}
+
 public static class SpellSchoolExtensions
 {
 	public static bool CanBeLearned(this SpellSchool school) => school switch
 	{
 		SpellSchool.White => true,
-		SpellSchool.Grey => true,
+		SpellSchool.Gray => true,
 		SpellSchool.Black => true,
 		_ => false
 	};
@@ -26,7 +36,7 @@ public static class SpellSchoolExtensions
 	{
 		SpellSchool.None => true,
 		SpellSchool.White => true,
-		SpellSchool.Grey => true,
+		SpellSchool.Gray => true,
 		SpellSchool.Black => true,
 		SpellSchool.Special => true,
 		_ => false

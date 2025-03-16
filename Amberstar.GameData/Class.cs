@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum Class
+public enum Class : byte
 {
 	None,
 	Warrior,

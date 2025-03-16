@@ -23,6 +23,8 @@ internal class GameState
 
 	public GameState()
 	{
+		int? CurrentInventoryIndex = null;
+
 		TileChanges = new(new TileChangeComparer());
 
 		// Initial savegame values follow
@@ -520,12 +522,13 @@ internal class GameState
 	public int TravelledDays { get; set; } = 0;
 	public int RelativeYear { get; set; } = 0;
 
-	#endregion
+    #endregion
 
 
-	#region Party
+    #region Party
 
-	public int PartySize { get; private set; } = 1;
+    public int? CurrentInventoryIndex { get; set; } = null;
+    public int PartySize { get; private set; } = 1;
 	public int ActivePartyMember { get; private set; } = 1;
 	public int[] PartyCharacterIndices { get; } = [1, 0, 0, 0, 0, 0];
 	public int[] CombatPositions { get; } = [1, 2, 3, 4, 8, 9];

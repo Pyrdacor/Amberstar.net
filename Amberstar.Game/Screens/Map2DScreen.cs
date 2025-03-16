@@ -635,6 +635,13 @@ internal class Map2DScreen : Screen
 
 	public override void KeyDown(Key key, KeyModifiers keyModifiers)
 	{
+		if (key >= Key.F1 && key <= Key.F6)
+		{
+			game!.State.CurrentInventoryIndex = key - Key.F1;
+            game.ScreenHandler.PushScreen(ScreenType.Inventory);
+            return;
+        }
+
 		UpdateMovement();
 	}
 

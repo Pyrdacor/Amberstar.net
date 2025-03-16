@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum Gender
+public enum Gender : byte
 {
 	Male,
 	Female

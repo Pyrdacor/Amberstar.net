@@ -94,8 +94,11 @@ public partial class Game : IDisposable
 
 	public void Update(double delta)
 	{
-		totalTime += delta;
-		gameTicks = (long)Math.Round(totalTime * TicksPerSecond);
+		if (!Paused)
+		{
+			totalTime += delta;
+			gameTicks = (long)Math.Round(totalTime * TicksPerSecond);
+		}
 
 		UpdateFading();
 
@@ -107,9 +110,6 @@ public partial class Game : IDisposable
 			readyTimedAction.Action();
 			return;
 		}
-
-		if (gameTicks == lastGameTicks)
-			return;
 
 		long elapsed = gameTicks - lastGameTicks;
 		lastGameTicks = gameTicks;
