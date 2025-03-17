@@ -95,8 +95,6 @@ internal class BattleCharacter : Character, IBattleCharacter
         character.attributes[Attribute.Charisma] = new(currentCharisma, maxCharisma);
         character.attributes[Attribute.Luck] = new(currentLuck, maxLuck);
         character.attributes[Attribute.AntiMagic] = new(currentAntiMagic, maxAntiMagic);
-        character.attributes[Attribute.Age] = new(currentAge, maxAge);
-        character.attributes[Attribute.Unused] = new(currentUnusedAttribute, maxUnusedAttribute);
 
         reader.Position = 0x86;
         var currentHitPoints = reader.ReadWord();

@@ -1,9 +1,12 @@
 ﻿using Amber.Common;
 using Amber.Renderer;
+using Amber.Renderer.Common;
 using Amberstar.Game.Screens;
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
+using static System.Net.Mime.MediaTypeNames;
+using System.Reflection.Emit;
 using EventHandler = Amberstar.Game.Events.EventHandler;
 using IAssetProvider = Amberstar.GameData.IAssetProvider;
 
@@ -62,14 +65,26 @@ public partial class Game : IDisposable
 			var position = new Position(16 + i * 48, 1);
 			var size = new Size(32, 34);
 			CreateColoredRect(Layer.UI, position, size, Color.Black);
-			CreateSprite(Layer.UI, position, size, i == 0 ? (int)UIGraphic.Skull : (int)UIGraphic.EmptyCharSlot, uiPaletteIndex);
+
+			if (i == 0)
+			{
+				// TODO: Load party from save data later
+				var hero = assetProvider.PartyMemberLoader.LoadPartyMember(1);
+
+				CreateSprite(Layer.UI, position, size, GraphicIndexProvider.GetPartyMemberPortraitIndex(1), uiPaletteIndex);
+
+            }
+            else
+			{
+                CreateSprite(Layer.UI, position, size, (int)UIGraphic.EmptyCharSlot, uiPaletteIndex);
+			}
 		}
 
-		//ScreenHandler.PushScreen(ScreenType.Map2D);
+        //ScreenHandler.PushScreen(ScreenType.Map2D);
 
-		// TODO: For debugging, remove later
-		// In Twinlake
-		State.MapIndex = 67;
+        // TODO: For debugging, remove later
+        // In Twinlake
+        State.MapIndex = 67;
 		State.PartyDirection = Direction.Down;
 		//State.SetPartyPosition(7 - 1, 15 - 1);
 		State.SetPartyPosition(32 - 1, 9 - 1);

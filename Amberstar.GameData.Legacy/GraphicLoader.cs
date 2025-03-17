@@ -13,8 +13,10 @@ internal class GraphicLoader(AssetProvider assetProvider) : IGraphicLoader
 	private readonly Dictionary<int, IGraphic> backgroundGraphics = [];
 	private readonly Dictionary<int, IGraphic> cloudGraphics = [];
 	private readonly Dictionary<DayTime, Color[]> skyGradients = [];
+    private readonly Dictionary<int, IGraphic> partyMemberPortraits = [];
+    private readonly Dictionary<int, IGraphic> npcPortraits = [];
 
-	public static byte[] LoadGraphicDataWithHeader(IDataReader dataReader, out int width, out int height, out int planes)
+    public static byte[] LoadGraphicDataWithHeader(IDataReader dataReader, out int width, out int height, out int planes)
 	{
 		width = dataReader.ReadWord() + 1;
 		height = dataReader.ReadWord() + 1;
@@ -241,4 +243,37 @@ internal class GraphicLoader(AssetProvider assetProvider) : IGraphicLoader
 
 		return skyGradients;
 	}
+
+    public Dictionary<int, IGraphic> LoadPartyMemberPortraits()
+	{
+		if (partyMemberPortraits.Count != 0)
+            return partyMemberPortraits;
+
+        foreach (var key in assetProvider.GetAssetKeys(AssetType.Player))
+        {
+            var partyMember = assetProvider.PartyMemberLoader.LoadPartyMember(key);
+
+            if (partyMember.Portrait != null)
+                partyMemberPortraits.Add(key, partyMember.Portrait);
+        }
+
+		return partyMemberPortraits;
+    }
+
+    public Dictionary<int, IGraphic> LoadNPCPortraits()
+	{
+        if (npcPortraits.Count != 0)
+            return npcPortraits;
+
+		// TODO
+        /*foreach (var key in assetProvider.GetAssetKeys(AssetType.NPC))
+        {
+            var npc = assetProvider.NPCLoader.LoadNPC(key);
+
+            if (npc.Portrait != null)
+                npcPortraits.Add(key, npc.Portrait);
+        }*/
+
+        return npcPortraits;
+    }
 }

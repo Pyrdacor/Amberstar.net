@@ -5,6 +5,7 @@ using Amber.IO.FileFormats.Serialization;
 using Amber.Serialization;
 using Amberstar.GameData.Serialization;
 using Amiga.FileFormats.LHA;
+using System.IO;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -81,6 +82,7 @@ public class AssetProvider : IAssetProvider
 	readonly Lazy<ILabDataLoader> labDataLoader;
 	readonly Lazy<ICursorLoader> cursorLoader;
     readonly Lazy<IMonsterLoader> monsterLoader;
+    readonly Lazy<IPartyMemberLoader> partyMemberLoader;
 
     private ProgramData Data => programData.Value;
 	public ITextLoader TextLoader => textLoader.Value;
@@ -96,6 +98,7 @@ public class AssetProvider : IAssetProvider
 	public ILabDataLoader LabDataLoader => labDataLoader.Value;
 	public ICursorLoader CursorLoader => cursorLoader.Value;
     public IMonsterLoader MonsterLoader => monsterLoader.Value;
+    public IPartyMemberLoader PartyMemberLoader => partyMemberLoader.Value;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AssetProvider(IReadOnlyFileSystem fileSystem)
@@ -132,6 +135,7 @@ public class AssetProvider : IAssetProvider
 		labDataLoader = new(() => new LabDataLoader(this));
 		cursorLoader = new(() => new CursorLoader(this));
         monsterLoader = new(() => new MonsterLoader(this));
+        partyMemberLoader = new(() => new PartyMemberLoader(this, textLoader));
     }
 
 	public LegacyPlatform Platform { get; } = LegacyPlatform.Source;
@@ -315,7 +319,9 @@ public class AssetProvider : IAssetProvider
 			AssetType.LabData => "LAB_DATA.AMB",
 			AssetType.LabBlock => "LABBLOCK.AMB",
 			AssetType.Background => "BACKGRND.AMB",
-			_ => Platform == LegacyPlatform.Source ? "" : programFileNames[Platform],
+            AssetType.Monster => "MON_DATA.AMB",
+            AssetType.Player => "CHARDATA.AMB",            
+            _ => Platform == LegacyPlatform.Source ? "" : programFileNames[Platform],
 		};
 	}
 

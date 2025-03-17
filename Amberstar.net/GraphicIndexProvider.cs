@@ -15,8 +15,11 @@ namespace Amberstar.net
 		int cursorGraphicOffset,
 		Dictionary<int, int> backgroundGraphicIndices,
 		Dictionary<int, int> cloudGraphicIndices,
-		Dictionary<int, Dictionary<PerspectiveLocation, Dictionary<BlockFacing, int>>> labBlockImageIndices
-	) : IGraphicIndexProvider
+		Dictionary<int, Dictionary<PerspectiveLocation, Dictionary<BlockFacing, int>>> labBlockImageIndices,
+        Dictionary<int, int> partyMemberPortraitIndices,
+        Dictionary<int, int> npcPortraitIndices
+
+    ) : IGraphicIndexProvider
 	{
 		public int Get80x80ImageIndex(Image80x80 image) => image80x80Offset + (int)image;
 
@@ -37,5 +40,9 @@ namespace Amberstar.net
 		public int GetWindowGraphicIndex(bool dark) => windowGraphicOffset + (dark ? 0 : 1);
 
 		public int GetCursorGraphicIndex(CursorType cursorType) => cursorGraphicOffset + (int)cursorType;
-	}
+
+        public int GetPartyMemberPortraitIndex(int index) => partyMemberPortraitIndices[index];
+
+        public int GetNPCPortraitIndex(int index) => npcPortraitIndices[index];
+    }
 }

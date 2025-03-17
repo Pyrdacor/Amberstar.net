@@ -57,7 +57,6 @@ internal class Character : ICharacter
 
             return itemLoader.LoadItem(reader);
         }
-
             
         var items = Enumerable.Range(0, itemCounts.Length)
             .Select(i => LoadOrSkipItem(itemCounts[i])).ToArray();

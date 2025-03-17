@@ -1,10 +1,12 @@
-﻿namespace Amberstar.GameData;
+﻿using Amber.Assets.Common;
 
-public interface IPartyMember : IBattleCharacter, IConversationCharacter
+namespace Amberstar.GameData;
+
+public interface IPartyMember : IBattleCharacter
 {
     ClassFlags PossibleClasses { get; init; }
     byte DefaultBattlePosition { get; init; }
-    byte AttackPerRoundLevel { get; init; }
+    word AttackPerRoundLevel { get; init; }
     word HitPointsPerLevel { get; init; }
     word SpellPointsPerLevel { get; init; }
     word SpellLearningPointsPerLevel { get; init; }
@@ -14,8 +16,11 @@ public interface IPartyMember : IBattleCharacter, IConversationCharacter
     dword LearnedWhiteSpells { get; set; }
     dword LearnedGraySpells { get; set; }
     dword LearnedBlackSpells { get; set; }
-    dword LearnedSpecialSpells { get; init; }
+    dword LearnedSpecialSpells { get; set; }
     dword TotalWeight { get; } // We should calculate it and only use it for display etc
+    IConversationData ConversationData { get; init; }
+    public CharacterValue Age => ConversationData.Age;
+    public IGraphic? Portrait => ConversationData.Portrait;
 
     /*
      * Level Up:

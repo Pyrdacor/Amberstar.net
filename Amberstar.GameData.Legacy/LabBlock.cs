@@ -1,5 +1,6 @@
 ﻿using Amber.Assets.Common;
 using Amber.Common;
+using Amber.Serialization;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -60,18 +61,8 @@ internal class LabBlock : ILabBlock
 
 		int numAnimationFrames = reader.ReadByte();
 
-		int[] ReadWords(int count)
-		{
-			int[] words = new int[count];
-
-			for (int i = 0; i < count; i++)
-				words[i] = reader.ReadWord();
-
-			return words;
-		}
-
-		var xOffsets = ReadWords(17);
-		var yOffsets = ReadWords(17);
+		var xOffsets = reader.ReadWords(17);
+		var yOffsets = reader.ReadWords(17);
 
 		int specialOffsetX = type == LabBlockType.Object ? reader.ReadWord() : 0;
 		int specialOffsetY = type == LabBlockType.Object ? reader.ReadWord() : 0;

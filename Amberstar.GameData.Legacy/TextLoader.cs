@@ -1,4 +1,5 @@
 ﻿using Amber.Common;
+using Amber.Serialization;
 using Amberstar.GameData.Serialization;
 
 namespace Amberstar.GameData.Legacy;
@@ -7,6 +8,11 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 {
 	readonly List<string> textFragments = textFragments;
 	readonly Dictionary<AssetIdentifier, IText> texts = [];
+
+	public IText ReadText(IDataReader dataReader)
+	{
+		return Text.Read(dataReader, textFragments);
+    }
 
 	public IText LoadText(AssetIdentifier assetIdentifier)
 	{

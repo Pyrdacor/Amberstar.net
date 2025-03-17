@@ -10,6 +10,4 @@ public enum Attribute : byte
 	Charisma,
 	Luck,
 	AntiMagic,
-	Age,
-	Unused
 }

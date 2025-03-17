@@ -1,4 +1,5 @@
 ﻿using Amber.Serialization;
+using System.Reflection.PortableExecutable;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -6,16 +7,6 @@ internal class Savegame : ISavegame
 {
 	public Savegame(IDataReader dataReader)
 	{
-		int[] ReadWords(int count)
-		{
-			int[] words = new int[count];
-
-			for (int i = 0; i < count; i++)
-				words[i] = dataReader.ReadWord();
-
-			return words;
-		}
-
 		Month = dataReader.ReadByte();
 		Day = dataReader.ReadByte();
 		Hour = dataReader.ReadByte();
@@ -42,15 +33,15 @@ internal class Savegame : ISavegame
 		}
 
 		Year = dataReader.ReadWord();
-		MapIndex = dataReader.ReadWord();
-		PartyCharacterIndices = ReadWords(ISavegame.MaxPartyMembers);
+        MapIndex = dataReader.ReadWord();
+		PartyCharacterIndices = dataReader.ReadWords(ISavegame.MaxPartyMembers);
 		TravelledDays = dataReader.ReadWord();
 		RelativeYear = dataReader.ReadWord();
 
 		var transportTypes = dataReader.ReadBytes(ISavegame.MaxTransportCount);
 		var transportXPositions = dataReader.ReadBytes(ISavegame.MaxTransportCount);
 		var transportYPositions = dataReader.ReadBytes(ISavegame.MaxTransportCount);
-		var transportMapIndices = ReadWords(ISavegame.MaxTransportCount);
+		var transportMapIndices = dataReader.ReadWords(ISavegame.MaxTransportCount);
 
 		for (int i = 0; i < ISavegame.MaxTransportCount; i++)
 		{
@@ -68,7 +59,7 @@ internal class Savegame : ISavegame
 		CharacterBits = dataReader.ReadBytes(1502);
 		KnownWordsBits = dataReader.ReadBytes(626);
 		ChestSlotBits = dataReader.ReadBytes(1500);
-		ChestGold = ReadWords(ISavegame.MaxChests);
+		ChestGold = dataReader.ReadWords(ISavegame.MaxChests);
 		WareCounts = dataReader.ReadBytes(1200).Select(b => (int)b).ToArray();
 
 		CombatPositions = dataReader.ReadBytes(ISavegame.MaxPartyMembers).Select(b => (int)b).ToArray();

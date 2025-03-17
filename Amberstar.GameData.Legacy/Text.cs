@@ -1,5 +1,6 @@
 ﻿using Amber.Assets.Common;
 using Amber.Common;
+using Amber.Serialization;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -11,37 +12,43 @@ internal class Text(List<string> textFragments) : IText
 
 	public int TextBlockCount => textBlockOffsets.Count;
 
-	public static Text Load(IAsset asset, List<string> textFragments)
+    public static Text Read(IDataReader reader, List<string> textFragments)
+	{
+        int textCount = reader.ReadByte();
+        reader.Position++; // skip fill byte
+
+        var text = new Text(textFragments);
+
+        if (textCount == 0)
+            return text;
+
+        var lengths = new int[textCount];
+        int offset = reader.ReadWord();
+
+        for (int i = 0; i < textCount; i++)
+        {
+            int nextOffset = reader.ReadWord();
+            lengths[i] = nextOffset - offset;
+            offset = nextOffset;
+        }
+
+        for (int i = 0; i < textCount; i++)
+        {
+            text.textBlockOffsets.Add(text.textIndices.Count);
+
+            for (int n = 0; n < lengths[i]; n++)
+                text.textIndices.Add(reader.ReadWord());
+        }
+
+        return text;
+    }
+
+
+    public static Text Load(IAsset asset, List<string> textFragments)
 	{
 		var reader = asset.GetReader();
 
-		int textCount = reader.ReadByte();
-		reader.Position++; // skip fill byte
-
-		var text = new Text(textFragments);
-
-		if (textCount == 0)
-			return text;
-
-		var lengths = new int[textCount];
-		int offset = reader.ReadWord();
-
-		for (int i = 0; i < textCount; i++)
-		{
-			int nextOffset = reader.ReadWord();
-			lengths[i] = nextOffset - offset;
-			offset = nextOffset;
-		}
-
-		for (int i = 0; i < textCount; i++)
-		{
-			text.textBlockOffsets.Add(text.textIndices.Count);
-
-			for (int n = 0; n < lengths[i]; n++)
-				text.textIndices.Add(reader.ReadWord());
-		}
-
-		return text;
+		return Read(reader, textFragments);
 	}
 
 	public static Text LoadSingleString(IAsset asset, List<string> textFragments)

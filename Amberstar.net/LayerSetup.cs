@@ -103,7 +103,19 @@ namespace Amberstar.net
 			int cursorGraphicOffset = graphics.Count;
 			foreach (var i in Enum.GetValues<CursorType>().Distinct())
 				graphics.Add(cursorGraphicOffset + (int)i, assetProvider.CursorLoader.LoadCursor(i).Graphic);
-			layer = renderer.LayerFactory.Create(LayerType.ColorAndTexture2D, new()
+            var partyMemberPortraitIndices = new Dictionary<int, int>();
+            foreach (var partyMemberPortrait in assetProvider.GraphicLoader.LoadPartyMemberPortraits())
+            {
+                partyMemberPortraitIndices.Add(partyMemberPortrait.Key, graphics.Count);
+                graphics.Add(graphics.Count, partyMemberPortrait.Value);
+            }
+            var npcPortraitIndices = new Dictionary<int, int>();
+            foreach (var npcPortrait in assetProvider.GraphicLoader.LoadNPCPortraits())
+            {
+                npcPortraitIndices.Add(npcPortrait.Key, graphics.Count);
+                graphics.Add(graphics.Count, npcPortrait.Value);
+            }
+            layer = renderer.LayerFactory.Create(LayerType.ColorAndTexture2D, new()
 			{
 				BaseZ = 0.7f,
 				LayerFeatures = LayerFeatures.Transparency | LayerFeatures.DisplayLayers,
@@ -250,7 +262,8 @@ namespace Amberstar.net
 
 			uiGraphicIndexProvider = new(buttonOffset, statusIconOffset, uiGraphicOffset,
 				image80x80Offset, itemGraphicOffset, windowGraphicOffset, cursorGraphicOffset,
-				backgroundGraphicIndices, cloudGraphicIndices, labBlockImageIndices);
+				backgroundGraphicIndices, cloudGraphicIndices, labBlockImageIndices,
+				partyMemberPortraitIndices, npcPortraitIndices);
 			paletteIndexProvider = new(0, image80x80PaletteIndices, tilesetPaletteIndices, generalPaletteIndices);
 			paletteColorProvider = new(palettes);
 			fontInfoProvider = new(textGlyphTextureIndices, runeGlyphTextureIndices);

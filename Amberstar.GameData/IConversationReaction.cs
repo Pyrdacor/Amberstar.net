@@ -1,4 +1,6 @@
-﻿namespace Amberstar.GameData;
+﻿using System.Collections.ObjectModel;
+
+namespace Amberstar.GameData;
 
 public enum InteractionTriggerType : byte
 {
@@ -14,13 +16,18 @@ public record InteractionTrigger(InteractionTriggerType Type, word Argument = 0)
 
 public interface IConversationInteraction
 {
+    ReadOnlyCollection<IConversationReaction> Reactions { get; }
+}
+
+public interface IConversationReaction
+{
 
 }
 
 /// <summary>
 /// The NPC responds with a text message.
 /// </summary>
-public interface ISayReaction : IConversationInteraction
+public interface ISayReaction : IConversationReaction
 {
     int MessageIndex { get; init; }
 }
@@ -29,7 +36,7 @@ public interface ISayReaction : IConversationInteraction
 /// The NPC teaches you a new word which can be used in future
 /// conversations.
 /// </summary>
-public interface ITeachWordReaction : IConversationInteraction
+public interface ITeachWordReaction : IConversationReaction
 {
     int WordIndex { get; init; }
 }
@@ -40,7 +47,7 @@ public interface ITeachWordReaction : IConversationInteraction
 /// The source item must be in the NPC's inventory or equipped by it.
 /// A copy of the item is used so the source item remains.
 /// </summary>
-public interface IGiveItemReaction : IConversationInteraction
+public interface IGiveItemReaction : IConversationReaction
 {
     /// <summary>
     /// This is the slot index of the item in the character's item data.
@@ -53,7 +60,7 @@ public interface IGiveItemReaction : IConversationInteraction
 /// <summary>
 /// The NPC gives you some gold.
 /// </summary>
-public interface IGiveGoldReaction : IConversationInteraction
+public interface IGiveGoldReaction : IConversationReaction
 {
     word Amount { get; init; }
 }
@@ -61,7 +68,7 @@ public interface IGiveGoldReaction : IConversationInteraction
 /// <summary>
 /// The NPC gives you some food.
 /// </summary>
-public interface IGiveFoodReaction : IConversationInteraction
+public interface IGiveFoodReaction : IConversationReaction
 {
     word Amount { get; init; }
 }
@@ -72,7 +79,7 @@ public interface IGiveFoodReaction : IConversationInteraction
 /// A quest index is usually stored inside NPCs and unlocks a second
 /// pair of interactions for the NPC.
 /// </summary>
-public interface ICompleteQuestReaction : IConversationInteraction
+public interface ICompleteQuestReaction : IConversationReaction
 {
     byte QuestIndex { get; init; }
 }
@@ -89,7 +96,7 @@ public enum ChangeStatAction
 /// A quest index is usually stored inside NPCs and unlocks a second
 /// pair of interactions for the NPC.
 /// </summary>
-public interface IChangeStatReaction : IConversationInteraction
+public interface IChangeStatReaction : IConversationReaction
 {
     /// <summary>
     /// Offset into the character data.

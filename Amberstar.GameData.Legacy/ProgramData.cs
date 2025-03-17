@@ -327,5 +327,5 @@ namespace Amberstar.GameData.Legacy
 		public List<string> TextFragments { get; } = [];
 		public byte[] GlyphMappings { get; } = [];
 		public string Version { get; } = string.Empty;
-	}
+    }
 }
