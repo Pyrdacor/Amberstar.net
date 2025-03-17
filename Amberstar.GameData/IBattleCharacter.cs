@@ -10,9 +10,9 @@ public interface IBattleCharacter : ICharacter
     byte Damage { get; set; }
     PhysicalCondition PhysicalConditions { get; set; }
     MentalCondition MentalConditions { get; set; }
-    byte BattleGraphicIndex { get; init; }
-    byte MagicArmorLevel { get; set; }
-    byte AttacksPerRound { get; set; }
+    public byte MagicBonusWeapon { get; set; }
+    public byte MagicBonusArmor { get; set; }
+    public byte AttacksPerRound { get; set; }
     CharacterValue HitPoints { get; }
     CharacterValue SpellPoints { get; }
     ReadOnlyDictionary<Skill, CharacterValue> Skills { get; }

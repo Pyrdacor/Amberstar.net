@@ -16,4 +16,5 @@ public interface IAssetProvider : Amber.Assets.Common.IAssetProvider
 	ITilesetLoader TilesetLoader { get; }
 	IFontLoader FontLoader { get; }
 	ISavegameLoader SavegameLoader { get; }
+    IMonsterLoader MonsterLoader { get; }
 }

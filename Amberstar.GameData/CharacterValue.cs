@@ -1,3 +1,3 @@
 ﻿namespace Amberstar.GameData;
 
-public record CharacterValue(byte CurrentValue, byte MaxValue);
+public record CharacterValue(word CurrentValue, word MaxValue);

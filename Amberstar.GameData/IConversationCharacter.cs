@@ -5,6 +5,7 @@ namespace Amberstar.GameData;
 public interface IConversationCharacter : ICharacter
 {
     LanguageFlags LearnedLanguages { get; set; }
+    byte JoinChance { get; init; }
     byte QuestCompletionIndex { get; init; }
     IGraphic Portrait { get; init; }
     IText[] Texts { get; init; }

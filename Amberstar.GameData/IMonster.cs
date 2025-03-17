@@ -4,7 +4,10 @@ public record MonsterSpell(SpellSchool School, byte SpellIndex);
 
 public interface IMonster : IBattleCharacter
 {
+    byte BattleGraphicIndex { get; init; }
     byte Morale { get; init; }
+    byte SpellCastChance { get; init; }
+    byte MagicHitBonus { get; init; }
     MonsterFlags MonsterFlags { get; init; }
     MonsterElementalFlags ElementalFlags { get; init; }
     /// <summary>

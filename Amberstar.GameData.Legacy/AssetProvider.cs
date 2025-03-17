@@ -80,8 +80,9 @@ public class AssetProvider : IAssetProvider
 	readonly Lazy<ISavegameLoader> savegameLoader;
 	readonly Lazy<ILabDataLoader> labDataLoader;
 	readonly Lazy<ICursorLoader> cursorLoader;
+    readonly Lazy<IMonsterLoader> monsterLoader;
 
-	private ProgramData Data => programData.Value;
+    private ProgramData Data => programData.Value;
 	public ITextLoader TextLoader => textLoader.Value;
 	public IPlaceLoader PlaceLoader => placeLoader.Value;
 	public ILayoutLoader LayoutLoader => layoutLoader.Value;
@@ -94,9 +95,10 @@ public class AssetProvider : IAssetProvider
 	public ISavegameLoader SavegameLoader => savegameLoader.Value;
 	public ILabDataLoader LabDataLoader => labDataLoader.Value;
 	public ICursorLoader CursorLoader => cursorLoader.Value;
+    public IMonsterLoader MonsterLoader => monsterLoader.Value;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-	public AssetProvider(IReadOnlyFileSystem fileSystem)
+    public AssetProvider(IReadOnlyFileSystem fileSystem)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	{
 		this.fileSystem = fileSystem;
@@ -129,7 +131,8 @@ public class AssetProvider : IAssetProvider
 		savegameLoader = new(() => new SavegameLoader(this));
 		labDataLoader = new(() => new LabDataLoader(this));
 		cursorLoader = new(() => new CursorLoader(this));
-	}
+        monsterLoader = new(() => new MonsterLoader(this));
+    }
 
 	public LegacyPlatform Platform { get; } = LegacyPlatform.Source;
 

@@ -7,6 +7,8 @@ public enum Race : byte
 	Dwarf,
 	Gnome,
 	Halfling,
-	Orc,
-	Animal,
+	HalfElf,
+	HalfOrc,
+	Animal = 13,
+	Monster
 }
