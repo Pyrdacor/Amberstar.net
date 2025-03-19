@@ -16,13 +16,13 @@ internal class ItemContainer
 	// TODO: Item count display
 	byte paletteIndex;
 	byte displayLayer;
-
-	static Position? draggedPosition;
 	static ItemContainer? draggedSourceSlot;
     static ItemContainer? DraggedItem { get; set; }
 
-    public event Action<ItemContainer>? Dragged;
-    public event Action<ItemContainer>? Dropped;
+    public event Action<IItem, int>? Dragged;
+    public event Action<IItem, int>? Dropped;
+    public static event Action? DraggingStarted;
+    public static event Action? DraggingEnded;
 
     public byte PaletteIndex
 	{
@@ -96,6 +96,14 @@ internal class ItemContainer
         if (item != null)
 			SetItem(itemCount, item);
 	}
+
+	private ItemContainer Clone(bool? draggable = null)
+	{
+        return new ItemContainer(game, position, ItemCount, Item, displayLayer)
+		{
+			Draggable = draggable ?? Draggable
+        };
+    }
 
 	private void CreateBrokenOverlay()
     {
@@ -200,6 +208,9 @@ internal class ItemContainer
 
 	public void ClearItem()
 	{
+		Item = null;
+		ItemCount = 0;
+
 		if (sprite != null)
         {
             sprite.Visible = false;
@@ -215,12 +226,10 @@ internal class ItemContainer
 		// TODO: item count display
     }
 
-	public static void UpdateDragPosition(Position position)
+	public static void UpdateDragPosition(Game game, Position position)
 	{
 		if (DraggedItem == null)
 			return;
-
-		draggedPosition = position;
 
 		DraggedItem.UpdateRenderPosition(position);
     }
@@ -230,10 +239,16 @@ internal class ItemContainer
         if (DraggedItem == null)
             return;
 
-        DraggedItem.UpdateRenderPosition(DraggedItem.Position);
-        DraggedItem.Dropped?.Invoke(DraggedItem);
+		var item = DraggedItem.Item!;
+		int count = DraggedItem.ItemCount;
+
+        DraggedItem.ClearItem();
         DraggedItem = null;
-		draggedSourceSlot = null;
+
+        DraggingEnded?.Invoke();
+
+        draggedSourceSlot!.DropItem(count, item); // TODO: if exchanged, this is not possible
+        draggedSourceSlot = null;
     }
 
     public static void ConsumeDragged()
@@ -241,14 +256,19 @@ internal class ItemContainer
         if (DraggedItem == null)
             return;
 
-        DraggedItem.UpdateRenderPosition(DraggedItem.Position);
 		DraggedItem.ClearItem();
         DraggedItem = null;
+        draggedSourceSlot = null;
+
+        DraggingEnded?.Invoke();
     }
 
     private void UpdateRenderPosition(Position position)
 	{
-		if (sprite != null)
+		// Center cursor pointer in the center of the item sprite.
+		position = new(position.X - Width / 2, position.Y - Height / 2);
+
+        if (sprite != null)
 			sprite.Position = position;
 
         if (brokenOverlay != null)
@@ -276,12 +296,22 @@ internal class ItemContainer
 			// TODO: if right mouse button, take all, else only one or show amount box
 
 			// Drag the item
-			DraggedItem = this;
-            DraggedItem.Dragged?.Invoke(this);
+			DraggedItem = Clone(draggable: false);
 
-            UpdateDragPosition(position);
+            if (!game.IsOptionSet(GameOption.UnmaskedDraggedItem))
+            {
+                DraggedItem.sprite!.MaskColorIndex = 0xf;
+            }
 
-			return true;
+            draggedSourceSlot = this;
+            Dragged?.Invoke(Item!, 1); // TODO: count
+			ClearItem(); // TODO: Some items may remain
+
+            UpdateDragPosition(game, position);
+
+			DraggingStarted?.Invoke();
+
+            return true;
 		}
 		else
 		{
@@ -292,8 +322,7 @@ internal class ItemContainer
 			if (DraggedItem.ItemCount == 0)
 			{
 				// Fully dropped
-                DraggedItem.ClearItem();
-                DraggedItem = null;
+				ConsumeDragged();
 				return true;
             }
 

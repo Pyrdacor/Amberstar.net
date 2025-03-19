@@ -1,20 +1,19 @@
 ﻿using Amberstar.Game.UI;
 using Amberstar.GameData;
 
-namespace Amberstar.Game
+namespace Amberstar.Game;
+
+partial class Game
 {
-	partial class Game
+	internal Cursor Cursor { get; }
+
+	internal void SetLayout(Layout layout, byte? paletteIndex = null)
 	{
-		internal Cursor Cursor { get; }
+		var renderLayer = GetRenderLayer(Layer.Layout);
+		var textureAtlas = renderLayer.Config.Texture!;
+		layoutSprite.TextureOffset = textureAtlas.GetOffset((int)layout);
 
-		internal void SetLayout(Layout layout, byte? paletteIndex = null)
-		{
-			var renderLayer = GetRenderLayer(Layer.Layout);
-			var textureAtlas = renderLayer.Config.Texture!;
-			layoutSprite.TextureOffset = textureAtlas.GetOffset((int)layout);
-
-			if (paletteIndex != null)
-				layoutSprite.PaletteIndex = paletteIndex.Value;
-		}
+		if (paletteIndex != null)
+			layoutSprite.PaletteIndex = paletteIndex.Value;
 	}
 }

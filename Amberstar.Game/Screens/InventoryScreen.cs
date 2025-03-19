@@ -8,6 +8,9 @@ internal class InventoryScreen : Screen
 {
 	Game? game;
     IPartyMember? partyMember;
+    bool itemDragged = false;
+    readonly Action draggingStartedHandler;
+    readonly Action draggingEndedHandler;
     readonly ItemContainer[] inventoryItemSlots = new ItemContainer[ICharacter.InventorySlotCount];
     readonly Dictionary<EquipmentSlot, ItemContainer> equippedItemSlots = [];
     readonly static Dictionary<EquipmentSlot, Position> EquipmentSlotPositions = [];
@@ -34,7 +37,35 @@ internal class InventoryScreen : Screen
         }
     }
 
+    public InventoryScreen()
+    {
+        draggingStartedHandler = () =>
+        {
+            itemDragged = true;
+            game!.Cursor.Visible = false;
+        };
+        draggingEndedHandler = () =>
+        {
+            itemDragged = false;
+            game!.Cursor.Visible = true;
+        };
+    }
+
     public override ScreenType Type { get; } = ScreenType.Inventory;
+
+
+
+    private void SetupEventHandlers()
+    {
+        ItemContainer.DraggingStarted += draggingStartedHandler;
+        ItemContainer.DraggingEnded += draggingEndedHandler;
+    }
+
+    private void CleanUpEventHandlers()
+    {
+        ItemContainer.DraggingStarted -= draggingStartedHandler;
+        ItemContainer.DraggingEnded -= draggingEndedHandler;
+    }
 
     public override void Init(Game game)
     {
@@ -43,10 +74,10 @@ internal class InventoryScreen : Screen
         this.game = game;
 
         for (int i = 0; i < inventoryItemSlots.Length; i++)
-            inventoryItemSlots[i] = new ItemContainer(game, InventorySlotPositions[i], 0, null, 10);
+            inventoryItemSlots[i] = new ItemContainer(game, InventorySlotPositions[i], 0, null, 10) { Draggable = true };
 
         foreach (var equipmentSlot in Enum.GetValues<EquipmentSlot>())
-            equippedItemSlots.Add(equipmentSlot, new ItemContainer(game, EquipmentSlotPositions[equipmentSlot], 0, null, 10));
+            equippedItemSlots.Add(equipmentSlot, new ItemContainer(game, EquipmentSlotPositions[equipmentSlot], 0, null, 10) { Draggable = true });
     }
 
     public override void Open(Game game, Action? closeAction)
@@ -56,8 +87,11 @@ internal class InventoryScreen : Screen
         var palette = game.PaletteIndexProvider.UIPaletteIndex;
 
         game.SetLayout(Layout.Inventory, palette);
+        game.Cursor.CursorType = CursorType.Sword;
 
         SwitchToPartyMember(game.State.CurrentInventoryIndex!.Value, true);
+
+        SetupEventHandlers();
     }
 
     private void CleanUpItems()
@@ -71,9 +105,25 @@ internal class InventoryScreen : Screen
 
     public override void Close(Game game)
     {
+        CleanUpEventHandlers();
+
         CleanUpItems();
 
         base.Close(game);
+    }
+
+    public override void ScreenPushed(Game game, Screen screen)
+    {
+        CleanUpEventHandlers();
+
+        base.ScreenPushed(game, screen);
+    }
+
+    public override void ScreenPopped(Game game, Screen screen)
+    {
+        base.ScreenPopped(game, screen);
+
+        SetupEventHandlers();
     }
 
     public override void KeyDown(Key key, KeyModifiers keyModifiers)
@@ -83,7 +133,30 @@ internal class InventoryScreen : Screen
 
 	public override void MouseDown(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
 	{
-        game!.ScreenHandler.PopScreen();
+        if (itemDragged && buttons == MouseButtons.Right)
+        {
+            ItemContainer.AbortDrag();
+            return;
+        }
+
+        foreach (var inventorySlot in inventoryItemSlots)
+        {
+            if (inventorySlot.MouseClick(position, buttons))
+                return;
+        }
+
+        foreach (var equippedItemSlot in equippedItemSlots)
+        {
+            if (equippedItemSlot.Value.MouseClick(position, buttons))
+                return;
+        }
+    }
+
+    public override void MouseMove(Position position, MouseButtons buttons)
+    {
+        base.MouseMove(position, buttons);
+
+        ItemContainer.UpdateDragPosition(game!, position);
     }
 
     public void SwitchToPartyMember(int index, bool force)

@@ -1,10 +1,8 @@
-﻿using Amberstar.Game.Screens;
-using Amberstar.GameData;
+﻿using Amberstar.GameData;
 
-namespace Amberstar.Game
+namespace Amberstar.Game;
+
+partial class Game
 {
-	partial class Game
-	{
-		internal IText? CurrentText { get; private set; }
-	}
+	internal IText? CurrentText { get; private set; }
 }
