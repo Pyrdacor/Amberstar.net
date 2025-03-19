@@ -5,7 +5,7 @@ using Amberstar.GameData.Serialization;
 
 namespace Amberstar.GameData.Legacy;
 
-internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, IGraphic uiPalette) : IPaletteLoader
+internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, IGraphic uiPalette, IGraphic itemPalette) : IPaletteLoader
 {
 	private readonly Dictionary<int, IGraphic> palettes = [];
 
@@ -25,10 +25,10 @@ internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, I
 		{
 			c *= 32;
 
-			if (c == 224)
+			/*if (c == 224)
 				c = 255;
 			else if (c != 0)
-				c += 16;
+				c += 16;*/
 
 			return c;
 		}
@@ -51,24 +51,9 @@ internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, I
 		// For compact palettes each color component is stored in a 4-bit nibble.
 		// But still only 3 bits are used on the Atari. So we need to map it.
 		// We achieve this by multiplying by 2 or left shifting by 1.
-		// The XR nibble can be directly shifted. The GB nibble needs special care.
-		for (int i = 0; i < numColors; i++)
+		for (int i = 0; i < numColors * 2; i++)
 		{
-			var r = data[i * 2] & 0x7;
-			r <<= 1;
-			if (r == 14)
-				r = 15;
-			data[i * 2] = (byte)r;
-			var gb = data[i * 2 + 1] & 0x77;
-			var g = gb >> 4;
-			var b = gb & 0xf;
-			g <<= 1;
-			if (g == 14)
-				g = 15;
-			b <<= 1;
-			if (b == 14)
-				b = 15;
-			data[i * 2 + 1] = (byte)((g << 4) | b);
+			data[i] <<= 1;
 		}
 
 		return data;
@@ -100,4 +85,6 @@ internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, I
 	}
 
 	public IGraphic LoadUIPalette() => uiPalette;
+
+	public IGraphic LoadItemPalette() => itemPalette;
 }

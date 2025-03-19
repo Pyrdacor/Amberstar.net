@@ -6,6 +6,7 @@ namespace Amberstar.net
 	internal class PaletteIndexProvider
 	(
 		byte uiPaletteIndex,
+		byte itemPaletteIndex,
 		Dictionary<Image80x80, byte> palettes80x80,
 		Dictionary<int, byte> palettesTileset,
 		Dictionary<int, byte> generalPalettes
@@ -13,7 +14,9 @@ namespace Amberstar.net
 	{
 		public byte UIPaletteIndex => uiPaletteIndex;
 
-		public byte Get80x80ImagePaletteIndex(Image80x80 image80X80) => palettes80x80[image80X80];
+        public byte ItemPaletteIndex => itemPaletteIndex;
+
+        public byte Get80x80ImagePaletteIndex(Image80x80 image80X80) => palettes80x80[image80X80];
 
 		public byte GetLabyrinthPaletteIndex(int paletteIndex) => generalPalettes[paletteIndex];
 

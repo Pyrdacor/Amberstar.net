@@ -14,7 +14,7 @@ namespace Amberstar.GameData.Legacy
 				var asset = assetProvider.GetAsset(new(AssetType.Player, index));
 
 				if (asset == null)
-					throw new AmberException(ExceptionScope.Data, $"Monster {index} not found.");
+					throw new AmberException(ExceptionScope.Data, $"Party member {index} not found.");
 
 				partyMember = PartyMember.Load(asset, textLoader.Value);
 				partyMembers.Add(index, partyMember);

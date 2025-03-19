@@ -1,7 +1,6 @@
 ﻿using Amber.Assets.Common;
 using Amber.Common;
 using Amber.Serialization;
-using System.Runtime.CompilerServices;
 
 namespace Amberstar.GameData.Legacy;
 

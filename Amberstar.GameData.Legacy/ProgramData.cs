@@ -188,8 +188,8 @@ namespace Amberstar.GameData.Legacy
 			for (int i = (int)UIGraphic.DamageSplash; i <= (int)UIGraphic.EmptyCharSlot; i++)
 				AddUIGraphic((UIGraphic)i);
 			#endregion
-			#region Read item graphics
-			void AddItemGraphic(int index)
+            #region Read item graphics
+            void AddItemGraphic(int index)
 			{
 				ItemGraphics.Add(index, new DataReader(dataReader.ReadBytes(16 * 16 / 2)));
 			}

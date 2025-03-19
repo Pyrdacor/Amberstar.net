@@ -695,7 +695,7 @@ internal class Map3DScreen : Screen
         if (key >= Key.F1 && key <= Key.F6)
         {
             game!.State.CurrentInventoryIndex = key - Key.F1;
-            game.ScreenHandler.PushScreen(ScreenType.Conversation);
+            game.ScreenHandler.PushScreen(ScreenType.Inventory);
 			return;
         }
 

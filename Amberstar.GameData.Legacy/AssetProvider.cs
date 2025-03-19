@@ -52,8 +52,27 @@ public class AssetProvider : IAssetProvider
 		0x03, 0x10,
 		0x07, 0x65
 	]));
+    private static readonly IGraphic ItemPalette = Legacy.PaletteLoader.LoadPalette(new DataReader(
+    [
+        0x00, 0x00,
+        0x06, 0x51,
+        0x03, 0x33,
+        0x02, 0x22,
+        0x01, 0x11,
+        0x05, 0x31,
+        0x04, 0x21,
+        0x01, 0x24,
+        0x02, 0x36,
+        0x06, 0x10,
+        0x03, 0x10,
+        0x05, 0x41,
+        0x03, 0x40,
+        0x04, 0x51,
+        0x04, 0x44,
+        0x07, 0x65
+    ]));
 
-	static readonly Dictionary<LegacyPlatform, string> programFileNames = new()
+    static readonly Dictionary<LegacyPlatform, string> programFileNames = new()
 	{
 		{ LegacyPlatform.Atari, "AMBRSTAR.68K" },
 		{ LegacyPlatform.Amiga, "AMBERDEV.UDO" },
@@ -83,6 +102,7 @@ public class AssetProvider : IAssetProvider
 	readonly Lazy<ICursorLoader> cursorLoader;
     readonly Lazy<IMonsterLoader> monsterLoader;
     readonly Lazy<IPartyMemberLoader> partyMemberLoader;
+	readonly Lazy<IItemLoader> itemLoader;
 
     private ProgramData Data => programData.Value;
 	public ITextLoader TextLoader => textLoader.Value;
@@ -99,6 +119,7 @@ public class AssetProvider : IAssetProvider
 	public ICursorLoader CursorLoader => cursorLoader.Value;
     public IMonsterLoader MonsterLoader => monsterLoader.Value;
     public IPartyMemberLoader PartyMemberLoader => partyMemberLoader.Value;
+	public IItemLoader ItemLoader => itemLoader.Value;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AssetProvider(IReadOnlyFileSystem fileSystem)
@@ -127,7 +148,7 @@ public class AssetProvider : IAssetProvider
 			Data.LayoutBottomCorners, Data.LayoutBottomCornerMasks, Data.PortraitArea));
 		uIGraphicLoader = new(() => new UIGraphicLoader(this, Data.LayoutBlocks[77])); // layout block 77 is the empty item slot
 		mapLoader = new(() => new MapLoader(this));		
-		paletteLoader = new(() => new PaletteLoader(this, UIPalette));
+		paletteLoader = new(() => new PaletteLoader(this, UIPalette, ItemPalette));
 		graphicLoader = new(() => new GraphicLoader(this));
 		tilesetLoader = new(() => new TilesetLoader(this));
 		fontLoader = new(() => new FontLoader(this));
@@ -136,6 +157,7 @@ public class AssetProvider : IAssetProvider
 		cursorLoader = new(() => new CursorLoader(this));
         monsterLoader = new(() => new MonsterLoader(this));
         partyMemberLoader = new(() => new PartyMemberLoader(this, textLoader));
+		itemLoader = new(() => new ItemLoader());
     }
 
 	public LegacyPlatform Platform { get; } = LegacyPlatform.Source;

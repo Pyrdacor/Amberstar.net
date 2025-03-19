@@ -6,4 +6,5 @@ public interface IPaletteLoader
 {
 	IGraphic LoadPalette(int index);
 	IGraphic LoadUIPalette();
+	IGraphic LoadItemPalette();
 }

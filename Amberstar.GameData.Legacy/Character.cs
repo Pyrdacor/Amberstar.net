@@ -55,7 +55,7 @@ internal class Character : ICharacter
                 return null;
             }
 
-            return itemLoader.LoadItem(reader);
+            return itemLoader.ReadItem(reader);
         }
             
         var items = Enumerable.Range(0, itemCounts.Length)
@@ -65,7 +65,7 @@ internal class Character : ICharacter
             character.equipment[(EquipmentSlot)i] = new ItemSlot(itemCounts[i], items[i]);
 
         for (int i = 0; i < ICharacter.InventorySlotCount; i++)
-            character.inventory[i] = new ItemSlot(itemCounts[i], items[i]);
+            character.inventory[i] = new ItemSlot(itemCounts[9 + i], items[9 + i]);
     }
 
     CharacterType ICharacter.Type { get => type; init => type = value; }

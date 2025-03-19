@@ -18,18 +18,21 @@ namespace Amberstar.net
 		{
 			// Create the palette
 			var uiPalette = assetProvider.PaletteLoader.LoadUIPalette();
-			var generalPalettes = Enumerable.Range(1, 10).Select(assetProvider.PaletteLoader.LoadPalette).ToArray();
+			var itemPalette = assetProvider.PaletteLoader.LoadItemPalette();
+            var generalPalettes = Enumerable.Range(1, 10).Select(assetProvider.PaletteLoader.LoadPalette).ToArray();
 			var tilesetPalettes = Enumerable.Range(1, 2).Select(index => assetProvider.TilesetLoader.LoadTileset(index).Palette).ToArray();
 			var image80x80Palettes = Enumerable.Range(1, 26).Select(index => assetProvider.GraphicLoader.Load80x80Graphic((Image80x80)index).Palette).ToArray();
-			var palette = new Graphic(16, 1 + 10 + 2 + 26, GraphicFormat.RGBA);
+			var palette = new Graphic(16, 2 + 10 + 2 + 26, GraphicFormat.RGBA);
 
 			palette.AddOverlay(0, 0, uiPalette);
-			byte y = 1;
-			var generalPaletteIndices = new Dictionary<int, byte>();
+            palette.AddOverlay(0, 1, itemPalette);
+            var generalPaletteIndices = new Dictionary<int, byte>();
 			var palettes = new Dictionary<int, IGraphic>();
 			palettes.Add(0, uiPalette);
+			palettes.Add(1, itemPalette);
+            byte y = 2;
 
-			for (int i = 0; i < generalPalettes.Length; i++)
+            for (int i = 0; i < generalPalettes.Length; i++)
 			{
 				generalPaletteIndices.Add(i, y);
 				palettes.Add(y, generalPalettes[i]);
@@ -264,7 +267,7 @@ namespace Amberstar.net
 				image80x80Offset, itemGraphicOffset, windowGraphicOffset, cursorGraphicOffset,
 				backgroundGraphicIndices, cloudGraphicIndices, labBlockImageIndices,
 				partyMemberPortraitIndices, npcPortraitIndices);
-			paletteIndexProvider = new(0, image80x80PaletteIndices, tilesetPaletteIndices, generalPaletteIndices);
+			paletteIndexProvider = new(0, 1, image80x80PaletteIndices, tilesetPaletteIndices, generalPaletteIndices);
 			paletteColorProvider = new(palettes);
 			fontInfoProvider = new(textGlyphTextureIndices, runeGlyphTextureIndices);
 		}

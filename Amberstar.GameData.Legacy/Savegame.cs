@@ -1,5 +1,4 @@
 ﻿using Amber.Serialization;
-using System.Reflection.PortableExecutable;
 
 namespace Amberstar.GameData.Legacy;
 
