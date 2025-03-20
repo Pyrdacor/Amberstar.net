@@ -5,7 +5,6 @@ using Amber.IO.FileFormats.Serialization;
 using Amber.Serialization;
 using Amberstar.GameData.Serialization;
 using Amiga.FileFormats.LHA;
-using System.IO;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -70,6 +69,25 @@ public class AssetProvider : IAssetProvider
         0x04, 0x51,
         0x04, 0x44,
         0x07, 0x65
+    ]));
+    private static readonly IGraphic AutomapPalette = Legacy.PaletteLoader.LoadPalette(new DataReader(
+    [
+        0x00, 0x00,
+        0x05, 0x00,
+        0x03, 0x33,
+        0x02, 0x22,
+        0x01, 0x11,
+        0x04, 0x44,
+        0x05, 0x55,
+        0x02, 0x10,
+        0x03, 0x20,
+        0x04, 0x31,
+        0x05, 0x42,
+        0x00, 0x12,
+        0x01, 0x23,
+        0x03, 0x51,
+        0x02, 0x30,
+        0x06, 0x66
     ]));
 
     static readonly Dictionary<LegacyPlatform, string> programFileNames = new()
@@ -142,13 +160,20 @@ public class AssetProvider : IAssetProvider
 		if (Platform == LegacyPlatform.Source)
 			programData = new(() => LoadProgramDataFromSource(fileSystem));
 
+		var builtinPalettes = new Dictionary<BuiltinPalette, IGraphic>()
+		{
+			{ BuiltinPalette.UI, UIPalette },
+            { BuiltinPalette.Item, ItemPalette },
+            { BuiltinPalette.Automap, AutomapPalette },
+        };
+
 		textLoader = new(() => new TextLoader(this, Data.TextFragments));
 		placeLoader = new(() => new PlaceLoader(this));
 		layoutLoader = new(() => new LayoutLoader(this, Data.LayoutBlocks,
 			Data.LayoutBottomCorners, Data.LayoutBottomCornerMasks, Data.PortraitArea));
 		uIGraphicLoader = new(() => new UIGraphicLoader(this, Data.LayoutBlocks[77])); // layout block 77 is the empty item slot
 		mapLoader = new(() => new MapLoader(this));		
-		paletteLoader = new(() => new PaletteLoader(this, UIPalette, ItemPalette));
+		paletteLoader = new(() => new PaletteLoader(this, builtinPalettes));
 		graphicLoader = new(() => new GraphicLoader(this));
 		tilesetLoader = new(() => new TilesetLoader(this));
 		fontLoader = new(() => new FontLoader(this));

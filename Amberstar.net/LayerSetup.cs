@@ -17,20 +17,20 @@ namespace Amberstar.net
 			out FontInfoProvider fontInfoProvider)
 		{
 			// Create the palette
-			var uiPalette = assetProvider.PaletteLoader.LoadUIPalette();
-			var itemPalette = assetProvider.PaletteLoader.LoadItemPalette();
+			var builtinPalettes = Enum.GetValues<BuiltinPalette>().Select(assetProvider.PaletteLoader.LoadBuiltinPalette).ToArray();
             var generalPalettes = Enumerable.Range(1, 10).Select(assetProvider.PaletteLoader.LoadPalette).ToArray();
 			var tilesetPalettes = Enumerable.Range(1, 2).Select(index => assetProvider.TilesetLoader.LoadTileset(index).Palette).ToArray();
 			var image80x80Palettes = Enumerable.Range(1, 26).Select(index => assetProvider.GraphicLoader.Load80x80Graphic((Image80x80)index).Palette).ToArray();
-			var palette = new Graphic(16, 2 + 10 + 2 + 26, GraphicFormat.RGBA);
-
-			palette.AddOverlay(0, 0, uiPalette);
-            palette.AddOverlay(0, 1, itemPalette);
+			var palette = new Graphic(16, builtinPalettes.Length + 10 + 2 + 26, GraphicFormat.RGBA);
             var generalPaletteIndices = new Dictionary<int, byte>();
 			var palettes = new Dictionary<int, IGraphic>();
-			palettes.Add(0, uiPalette);
-			palettes.Add(1, itemPalette);
-            byte y = 2;
+            byte y = 0;
+
+            foreach (var builtinPalette in builtinPalettes)
+            {
+                palette.AddOverlay(0, y, builtinPalette);
+                palettes.Add(y++, builtinPalette);
+            }
 
             for (int i = 0; i < generalPalettes.Length; i++)
 			{

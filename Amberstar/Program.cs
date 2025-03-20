@@ -12,8 +12,8 @@ namespace Amberstar
 	{
 		static void Main(string[] args)
 		{
-			//string basePath = @"D:\Projects\Amber\English\AmberfilesST";
-			string basePath = @"D:\Projects\Amber\German\AmberfilesST";
+            //string basePath = @"D:\Projects\Amber\English\AmberfilesST";
+            string basePath = @"D:\Projects\Amber\German\AmberfilesST";
 
 			var fileSystem = FileSystem.FromOperatingSystemPath(basePath);
 
@@ -68,8 +68,8 @@ namespace Amberstar
 			WriteTexts(AssetType.PuzzleText, 1, 1, false, true);
 			WriteTexts(AssetType.ItemText, 2, 1, false, true);
 
-			byte[] uiPalette = assetProvider.PaletteLoader.LoadUIPalette().GetData();
-            byte[] itemPalette = assetProvider.PaletteLoader.LoadItemPalette().GetData();
+			byte[] uiPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.UI).GetData();
+            byte[] itemPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.Item).GetData();
 
             for (int i = 1; i <= 11; i++)
 			{

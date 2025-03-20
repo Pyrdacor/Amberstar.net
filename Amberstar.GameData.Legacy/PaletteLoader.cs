@@ -5,7 +5,7 @@ using Amberstar.GameData.Serialization;
 
 namespace Amberstar.GameData.Legacy;
 
-internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, IGraphic uiPalette, IGraphic itemPalette) : IPaletteLoader
+internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, Dictionary<BuiltinPalette, IGraphic> builtinPalettes) : IPaletteLoader
 {
 	private readonly Dictionary<int, IGraphic> palettes = [];
 
@@ -84,7 +84,5 @@ internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, I
 		return palette;
 	}
 
-	public IGraphic LoadUIPalette() => uiPalette;
-
-	public IGraphic LoadItemPalette() => itemPalette;
+    public IGraphic LoadBuiltinPalette(BuiltinPalette builtinPalette) => builtinPalettes[builtinPalette];
 }

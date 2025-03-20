@@ -24,7 +24,7 @@ public partial class Game : IDisposable
 	double totalTime = 0.0;
 	long lastGameTicks = 0;
 	long gameTicks = 0;
-	readonly ISprite portraitBackgroundSprite;
+    readonly ISprite portraitBackgroundSprite;
 	readonly ISprite layoutSprite;
 
 	public Game(IRenderer renderer, IAssetProvider assetProvider,
@@ -109,11 +109,8 @@ public partial class Game : IDisposable
 
 	public void Update(double delta)
 	{
-		if (!Paused)
-		{
-			totalTime += delta;
-			gameTicks = (long)Math.Round(totalTime * TicksPerSecond);
-		}
+		totalTime += delta;
+		gameTicks = (long)Math.Round(totalTime * TicksPerSecond);
 
 		UpdateFading();
 
@@ -126,7 +123,7 @@ public partial class Game : IDisposable
 			return;
 		}
 
-		long elapsed = gameTicks - lastGameTicks;
+		long elapsed = Paused ? 0 : gameTicks - lastGameTicks;
 		lastGameTicks = gameTicks;
 
 		Time.Update(elapsed);
