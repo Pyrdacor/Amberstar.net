@@ -1,5 +1,7 @@
 ﻿using Amber.Common;
 using Amberstar.Game.Collections;
+using Amberstar.Game.Events;
+using Amberstar.GameData;
 
 namespace Amberstar.Game;
 
@@ -34,4 +36,12 @@ partial class Game
 	{
 		timedActions.Clear();
 	}
+
+    IText GetMapText(int mapIndex, int index)
+    {
+        var text = AssetProvider.TextLoader.LoadText(new(AssetType.MapText, mapIndex));
+        return text.GetTextBlock(index);
+    }
+
+	IText GetCurrentMapText(int index) => GetMapText(State.GetIndexOfMapWithPlayer(), index);
 }

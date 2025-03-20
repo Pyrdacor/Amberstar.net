@@ -52,10 +52,10 @@ public partial class Game : IDisposable
 		Cursor = new(this);
 		this.pressedKeyProvider = pressedKeyProvider;
 
-		int uiPaletteIndex = paletteIndexProvider.UIPaletteIndex;
+		int uiPaletteIndex = paletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
 		// Show portrait area
-		portraitBackgroundSprite = CreateSprite(Layer.Layout, new Position(0, 0), new Size(320, 36), 0, 14)!;
+		portraitBackgroundSprite = CreateSprite(Layer.Layout, new Position(0, 0), new Size(320, 36), 0, uiPaletteIndex)!;
 		// Show layout
 		layoutSprite = CreateSprite(Layer.Layout, new Position(0, 37), new Size(320, 163), 0, 14)!;
 

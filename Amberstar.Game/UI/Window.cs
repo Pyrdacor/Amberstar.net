@@ -1,6 +1,7 @@
 ﻿using Amber.Assets.Common;
 using Amber.Common;
 using Amber.Renderer;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.UI
 {
@@ -23,7 +24,7 @@ namespace Amberstar.Game.UI
 			ClientArea = new(x + TileWidth, y + TileHeight, (widthInTiles - 2) * TileWidth, (heightInTiles - 2) * TileHeight);
 			borders = new ISprite[2 * widthInTiles + 2 * heightInTiles - 4];
 
-			paletteIndex ??= game.PaletteIndexProvider.UIPaletteIndex;
+			paletteIndex ??= game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 			int windowColorIndex = dark ? 3 : 2;
 			var windowColor = game.PaletteColorProvider.GetPaletteColor(paletteIndex.Value, windowColorIndex);
 			int baseImageIndex = game.GraphicIndexProvider.GetWindowGraphicIndex(dark);

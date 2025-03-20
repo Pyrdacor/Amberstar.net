@@ -1,6 +1,7 @@
 ﻿using Amber.Common;
 using Amber.Renderer;
 using Amberstar.GameData;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.UI;
 
@@ -81,7 +82,7 @@ internal class ItemContainer
 	{
 		this.game = game;
 		this.position = position;
-		this.paletteIndex = game.PaletteIndexProvider.ItemPaletteIndex;
+		this.paletteIndex = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.Item];
 
         if (displayLayer > byte.MaxValue - 2)
             displayLayer = byte.MaxValue - 2;

@@ -1,6 +1,8 @@
-﻿using Amberstar.Game.Events;
+﻿using Amber.Common;
+using Amberstar.Game.Events;
 using Amberstar.Game.Screens;
 using Amberstar.GameData;
+using Amberstar.GameData.Events;
 
 namespace Amberstar.Game;
 
@@ -73,6 +75,16 @@ partial class Game
 
 	internal void OpenPlace(PlaceEvent placeEvent)
 	{
-		// TODO
+		if (placeEvent.PlaceType == PlaceType.Unused ||
+			placeEvent.PlaceType >= PlaceType.Invalid)
+			throw new AmberException(ExceptionScope.Data, "Invalid place type");
+
+        if (!placeEvent.AlwaysOpen && (State.Hour < placeEvent.OpeningHour || State.Hour >= placeEvent.ClosingHour))
+		{
+            ShowTextMessage(GetCurrentMapText(placeEvent.ClosedTextIndex));
+			return;
+		}
+
+		ScreenHandler.PushScreen(ScreenType.Place);
 	}
 }

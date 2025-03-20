@@ -1,4 +1,5 @@
-﻿using Amberstar.Game.UI;
+﻿using Amberstar.Game.Screens;
+using Amberstar.Game.UI;
 using Amberstar.GameData;
 
 namespace Amberstar.Game;
@@ -16,4 +17,10 @@ partial class Game
 		if (paletteIndex != null)
 			layoutSprite.PaletteIndex = paletteIndex.Value;
 	}
+
+    internal void ShowTextMessage(IText text, Action? nextAction = null)
+    {
+        CurrentText = text;
+        ScreenHandler.PushScreen(ScreenType.TextBox);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using Amber.Common;
 using Amber.Renderer;
 using Amberstar.GameData;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.UI;
 
@@ -69,7 +70,7 @@ internal class Cursor
 		this.game = game;
 		var layer = game.GetRenderLayer(Layer.UI);
 		var textureAtlas = layer.Config.Texture!;
-		var paletteIndex = game.PaletteIndexProvider.UIPaletteIndex;
+		var paletteIndex = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
 		sprite = layer.SpriteFactory!.Create();
 		sprite.Position = new(0, 0);

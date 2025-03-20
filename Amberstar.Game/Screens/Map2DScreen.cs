@@ -3,6 +3,7 @@ using Amber.Renderer;
 using Amberstar.Game.Events;
 using Amberstar.Game.UI;
 using Amberstar.GameData;
+using Amberstar.GameData.Events;
 using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.Screens;
@@ -228,7 +229,7 @@ internal class Map2DScreen : Screen
 	{
 		if (!screen.Transparent)
 		{
-			game.SetLayout(Layout.Map2D);
+			SetLayout();
 			underlay.Values.ToList().ForEach(tile => tile.Visible = true);
 			overlay.Values.ToList().ForEach(tile => tile.Visible = true);
 			player!.Visible = screenPushPlayerWasVisible;
@@ -253,7 +254,7 @@ internal class Map2DScreen : Screen
 		additionalMoveRequested = false;
 		mouseDown = false;
 
-		game.SetLayout(Layout.Map2D);
+		SetLayout();
 		buttonGrid = new(game);
 		buttonGrid.ClickButtonAction += ButtonClicked;
 		buttonLayout = ButtonLayout.Movement;
@@ -262,6 +263,11 @@ internal class Map2DScreen : Screen
 		InitPlayer();
 		AfterMove();
 	}
+
+	private void SetLayout()
+	{
+        game!.SetLayout(Layout.Map2D, palette);
+    }
 
 	private void ButtonClicked(int index)
 	{
@@ -484,7 +490,15 @@ internal class Map2DScreen : Screen
 		{
 			var mapEvent = Event.CreateEvent(@event);
 
-			if (game.EventHandler.HandleEvent(EventTrigger.Move, mapEvent, map!) && mapEvent is ITeleportEvent)
+            if (mapEvent is IPlaceEvent)
+            {
+                game.State.ResetPartyPosition();
+
+                if (worldMap != null)
+                    UpdateWorldMap();
+            }
+
+            if (game.EventHandler.HandleEvent(EventTrigger.Move, mapEvent, map!) && mapEvent is ITeleportEvent)
 			{
 				// Don't update the map if we are teleporting away.
 				return;

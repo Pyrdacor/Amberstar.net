@@ -39,7 +39,7 @@ internal class Button
 		this.game = game;
 		var layer = game.GetRenderLayer(Layer.UI);
 		var textureAtlas = layer.Config.Texture!;
-		paletteIndex ??= game.PaletteIndexProvider.UIPaletteIndex;
+		paletteIndex ??= game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
 		if (displayLayer < 2)
 			displayLayer = 2;

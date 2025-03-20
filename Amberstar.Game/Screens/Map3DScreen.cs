@@ -4,9 +4,8 @@ using Amber.Renderer;
 using Amberstar.Game.Events;
 using Amberstar.Game.UI;
 using Amberstar.GameData;
+using Amberstar.GameData.Events;
 using Amberstar.GameData.Serialization;
-using System.Numerics;
-using System.Threading;
 
 namespace Amberstar.Game.Screens;
 
@@ -281,7 +280,7 @@ internal class Map3DScreen : Screen
 	{
 		if (!screen.Transparent)
 		{
-			game.SetLayout(Layout.Map3D);
+			SetLayout();
 			images.ForEach(image => image.Visible = true);
 			skyGradient.ForEach(g => g.Visible = true);
 		}
@@ -291,7 +290,12 @@ internal class Map3DScreen : Screen
 		game.Resume();
 	}
 
-	public override void Open(Game game, Action? closeAction)
+    private void SetLayout()
+    {
+        game!.SetLayout(Layout.Map3D, palette);
+    }
+
+    public override void Open(Game game, Action? closeAction)
 	{
 		base.Open(game, closeAction);
 
@@ -300,7 +304,7 @@ internal class Map3DScreen : Screen
 		lastTurnTicks = 0;
 		mouseDown = false;
 
-		game.SetLayout(Layout.Map3D);
+		SetLayout();
 		buttonGrid = new(game);
 		buttonGrid.ClickButtonAction += ButtonClicked;
 		buttonLayout = ButtonLayout.Movement;
@@ -350,6 +354,21 @@ internal class Map3DScreen : Screen
 		}
 		else // Actions
 		{
+			if (index == 0) // eye
+			{
+                // TODO: NPCs
+
+                var playerPosition = game!.State.PartyPosition;
+                var forwardPosition = playerPosition + game.State.PartyDirection.Offset();
+
+				if (forwardPosition.X >= 0 && forwardPosition.X < map!.Width &&
+					forwardPosition.Y >= 0 && forwardPosition.Y < map.Height &&
+					map.Tiles[forwardPosition.X + forwardPosition.Y * map.Width].Event != 0)
+				{
+                    game.EventHandler.HandleEvent(EventTrigger.Eye, Event.CreateEvent(map.Events[map.Tiles[forwardPosition.X + forwardPosition.Y * map.Width].Event - 1]), map);
+                }
+            }
+
 			// TODO
 		}
 	}
@@ -486,7 +505,17 @@ internal class Map3DScreen : Screen
 		var eventIndex = map!.Tiles[playerPosition.X + playerPosition.Y * map.Width].Event;
 
 		if (eventIndex != 0)
-			game.EventHandler.HandleEvent(EventTrigger.Move, Event.CreateEvent(map.Events[eventIndex - 1]), map);
+		{
+			var mapEvent = Event.CreateEvent(map.Events[eventIndex - 1]);
+
+			if (mapEvent is IPlaceEvent)
+			{
+				game.State.ResetPartyPosition();
+                UpdateView();
+            }
+
+			game.EventHandler.HandleEvent(EventTrigger.Move, mapEvent, map);
+		}
 	}
 
 	private bool CanMoveTo(int x, int y, bool player, int collisionClass)

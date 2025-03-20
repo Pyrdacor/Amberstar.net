@@ -6,7 +6,10 @@ public enum BuiltinPalette
 {
     UI,
     Item,
-	Automap
+	Automap,
+	Day,
+	DuskDawn,
+	Night
 }
 
 public interface IPaletteLoader

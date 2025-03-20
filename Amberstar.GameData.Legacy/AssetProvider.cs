@@ -165,6 +165,9 @@ public class AssetProvider : IAssetProvider
 			{ BuiltinPalette.UI, UIPalette },
             { BuiltinPalette.Item, ItemPalette },
             { BuiltinPalette.Automap, AutomapPalette },
+            { BuiltinPalette.Day, AutomapPalette }, // TODO
+            { BuiltinPalette.DuskDawn, AutomapPalette }, // TODO
+            { BuiltinPalette.Night, AutomapPalette }, // TODO
         };
 
 		textLoader = new(() => new TextLoader(this, Data.TextFragments));

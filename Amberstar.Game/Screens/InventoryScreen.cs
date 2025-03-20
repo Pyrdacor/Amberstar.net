@@ -1,6 +1,7 @@
 ﻿using Amber.Common;
 using Amberstar.Game.UI;
 using Amberstar.GameData;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.Screens;
 
@@ -84,7 +85,7 @@ internal class InventoryScreen : Screen
 	{
 		base.Open(game, closeAction);
 
-        var palette = game.PaletteIndexProvider.UIPaletteIndex;
+        var palette = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
         game.SetLayout(Layout.Inventory, palette);
         game.Cursor.CursorType = CursorType.Sword;
@@ -170,7 +171,7 @@ internal class InventoryScreen : Screen
         int partyMemberIndex = 1; // TODO: get from savegame, slot is index
         partyMember = game!.AssetProvider.PartyMemberLoader.LoadPartyMember(partyMemberIndex);
         var graphicLoader = game!.AssetProvider.GraphicLoader;
-        var uiPaletteIndex = game!.PaletteIndexProvider.UIPaletteIndex;
+        var uiPaletteIndex = game!.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
         foreach (var equipmentSlot in Enum.GetValues<EquipmentSlot>())
         {

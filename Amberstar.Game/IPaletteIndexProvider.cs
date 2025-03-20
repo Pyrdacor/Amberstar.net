@@ -1,11 +1,11 @@
 ﻿using Amberstar.GameData.Serialization;
+using System.Collections.ObjectModel;
 
 namespace Amberstar.Game;
 
 public interface IPaletteIndexProvider
 {
-	byte UIPaletteIndex { get; }
-    byte ItemPaletteIndex { get; }
+	ReadOnlyDictionary<BuiltinPalette, byte> BuiltinPaletteIndices { get; }
 
     byte GetTilesetPaletteIndex(int tileset);
 	byte GetLabyrinthPaletteIndex(int paletteIndex); // not labyrinth index!

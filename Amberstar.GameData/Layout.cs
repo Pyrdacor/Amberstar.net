@@ -7,7 +7,7 @@ public enum Layout
 	Inventory = 2,
     Door = 3,
     Chest = 3,
-	Merchant = 3,
+	Place = 3,
     Battle = 4,
     Map3D = 5,
     Stats = 6,

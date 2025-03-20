@@ -2,6 +2,7 @@
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Events;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.Screens;
 
@@ -63,7 +64,7 @@ internal class TextBoxScreen : Screen
 
 		// TODO: others?
 
-		return game.PaletteIndexProvider.UIPaletteIndex;
+		return game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 	}
 
 	private void InitText(IText text)

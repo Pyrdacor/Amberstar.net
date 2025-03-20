@@ -559,7 +559,8 @@ internal class GameState
 	public Direction PartyDirection { get; set; } = Direction.Right;
 	Transport[] Transports { get; } = new Transport[ISavegame.MaxTransportCount];
 	HashSet<TileChange> TileChanges { get; } = [];
-	public Position PartyPosition => new(PartyX - 1, PartyY - 1);
+	public Position LastPosition { get; private set; } = new(7, 10);
+    public Position PartyPosition => new(PartyX - 1, PartyY - 1);
 	bool WorldMap { get; set; } = false;
 
 	public int GetIndexOfMapWithPlayer()
@@ -580,11 +581,18 @@ internal class GameState
 
 	public void SetPartyPosition(int x, int y)
 	{
-		PartyX = x + 1;
+		LastPosition = new(PartyX - 1, PartyY - 1);
+        PartyX = x + 1;
 		PartyY = y + 1;
 	}
 
-	public void SetIsWorldMap(bool worldMap)
+    public void ResetPartyPosition()
+    {
+        PartyX = LastPosition.X + 1;
+        PartyY = LastPosition.Y + 1;
+    }
+
+    public void SetIsWorldMap(bool worldMap)
 	{
 		WorldMap = worldMap;
 	}

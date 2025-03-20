@@ -263,11 +263,13 @@ namespace Amberstar.net
 
 			// TODO ...
 
-			uiGraphicIndexProvider = new(buttonOffset, statusIconOffset, uiGraphicOffset,
+			var builtinPaletteIndices = Enum.GetValues<BuiltinPalette>().ToDictionary(p => p, p => (byte)p);
+
+            uiGraphicIndexProvider = new(buttonOffset, statusIconOffset, uiGraphicOffset,
 				image80x80Offset, itemGraphicOffset, windowGraphicOffset, cursorGraphicOffset,
 				backgroundGraphicIndices, cloudGraphicIndices, labBlockImageIndices,
 				partyMemberPortraitIndices, npcPortraitIndices);
-			paletteIndexProvider = new(0, 1, image80x80PaletteIndices, tilesetPaletteIndices, generalPaletteIndices);
+			paletteIndexProvider = new(builtinPaletteIndices, image80x80PaletteIndices, tilesetPaletteIndices, generalPaletteIndices);
 			paletteColorProvider = new(palettes);
 			fontInfoProvider = new(textGlyphTextureIndices, runeGlyphTextureIndices);
 		}

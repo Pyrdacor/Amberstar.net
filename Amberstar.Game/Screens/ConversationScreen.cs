@@ -1,5 +1,6 @@
 ﻿using Amber.Common;
 using Amberstar.GameData;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.Screens;
 
@@ -15,7 +16,7 @@ internal class ConversationScreen : Screen
 
 		this.game = game;
 
-        var palette = game.PaletteIndexProvider.UIPaletteIndex;
+        var palette = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
         game.SetLayout(Layout.Conversation, palette);
 	}
