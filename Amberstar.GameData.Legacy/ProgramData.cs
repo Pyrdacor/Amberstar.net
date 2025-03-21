@@ -201,8 +201,6 @@ namespace Amberstar.GameData.Legacy
 				AddUIGraphic((UIGraphic)i);
 			#endregion
 			#region Read sky gradients
-			// TODO: read gfx between the above and the sky gradients
-			dataReader.Position = (int)dataReader.FindByteSequence([0x00, 0x56, 0x00, 0x56], dataReader.Position);
 			for (int i = 0; i < 3; i++)
 				SkyGradients.Add(i, new DataReader(dataReader.ReadBytes(84 * 2)));
 			#endregion

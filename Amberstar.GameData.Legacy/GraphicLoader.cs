@@ -230,10 +230,10 @@ internal class GraphicLoader(AssetProvider assetProvider) : IGraphicLoader
 				gradient[n] = new Color((byte)r, (byte)g, (byte)b);
 			}
 
-			// 0 -> 2
-			// 1 -> 0
-			// 2 -> 1
-			DayTime dayTime = (DayTime)((i + 2) % 3);
+            // 0 -> 2 (first is day)
+            // 1 -> 0 (second is night)
+            // 2 -> 1 (third is dawn/dusk)
+            DayTime dayTime = (DayTime)((i + 2) % 3);
 
 			skyGradients.Add(dayTime, gradient);
 

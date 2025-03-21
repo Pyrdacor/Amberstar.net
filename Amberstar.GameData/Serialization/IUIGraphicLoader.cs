@@ -34,7 +34,12 @@ public enum UIGraphic
 	SPBar,
 	Sword,
 	Shield,
-	LastUIGraphic // TODO: point to last
+	RiddlemouthEyes,
+    RiddlemouthMouth,
+	CurseAnimation,
+	AutomapIcons,
+	SmallOuch,
+    LastUIGraphic = SmallOuch
 }
 
 public enum ButtonType
@@ -343,7 +348,12 @@ public static class UIGraphicExtensions
 		{ UIGraphic.SPBar, Info(16, 17) },
 		{ UIGraphic.Sword, Info(16, 10) },
 		{ UIGraphic.Shield, Info(16, 10) },
-		{ UIGraphic.LastUIGraphic, Info(16, 1) } // TODO
+		{ UIGraphic.RiddlemouthEyes, Info(80, 29, 4) },
+        { UIGraphic.RiddlemouthMouth, Info(80, 15, 8) },
+        { UIGraphic.CurseAnimation, Info(16, 16, 16) },
+        { UIGraphic.AutomapIcons, Info(16, 8, 14) },
+        { UIGraphic.SmallOuch, Info(16, 16) },
+        //{ UIGraphic.LastUIGraphic, Info(16, 32, 1) } // TODO
 	};
 
 	public static Size GetSize(this UIGraphic graphic) => uiGraphicInfos[graphic].Item2;
