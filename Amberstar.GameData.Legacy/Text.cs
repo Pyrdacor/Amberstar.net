@@ -12,6 +12,19 @@ internal class Text(List<string> textFragments) : IText
 
 	public int TextBlockCount => textBlockOffsets.Count;
 
+	public static Text FromString(string text)
+	{
+        // First byte is the number of text:	1
+        // Then padding byte:					0
+        // Then offset to first text:			0 0 (word: value = 0)
+        // Then offset to second text:			0 1 (word: value = 1)
+        // Then the index to text fragment:		0 0 (word: value = 0)
+        byte[] data = [1, 0, 0, 0, 0, 1, 0, 0];
+
+		return Read(new DataReader(data), [text]);
+	}
+
+	// [1, 0, offHi, offLo, offHi2, offLo2, 0, 0]
     public static Text Read(IDataReader reader, List<string> textFragments)
 	{
         int textCount = reader.ReadByte();

@@ -4,15 +4,24 @@ using Amberstar.GameData;
 
 namespace Amberstar.Game.UI;
 
+public enum TextAlignment
+{
+    Left,
+    Center,
+    Right
+}
+
 internal interface IRenderText
 {
     bool SupportsScrolling { get; }
     int TextLineCount { get; }
 	int LineHeight { get; }
-	event Action? ScrollEnded;
+    bool Visible { get; set; }
+
+    event Action? ScrollEnded;
 
     void Show(int x, int y, byte displayLayer);
-    void ShowInArea(int x, int y, int width, int height, byte displayLayer);
+    void ShowInArea(int x, int y, int width, int height, byte displayLayer, TextAlignment textAlignment = TextAlignment.Left);
     void Delete();
     bool Scroll(int lines);
     bool ScrollFullHeight();
@@ -58,6 +67,7 @@ internal class TextManager(Game game, IFont font,
         int scrollOffsetInPixels = 0;
         int scrollOffsetInLines = 0;
         byte displayLayer = 0;
+        bool visible = false;
 
         public event Action? ScrollEnded;
 
@@ -66,6 +76,26 @@ internal class TextManager(Game game, IFont font,
         public int TextLineCount => textLines.Count;
 
         public int LineHeight => font.LineHeight;
+
+        public bool Visible
+        {
+            get => visible;
+            set
+            {
+                if (visible == value)
+                    return;
+
+                if (value && glyphs.Count == 0)
+                    return; // Cannot make text without glyphs visible
+
+                visible = value;
+
+                foreach (var glyph in glyphs.SelectMany(g => g))
+                    glyph.Visible = visible;
+                foreach (var shadow in glyphShadows.SelectMany(g => g))
+                    shadow.Visible = visible;
+            }
+        }
 
 		private static readonly Dictionary<char, int> UnicodeToAtariST = new()
         {
@@ -206,6 +236,8 @@ internal class TextManager(Game game, IFont font,
             scrollOffsetInLines = 0;
             this.displayLayer = displayLayer;
 
+            Delete();
+
             if (startedScrollAction.Count != 0)
             {
                 game.DeleteDelayedActions(startedScrollAction.ToArray());
@@ -219,9 +251,11 @@ internal class TextManager(Game game, IFont font,
                 SetupTextLine(x, y, i, textLines[i]);
                 y += font.LineHeight;
             }
+
+            Visible = true;
         }
 
-        public void ShowInArea(int x, int y, int width, int height, byte displayLayer)
+        public void ShowInArea(int x, int y, int width, int height, byte displayLayer, TextAlignment textAlignment = TextAlignment.Left)
         {
             int diff = MathUtil.Limit(0, font.LineHeight - font.GlyphHeight, height - 1);
             int numDisplayedRows = (height + diff) / font.LineHeight;
@@ -229,6 +263,18 @@ internal class TextManager(Game game, IFont font,
 
             maxScroll = Math.Max(0, textLines.Count - numDisplayedRows);
             SupportsScrolling = numDisplayedRows < textLines.Count;
+
+            if (textAlignment != TextAlignment.Left)
+            {
+                int GetTextLineLength(TextLine textLine) => textLine.TextBlocks.Sum(textBlock => textBlock.Text.Length) * font.Advance;
+                int maxLineWidth = textLines.Max(GetTextLineLength);
+
+                if (textAlignment == TextAlignment.Right)
+                    x = x + width - maxLineWidth;
+                else if (maxLineWidth < width)
+                    x += (width - maxLineWidth) / 2;
+            }
+
             InternalShow(x, y, displayLayer, numDisplayedRows);
         }
 
@@ -356,7 +402,12 @@ internal class TextManager(Game game, IFont font,
                 glyph.Visible = false;
 			foreach (var shadow in glyphShadows.SelectMany(g => g))
 				shadow.Visible = false;
-		}
+
+            glyphs.Clear();
+            glyphShadows.Clear();
+
+            visible = false;
+        }
     }
 
     public IRenderText Create(IText text, int maxWidth,

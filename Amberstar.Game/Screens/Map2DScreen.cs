@@ -31,6 +31,8 @@ internal class Map2DScreen : Screen
 
 		public MapFlags Flags => maps[0].Flags;
 
+		public string Name => maps[0].Name;
+
 		public MapNPC[] NPCs => [];
 
 		public Position[][] NPCPositions => [];
@@ -175,14 +177,16 @@ internal class Map2DScreen : Screen
 	long delayedMoveActionIndex = -1;
 	ButtonGrid? buttonGrid;
 	bool mouseDown = false;
+    IRenderText? mapNameText;
 
-	public override ScreenType Type { get; } = ScreenType.Map2D;
+    public override ScreenType Type { get; } = ScreenType.Map2D;
 	public IMap2D Map => map!;
 
 	internal void MapChanged()
 	{
 		LoadMap(game!.State.MapIndex);
-		AfterMove();
+        ShowMapName();
+        AfterMove();
 	}
 
 	public override void Init(Game game)
@@ -218,7 +222,8 @@ internal class Map2DScreen : Screen
 			overlay.Values.ToList().ForEach(tile => tile.Visible = false);
 			screenPushPlayerWasVisible = player!.Visible;
 			player!.Visible = false;
-		}
+            mapNameText!.Visible = false;
+        }
 
 		timeText?.Delete();
 
@@ -233,7 +238,8 @@ internal class Map2DScreen : Screen
 			underlay.Values.ToList().ForEach(tile => tile.Visible = true);
 			overlay.Values.ToList().ForEach(tile => tile.Visible = true);
 			player!.Visible = screenPushPlayerWasVisible;
-		}
+            mapNameText!.Visible = true;
+        }
 
 		timeText?.Delete();
 		timeText = game.TextManager.Create($"{game.State.Hour:00}:{game.State.Minute:00}", 15, -1, palette);
@@ -260,7 +266,8 @@ internal class Map2DScreen : Screen
 		buttonLayout = ButtonLayout.Movement;
 		SetupButtons();		
 		LoadMap(game.State.MapIndex);
-		InitPlayer();
+        ShowMapName();
+        InitPlayer();
 		AfterMove();
 	}
 
@@ -269,7 +276,15 @@ internal class Map2DScreen : Screen
         game!.SetLayout(Layout.Map2D, palette);
     }
 
-	private void ButtonClicked(int index)
+    private void ShowMapName()
+    {
+        var name = game!.AssetProvider.TextLoader.FromString(map!.Name).GetTextBlock(0);
+
+        mapNameText ??= game!.TextManager.Create(name, Game.VirtualScreenWidth, 15, TextManager.TransparentPaper, palette);
+        mapNameText.ShowInArea(OffsetX, OffsetY - mapNameText.LineHeight - 3, TilesPerRow * TileWidth, TileRows * TileHeight, 100, TextAlignment.Center);
+    }
+
+    private void ButtonClicked(int index)
 	{
 		if (buttonLayout == ButtonLayout.Movement)
 		{
@@ -351,8 +366,9 @@ internal class Map2DScreen : Screen
 		buttonGrid!.Destroy();
 
 		timeText?.Delete();
+        mapNameText!.Delete();
 
-		base.Close(game);
+        base.Close(game);
 	}
 
 	private void ResetMovement()

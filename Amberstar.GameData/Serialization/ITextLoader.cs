@@ -7,4 +7,5 @@ public interface ITextLoader
 {
 	IText LoadText(AssetIdentifier assetIdentifier);
     IText ReadText(IDataReader dataReader);
+    IText FromString(string text);
 }

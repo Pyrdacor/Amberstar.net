@@ -48,13 +48,15 @@ internal unsafe struct MapHeader
 
 internal abstract class Map : IMap
 {
-	protected readonly MapHeader header;
+    protected readonly MapHeader header;
 
 	public unsafe Map(MapHeader header, MapNPC[] npcs, PositionList[] npcPositions)
 	{
 		this.header = header;
 		NPCs = npcs;
 		NPCPositions = npcPositions;
+
+        Name = new string((sbyte*)header.Name).TrimEnd(' ', '\0');
 
 		var eventReader = new FixedDataReader(header.EventData, IMap.EventCount * IEvent.DataSize);
 
@@ -109,7 +111,9 @@ internal abstract class Map : IMap
 
 	public MapFlags Flags => header.Flags;
 
-	public MapNPC[] NPCs { get; }
+	public string Name { get; }
+
+    public MapNPC[] NPCs { get; }
 
 	public PositionList[] NPCPositions { get; }
 

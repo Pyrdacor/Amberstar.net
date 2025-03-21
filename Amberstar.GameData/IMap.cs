@@ -84,6 +84,7 @@ public interface IMap : IEventProvider
 	int Height { get; }
 	MapType Type { get; }
 	MapFlags Flags { get; }
+	string Name { get; }
 	MapNPC[] NPCs { get; }
 	PositionList[] NPCPositions { get; }
 

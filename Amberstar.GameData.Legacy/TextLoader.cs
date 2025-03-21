@@ -9,7 +9,12 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 	readonly List<string> textFragments = textFragments;
 	readonly Dictionary<AssetIdentifier, IText> texts = [];
 
-	public IText ReadText(IDataReader dataReader)
+    public IText FromString(string text)
+	{
+        return Text.FromString(text);
+    }
+
+    public IText ReadText(IDataReader dataReader)
 	{
 		return Text.Read(dataReader, textFragments);
     }

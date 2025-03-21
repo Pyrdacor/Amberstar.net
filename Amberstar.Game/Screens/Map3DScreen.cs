@@ -243,6 +243,7 @@ internal class Map3DScreen : Screen
 	byte palette = 0;
 	bool mouseDown = false;
 	ButtonGrid? buttonGrid;
+	IRenderText? mapNameText;
 
 	public override ScreenType Type { get; } = ScreenType.Map3D;
 	public IMap3D Map => map!;
@@ -259,7 +260,7 @@ internal class Map3DScreen : Screen
 		backgrounds = game.AssetProvider.GraphicLoader.LoadAllBackgroundGraphics();
 		clouds = game.AssetProvider.GraphicLoader.LoadAllCloudGraphics();
 		skyGradients = game.AssetProvider.GraphicLoader.LoadSkyGradients();
-	}
+    }
 
 	public override void ScreenPushed(Game game, Screen screen)
 	{
@@ -270,6 +271,7 @@ internal class Map3DScreen : Screen
 			// TODO: check for transparent screens?
 			images.ForEach(image => image.Visible = false);
 			skyGradient.ForEach(g => g.Visible = false);
+			mapNameText!.Visible = false;
 		}
 
 		mouseDown = false;
@@ -283,7 +285,8 @@ internal class Map3DScreen : Screen
 			SetLayout();
 			images.ForEach(image => image.Visible = true);
 			skyGradient.ForEach(g => g.Visible = true);
-		}
+            mapNameText!.Visible = true;
+        }
 
 		base.ScreenPopped(game, screen);
 
@@ -292,7 +295,16 @@ internal class Map3DScreen : Screen
 
     private void SetLayout()
     {
+		// TODO: For some reason the palette is not exactly the same as on the Atari ST. It is brighter there.
         game!.SetLayout(Layout.Map3D, palette);
+    }
+
+	private void ShowMapName()
+	{
+		var name = game!.AssetProvider.TextLoader.FromString(map!.Name).GetTextBlock(0);
+
+        mapNameText ??= game!.TextManager.Create(name, Game.VirtualScreenWidth, 15, TextManager.TransparentPaper, palette);
+        mapNameText.ShowInArea(OffsetX, OffsetY - mapNameText.LineHeight - 3, ViewWidth, ViewHeight, 100, TextAlignment.Center);
     }
 
     public override void Open(Game game, Action? closeAction)
@@ -305,12 +317,13 @@ internal class Map3DScreen : Screen
 		mouseDown = false;
 
 		SetLayout();
-		buttonGrid = new(game);
+        buttonGrid = new(game);
 		buttonGrid.ClickButtonAction += ButtonClicked;
 		buttonLayout = ButtonLayout.Movement;
 		SetupButtons();
 		LoadMap(game.State.MapIndex);
-		AfterMove();
+        ShowMapName();
+        AfterMove();
 
 		game.Time.MinuteChanged += MinuteChanged;
 		game.CanSeeChanged += CanSeeChanged;
@@ -419,6 +432,7 @@ internal class Map3DScreen : Screen
 		skyGradient.Clear();
 		npcs.Clear();
 		buttonGrid!.Destroy();
+		mapNameText!.Delete();
 
 		base.Close(game);
 	}
