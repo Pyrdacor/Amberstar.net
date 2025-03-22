@@ -17,6 +17,6 @@ public interface IAssetProvider : Amber.Assets.Common.IAssetProvider
 	IFontLoader FontLoader { get; }
 	ISavegameLoader SavegameLoader { get; }
     IMonsterLoader MonsterLoader { get; }
-    IPartyMemberLoader PartyMemberLoader { get; }
+    IPersonLoader PersonLoader { get; }
     IItemLoader ItemLoader { get; }
 }

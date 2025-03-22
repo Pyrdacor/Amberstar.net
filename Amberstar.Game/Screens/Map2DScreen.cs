@@ -8,7 +8,7 @@ using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.Screens;
 
-internal class Map2DScreen : Screen
+internal class Map2DScreen : ButtonGridScreen
 {
 	enum ButtonLayout
 	{
@@ -33,9 +33,9 @@ internal class Map2DScreen : Screen
 
 		public string Name => maps[0].Name;
 
-		public MapNPC[] NPCs => [];
+		public MapCharacter[] Characters => [];
 
-		public Position[][] NPCPositions => [];
+		public Position[][] CharacterPositions => [];
 
 		public List<IEvent> Events => events;
 
@@ -175,14 +175,15 @@ internal class Map2DScreen : Screen
 	IRenderText? timeText; // for debugging, TODO: REMOVE
 	byte palette = 0;
 	long delayedMoveActionIndex = -1;
-	ButtonGrid? buttonGrid;
 	bool mouseDown = false;
     IRenderText? mapNameText;
 
     public override ScreenType Type { get; } = ScreenType.Map2D;
 	public IMap2D Map => map!;
 
-	internal void MapChanged()
+	protected override byte ButtonGridPaletteIndex => palette;
+
+    internal void MapChanged()
 	{
 		LoadMap(game!.State.MapIndex);
         ShowMapName();
@@ -235,7 +236,7 @@ internal class Map2DScreen : Screen
 		if (!screen.Transparent)
 		{
 			SetLayout();
-			underlay.Values.ToList().ForEach(tile => tile.Visible = true);
+            underlay.Values.ToList().ForEach(tile => tile.Visible = true);
 			overlay.Values.ToList().ForEach(tile => tile.Visible = true);
 			player!.Visible = screenPushPlayerWasVisible;
             mapNameText!.Visible = true;
@@ -252,7 +253,9 @@ internal class Map2DScreen : Screen
 
 	public override void Open(Game game, Action? closeAction)
 	{
-		base.Open(game, closeAction);
+        buttonLayout = ButtonLayout.Movement;
+
+        base.Open(game, closeAction);
 
 		moveTickCounter = 0;
 		lastMoveStartTicks = 0;
@@ -261,10 +264,6 @@ internal class Map2DScreen : Screen
 		mouseDown = false;
 
 		SetLayout();
-		buttonGrid = new(game);
-		buttonGrid.ClickButtonAction += ButtonClicked;
-		buttonLayout = ButtonLayout.Movement;
-		SetupButtons();		
 		LoadMap(game.State.MapIndex);
         ShowMapName();
         InitPlayer();
@@ -284,7 +283,7 @@ internal class Map2DScreen : Screen
         mapNameText.ShowInArea(OffsetX, OffsetY - mapNameText.LineHeight - 3, TilesPerRow * TileWidth, TileRows * TileHeight, 100, TextAlignment.Center);
     }
 
-    private void ButtonClicked(int index)
+    protected override void ButtonClicked(int index)
 	{
 		if (buttonLayout == ButtonLayout.Movement)
 		{
@@ -319,12 +318,12 @@ internal class Map2DScreen : Screen
 		}
 	}
 
-	private void SetupButtons()
+	protected override void SetupButtons(ButtonGrid buttonGrid)
 	{
 		if (buttonLayout == ButtonLayout.Movement)
 		{
 			// Upper row
-			buttonGrid!.SetButton(0, ButtonType.ArrowUpLeft);
+			buttonGrid.SetButton(0, ButtonType.ArrowUpLeft);
 			buttonGrid.SetButton(1, ButtonType.ArrowUp);
 			buttonGrid.SetButton(2, ButtonType.ArrowUpRight);
 			// Middle row
@@ -340,7 +339,7 @@ internal class Map2DScreen : Screen
 		else // Actions
 		{
 			// Upper row
-			buttonGrid!.SetButton(0, ButtonType.Eye);
+			buttonGrid.SetButton(0, ButtonType.Eye);
 			buttonGrid.SetButton(1, ButtonType.Ear);
 			buttonGrid.SetButton(2, ButtonType.Mouth);
 			// Middle row
@@ -363,7 +362,6 @@ internal class Map2DScreen : Screen
 		ClearMap();
 		player!.Visible = false;
 		player = null;
-		buttonGrid!.Destroy();
 
 		timeText?.Delete();
         mapNameText!.Delete();
@@ -687,8 +685,8 @@ internal class Map2DScreen : Screen
 			if (ButtonGrid.Area.Contains(position))
 			{
 				buttonLayout = (ButtonLayout)(1 - (int)buttonLayout); // toggle
-				SetupButtons();
-			}
+				RequestButtonSetup();
+            }
 		}
 		else
 		{
@@ -705,8 +703,8 @@ internal class Map2DScreen : Screen
 				return;
 			}
 
-			buttonGrid!.MouseClick(position);
-		}
+			base.MouseDown(position, buttons, keyModifiers);
+        }
 	}
 
 	public override void MouseUp(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
@@ -1029,6 +1027,6 @@ internal class Map2DScreen : Screen
 		game.State.SetIsWorldMap(isWorldMap);
 		game.State.TravelType = TravelType.Walk; // TODO: is it possible to change map with travel type (always reset to walk for non-world maps though!)
 		game.Cursor.PaletteIndex = palette;
-		buttonGrid!.PaletteIndex = palette;
+		RequestButtonGridPaletteUpdate();
 	}
 }

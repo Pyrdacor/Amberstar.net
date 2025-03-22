@@ -69,9 +69,9 @@ public partial class Game : IDisposable
 			if (i == 0)
 			{
 				// TODO: Load party from save data later
-				var hero = assetProvider.PartyMemberLoader.LoadPartyMember(1);
+				var hero = assetProvider.PersonLoader.LoadPerson(1);
 
-				CreateSprite(Layer.UI, position, size, GraphicIndexProvider.GetPartyMemberPortraitIndex(1), uiPaletteIndex);
+				CreateSprite(Layer.UI, position, size, GraphicIndexProvider.GetPersonPortraitIndex(1), uiPaletteIndex);
 
             }
             else

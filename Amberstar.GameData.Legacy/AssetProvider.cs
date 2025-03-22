@@ -119,8 +119,8 @@ public class AssetProvider : IAssetProvider
 	readonly Lazy<ILabDataLoader> labDataLoader;
 	readonly Lazy<ICursorLoader> cursorLoader;
     readonly Lazy<IMonsterLoader> monsterLoader;
-    readonly Lazy<IPartyMemberLoader> partyMemberLoader;
-	readonly Lazy<IItemLoader> itemLoader;
+    readonly Lazy<IPersonLoader> personLoader;
+    readonly Lazy<IItemLoader> itemLoader;
 
     private ProgramData Data => programData.Value;
 	public ITextLoader TextLoader => textLoader.Value;
@@ -136,8 +136,8 @@ public class AssetProvider : IAssetProvider
 	public ILabDataLoader LabDataLoader => labDataLoader.Value;
 	public ICursorLoader CursorLoader => cursorLoader.Value;
     public IMonsterLoader MonsterLoader => monsterLoader.Value;
-    public IPartyMemberLoader PartyMemberLoader => partyMemberLoader.Value;
-	public IItemLoader ItemLoader => itemLoader.Value;
+    public IPersonLoader PersonLoader => personLoader.Value;
+    public IItemLoader ItemLoader => itemLoader.Value;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AssetProvider(IReadOnlyFileSystem fileSystem)
@@ -181,8 +181,8 @@ public class AssetProvider : IAssetProvider
 		labDataLoader = new(() => new LabDataLoader(this));
 		cursorLoader = new(() => new CursorLoader(this));
         monsterLoader = new(() => new MonsterLoader(this));
-        partyMemberLoader = new(() => new PartyMemberLoader(this, textLoader));
-		itemLoader = new(() => new ItemLoader());
+        personLoader = new(() => new PersonLoader(this, textLoader));
+        itemLoader = new(() => new ItemLoader());
     }
 
 	public LegacyPlatform Platform { get; } = LegacyPlatform.Source;
@@ -367,7 +367,7 @@ public class AssetProvider : IAssetProvider
 			AssetType.LabBlock => "LABBLOCK.AMB",
 			AssetType.Background => "BACKGRND.AMB",
             AssetType.Monster => "MON_DATA.AMB",
-            AssetType.Player => "CHARDATA.AMB",            
+            AssetType.Person => "CHARDATA.AMB",            
             _ => Platform == LegacyPlatform.Source ? "" : programFileNames[Platform],
 		};
 	}

@@ -25,7 +25,7 @@ public interface IConversationReaction
 }
 
 /// <summary>
-/// The NPC responds with a text message.
+/// The person responds with a text message.
 /// </summary>
 public interface ISayReaction : IConversationReaction
 {
@@ -33,7 +33,7 @@ public interface ISayReaction : IConversationReaction
 }
 
 /// <summary>
-/// The NPC teaches you a new word which can be used in future
+/// The person teaches you a new word which can be used in future
 /// conversations.
 /// </summary>
 public interface ITeachWordReaction : IConversationReaction
@@ -42,9 +42,9 @@ public interface ITeachWordReaction : IConversationReaction
 }
 
 /// <summary>
-/// The NPC gives you an item.
+/// The person gives you an item.
 /// 
-/// The source item must be in the NPC's inventory or equipped by it.
+/// The source item must be in the person's inventory or equipped by it.
 /// A copy of the item is used so the source item remains.
 /// </summary>
 public interface IGiveItemReaction : IConversationReaction
@@ -58,7 +58,7 @@ public interface IGiveItemReaction : IConversationReaction
 }
 
 /// <summary>
-/// The NPC gives you some gold.
+/// The person gives you some gold.
 /// </summary>
 public interface IGiveGoldReaction : IConversationReaction
 {
@@ -66,7 +66,7 @@ public interface IGiveGoldReaction : IConversationReaction
 }
 
 /// <summary>
-/// The NPC gives you some food.
+/// The person gives you some food.
 /// </summary>
 public interface IGiveFoodReaction : IConversationReaction
 {
@@ -74,10 +74,10 @@ public interface IGiveFoodReaction : IConversationReaction
 }
 
 /// <summary>
-/// The NPC completes the given quest.
+/// The person completes the given quest.
 /// 
-/// A quest index is usually stored inside NPCs and unlocks a second
-/// pair of interactions for the NPC.
+/// A quest index is usually stored inside persons and unlocks a second
+/// pair of interactions for the person.
 /// </summary>
 public interface ICompleteQuestReaction : IConversationReaction
 {
@@ -91,10 +91,10 @@ public enum ChangeStatAction
 }
 
 /// <summary>
-/// The NPC changes some stat of the player.
+/// The person changes some stat of the player.
 /// 
-/// A quest index is usually stored inside NPCs and unlocks a second
-/// pair of interactions for the NPC.
+/// A quest index is usually stored inside persons and unlocks a second
+/// pair of interactions for the person.
 /// </summary>
 public interface IChangeStatReaction : IConversationReaction
 {

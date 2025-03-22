@@ -2,7 +2,7 @@
 
 namespace Amberstar.GameData;
 
-public interface INPC : ICharacter
+public interface IPerson : ICharacter
 {
     IConversationData ConversationData { get; init; }
     public CharacterValue Age => ConversationData.Age;

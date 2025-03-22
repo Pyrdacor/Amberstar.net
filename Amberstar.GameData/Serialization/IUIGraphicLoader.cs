@@ -105,9 +105,9 @@ public enum ButtonType
 	ReadScroll,
 	Ok,
 	Disk, // options
-	GiveItemToNPC,
-	GiveFoodToNPC,
-	GiveGoldToNPC,
+	GiveItemToPerson,
+	GiveFoodToPerson,
+	GiveGoldToPerson,
 	BuyFood,
 	Quit,
 	Flee,

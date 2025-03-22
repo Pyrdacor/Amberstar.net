@@ -4,8 +4,8 @@ namespace Amberstar.GameData.Legacy;
 
 internal class Map2D : Map, IMap2D
 {
-	private Map2D(MapHeader header, MapNPC[] npcs, PositionList[] npcPositions, Tile2D[] tiles)
-		: base(header, npcs, npcPositions)
+	private Map2D(MapHeader header, MapCharacter[] characters, PositionList[] characterPositions, Tile2D[] tiles)
+		: base(header, characters, characterPositions)
 	{
 		Tiles = tiles;
 	}
@@ -31,59 +31,59 @@ internal class Map2D : Map, IMap2D
 			Event = events[index]
 		}).ToArray();
 
-		word* index = header.NPCData;
-		byte* icon = header.NPCIcon;
-		byte* move = header.NPCMove;
-		byte* flags = header.NPCFlags;
-		byte* day = header.NPCDay;
-		byte* month = header.NPCMonth;
+		word* index = header.CharacterData;
+		byte* icon = header.CharacterIcon;
+		byte* move = header.CharacterMove;
+		byte* flags = header.CharacterFlags;
+		byte* day = header.CharacterDay;
+		byte* month = header.CharacterMonth;
 
-		var npcs = new MapNPC[IMap.NPCCount];
-		var positionCountPerNpcs = new int[IMap.NPCCount];
+		var characters = new MapCharacter[IMap.CharacterCount];
+		var positionCountPerCharacters = new int[IMap.CharacterCount];
 
-		for (int i = 0; i < npcs.Length; i++)
+		for (int i = 0; i < characters.Length; i++)
 		{
-			var npc = new MapNPC();
+			var character = new MapCharacter();
 
-			npc.Index = *index++;
-			npc.Icon = *icon++;
-			var npcFlags = *flags++;
-			npc.TravelType = *move++;
-			npc.Type = (npcFlags & 0x1) != 0 ? MapNPCType.Monster
-				: (npcFlags & 0x10) != 0 ? MapNPCType.Popup
-				: MapNPCType.Person;
-			npc.WalkType = npc.Type == MapNPCType.Monster
-				? ((npcFlags & 0x04) != 0 ? MapNPCWalkType.Chase : MapNPCWalkType.Stationary)
-				: ((npcFlags & 0x02) != 0 ? MapNPCWalkType.Random : MapNPCWalkType.Path);
-			bool hasSpawnDate = (npcFlags & 0x08) != 0;
+			character.Index = *index++;
+			character.Icon = *icon++;
+			var characterFlags = *flags++;
+			character.TravelType = *move++;
+			character.Type = (characterFlags & 0x1) != 0 ? MapCharacterType.Monster
+				: (characterFlags & 0x10) != 0 ? MapCharacterType.Popup
+				: MapCharacterType.Person;
+			character.WalkType = character.Type == MapCharacterType.Monster
+				? ((characterFlags & 0x04) != 0 ? MapCharacterWalkType.Chase : MapCharacterWalkType.Stationary)
+				: ((characterFlags & 0x02) != 0 ? MapCharacterWalkType.Random : MapCharacterWalkType.Path);
+			bool hasSpawnDate = (characterFlags & 0x08) != 0;
 			var spawnDay = *day++;
 			var spawnMonth = *month++;
-			npc.Day = hasSpawnDate ? spawnDay : (byte)0xff;
-			npc.Month = hasSpawnDate ? spawnMonth : (byte)0xff;		
+			character.Day = hasSpawnDate ? spawnDay : (byte)0xff;
+			character.Month = hasSpawnDate ? spawnMonth : (byte)0xff;		
 
-			npcs[i] = npc;
+			characters[i] = character;
 
-			positionCountPerNpcs[i] = npc.Index == 0 ? 0 : npc.WalkType == MapNPCWalkType.Path ? 288 : 1;
+			positionCountPerCharacters[i] = character.Index == 0 ? 0 : character.WalkType == MapCharacterWalkType.Path ? 288 : 1;
 		}
 
-		int totalNPCPositions = positionCountPerNpcs.Sum();
-		var x = reader.ReadBytes(totalNPCPositions);
-		var y = reader.ReadBytes(totalNPCPositions);
-		var npcPositions = new PositionList[IMap.NPCCount];
+		int totalCharacterPositions = positionCountPerCharacters.Sum();
+		var x = reader.ReadBytes(totalCharacterPositions);
+		var y = reader.ReadBytes(totalCharacterPositions);
+		var characterPositions = new PositionList[IMap.CharacterCount];
 		int offset = 0;
 
-		for (int i = 0; i < npcs.Length; i++)
+		for (int i = 0; i < characters.Length; i++)
 		{
-			var positions = new Position[positionCountPerNpcs[i]];
+			var positions = new Position[positionCountPerCharacters[i]];
 
 			for (int p = 0; p < positions.Length; offset++, p++)
 			{
 				positions[p] = new Position(x[offset], y[offset]);
 			}
 
-			npcPositions[i] = positions;
+			characterPositions[i] = positions;
 		}
 
-		return new Map2D(header, npcs, npcPositions, tiles);
+		return new Map2D(header, characters, characterPositions, tiles);
 	}
 }

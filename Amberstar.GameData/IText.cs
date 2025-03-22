@@ -12,5 +12,5 @@ public interface IText
 	List<string[]> GetParagraphs(int maxWidthInCharacters);
 	IText GetTextBlock(int index);
 
-	int TextBlockCount { get; }
+    int TextBlockCount { get; }
 }

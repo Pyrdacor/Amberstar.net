@@ -2,7 +2,6 @@
 
 public enum CharacterType : byte
 {
-	Player,
+	Person,
 	Monster,
-	NPC = Player
 }

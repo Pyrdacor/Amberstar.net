@@ -169,7 +169,7 @@ internal class InventoryScreen : Screen
 
         game!.State.CurrentInventoryIndex = index;
         int partyMemberIndex = 1; // TODO: get from savegame, slot is index
-        partyMember = game!.AssetProvider.PartyMemberLoader.LoadPartyMember(partyMemberIndex);
+        partyMember = (game!.AssetProvider.PersonLoader.LoadPerson(partyMemberIndex) as IPartyMember)!;
         var graphicLoader = game!.AssetProvider.GraphicLoader;
         var uiPaletteIndex = game!.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 

@@ -15,6 +15,5 @@ public interface IGraphicIndexProvider
 	int GetCloudGraphicIndex(int index);
 	int GetLabBlockGraphicIndex(int labBlockIndex, PerspectiveLocation location, BlockFacing facing);
 	int GetCursorGraphicIndex(CursorType cursorType);
-	int GetPartyMemberPortraitIndex(int index);
-    int GetNPCPortraitIndex(int index);
+	int GetPersonPortraitIndex(int index);
 }

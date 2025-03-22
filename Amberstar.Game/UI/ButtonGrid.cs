@@ -9,7 +9,6 @@ internal class ButtonGrid
 	public const int OffsetY = 37 + 108;
 	public static readonly Rect Area = new(OffsetX, OffsetY, 3 * Button.Width, 3 * Button.Height);
 	const int ButtonCount = 9;
-	readonly Game game;
 	readonly Button[] buttons = new Button[ButtonCount];
 
 	public event Action<int>? ClickButtonAction;
@@ -26,8 +25,6 @@ internal class ButtonGrid
 
 	public ButtonGrid(Game game)
 	{
-		this.game = game;
-
 		for (int y = 0; y < 3; y++)
 		{
 			for (int x = 0; x < 3; x++)
@@ -55,7 +52,15 @@ internal class ButtonGrid
 		buttons[index].Disabled = !enable;
 	}
 
-	public bool MouseClick(Position position)
+	public bool IsButtonEnabled(int index)
+    {
+        if (index < 0 || index >= buttons.Length)
+            return false;
+
+        return !buttons[index].Disabled;
+    }
+
+    public bool MouseClick(Position position)
 	{
 		foreach (var button in buttons)
 		{

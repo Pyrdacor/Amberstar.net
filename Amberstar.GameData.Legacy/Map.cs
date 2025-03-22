@@ -29,12 +29,12 @@ internal unsafe struct MapHeader
 	public byte Height;
 	public fixed byte Name[31]; // null-terminated (max 30 chars)
 	public fixed byte EventData[IMap.EventCount * IEvent.DataSize];
-	public fixed word NPCData[IMap.NPCCount]; // NPC index, monster group index, map text index
-	public fixed byte NPCIcon[IMap.NPCCount];
-	public fixed byte NPCMove[IMap.NPCCount];
-	public fixed byte NPCFlags[IMap.NPCCount];
-	public fixed byte NPCDay[IMap.NPCCount];
-	public fixed byte NPCMonth[IMap.NPCCount];
+	public fixed word CharacterData[IMap.CharacterCount]; // Person index, monster group index, map text index
+	public fixed byte CharacterIcon[IMap.CharacterCount];
+	public fixed byte CharacterMove[IMap.CharacterCount];
+	public fixed byte CharacterFlags[IMap.CharacterCount];
+	public fixed byte CharacterDay[IMap.CharacterCount];
+	public fixed byte CharacterMonth[IMap.CharacterCount];
 	public word StepsPerDay; // 288
 	public byte MonthsPerYear; // 12
 	public byte DaysPerMonth; // 30
@@ -50,11 +50,11 @@ internal abstract class Map : IMap
 {
     protected readonly MapHeader header;
 
-	public unsafe Map(MapHeader header, MapNPC[] npcs, PositionList[] npcPositions)
+	public unsafe Map(MapHeader header, MapCharacter[] characters, PositionList[] characterPositions)
 	{
 		this.header = header;
-		NPCs = npcs;
-		NPCPositions = npcPositions;
+		Characters = characters;
+		CharacterPositions = characterPositions;
 
         Name = new string((sbyte*)header.Name).TrimEnd(' ', '\0');
 
@@ -84,8 +84,8 @@ internal abstract class Map : IMap
 			var fixer = builder
 				.Word(2)
 				.WordGap(40 + 6, 2, IMap.EventCount, 6)
-				.WordArray(40 + 2540, IMap.NPCCount)
-				.Word(40 + 2540 + 7 * IMap.NPCCount)
+				.WordArray(40 + 2540, IMap.CharacterCount)
+				.Word(40 + 2540 + 7 * IMap.CharacterCount)
 				.Build();
 			fixer.FixData(headerData);
 		}
@@ -113,9 +113,9 @@ internal abstract class Map : IMap
 
 	public string Name { get; }
 
-    public MapNPC[] NPCs { get; }
+    public MapCharacter[] Characters { get; }
 
-	public PositionList[] NPCPositions { get; }
+	public PositionList[] CharacterPositions { get; }
 
 	public List<IEvent> Events { get; } = [];
 }

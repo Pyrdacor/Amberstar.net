@@ -16,8 +16,7 @@ namespace Amberstar.net
 		Dictionary<int, int> backgroundGraphicIndices,
 		Dictionary<int, int> cloudGraphicIndices,
 		Dictionary<int, Dictionary<PerspectiveLocation, Dictionary<BlockFacing, int>>> labBlockImageIndices,
-        Dictionary<int, int> partyMemberPortraitIndices,
-        Dictionary<int, int> npcPortraitIndices
+        Dictionary<int, int> personPortraitIndices
 
     ) : IGraphicIndexProvider
 	{
@@ -41,8 +40,6 @@ namespace Amberstar.net
 
 		public int GetCursorGraphicIndex(CursorType cursorType) => cursorGraphicOffset + (int)cursorType;
 
-        public int GetPartyMemberPortraitIndex(int index) => partyMemberPortraitIndices[index];
-
-        public int GetNPCPortraitIndex(int index) => npcPortraitIndices[index];
+        public int GetPersonPortraitIndex(int index) => personPortraitIndices[index];
     }
 }

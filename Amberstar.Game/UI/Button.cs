@@ -101,6 +101,16 @@ internal class Button
 		return true;
 	}
 
+	public bool TryPress()
+	{
+        if (Disabled)
+            return false;
+
+        Press();
+
+        return true;
+    }
+
 	public void Press()
 	{
 		if (pressed || Disabled)

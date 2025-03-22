@@ -1,4 +1,5 @@
-﻿using Amber.Serialization;
+﻿using Amber.Common;
+using Amber.Serialization;
 using System.Collections.ObjectModel;
 
 namespace Amberstar.GameData.Legacy;
@@ -26,6 +27,10 @@ internal class Character : ICharacter
     public static void Load(Character character, IDataReader reader)
     {
         reader.Position = 0x00;
+
+        if (reader.ReadWord() != 0xff)
+            throw new AmberException(ExceptionScope.Data, "Invalid character data.");
+
         character.type = (CharacterType)reader.ReadByte();
         character.gender = (Gender)reader.ReadByte();
         character.race = (Race)reader.ReadByte();

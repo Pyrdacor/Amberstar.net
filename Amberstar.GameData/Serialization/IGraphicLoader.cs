@@ -11,6 +11,5 @@ public interface IGraphicLoader
 	Dictionary<int, IGraphic> LoadAllBackgroundGraphics();
 	Dictionary<int, IGraphic> LoadAllCloudGraphics();
 	Dictionary<DayTime, Color[]> LoadSkyGradients();
-    Dictionary<int, IGraphic> LoadPartyMemberPortraits();
-    Dictionary<int, IGraphic> LoadNPCPortraits();
+    Dictionary<int, IGraphic> LoadPersonPortraits();
 }

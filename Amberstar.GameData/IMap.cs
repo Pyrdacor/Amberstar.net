@@ -52,14 +52,14 @@ public enum MapType : byte
 // Otherwise if no light spell is active, use full darkness.
 // Otherwise use a radius of 16 + (lsl by 3 the spell effect).
 
-public enum MapNPCType : byte
+public enum MapCharacterType : byte
 {
 	Person,
 	Monster,
 	Popup
 }
 
-public enum MapNPCWalkType : byte
+public enum MapCharacterWalkType : byte
 {
 	Stationary,
 	Random,
@@ -67,13 +67,13 @@ public enum MapNPCWalkType : byte
 	Chase
 }
 
-public struct MapNPC
+public struct MapCharacter
 {
 	public word Index;	
 	public byte Icon;
 	public byte TravelType; // collision class
-	public MapNPCType Type;	
-	public MapNPCWalkType WalkType;
+	public MapCharacterType Type;	
+	public MapCharacterWalkType WalkType;
 	public byte Day; // 0xff = always there
 	public byte Month; // 0xff = always there	
 }
@@ -85,9 +85,9 @@ public interface IMap : IEventProvider
 	MapType Type { get; }
 	MapFlags Flags { get; }
 	string Name { get; }
-	MapNPC[] NPCs { get; }
-	PositionList[] NPCPositions { get; }
+	MapCharacter[] Characters { get; }
+	PositionList[] CharacterPositions { get; }
 
 	public const int EventCount = 254;
-	public const int NPCCount = 24;
+	public const int CharacterCount = 24;
 }

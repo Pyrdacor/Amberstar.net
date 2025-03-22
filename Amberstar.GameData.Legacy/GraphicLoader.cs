@@ -13,8 +13,7 @@ internal class GraphicLoader(AssetProvider assetProvider) : IGraphicLoader
 	private readonly Dictionary<int, IGraphic> backgroundGraphics = [];
 	private readonly Dictionary<int, IGraphic> cloudGraphics = [];
 	private readonly Dictionary<DayTime, Color[]> skyGradients = [];
-    private readonly Dictionary<int, IGraphic> partyMemberPortraits = [];
-    private readonly Dictionary<int, IGraphic> npcPortraits = [];
+    private readonly Dictionary<int, IGraphic> personPortraits = [];
 
     public static byte[] LoadGraphicDataWithHeader(IDataReader dataReader, out int width, out int height, out int planes)
 	{
@@ -244,36 +243,19 @@ internal class GraphicLoader(AssetProvider assetProvider) : IGraphicLoader
 		return skyGradients;
 	}
 
-    public Dictionary<int, IGraphic> LoadPartyMemberPortraits()
+    public Dictionary<int, IGraphic> LoadPersonPortraits()
 	{
-		if (partyMemberPortraits.Count != 0)
-            return partyMemberPortraits;
+		if (personPortraits.Count != 0)
+            return personPortraits;
 
-        foreach (var key in assetProvider.GetAssetKeys(AssetType.Player))
+        foreach (var key in assetProvider.GetAssetKeys(AssetType.Person))
         {
-            var partyMember = assetProvider.PartyMemberLoader.LoadPartyMember(key);
+            var person = assetProvider.PersonLoader.LoadPerson(key);
 
-            if (partyMember.Portrait != null)
-                partyMemberPortraits.Add(key, partyMember.Portrait);
+            if (person.Portrait != null)
+                personPortraits.Add(key, person.Portrait);
         }
 
-		return partyMemberPortraits;
-    }
-
-    public Dictionary<int, IGraphic> LoadNPCPortraits()
-	{
-        if (npcPortraits.Count != 0)
-            return npcPortraits;
-
-		// TODO
-        /*foreach (var key in assetProvider.GetAssetKeys(AssetType.NPC))
-        {
-            var npc = assetProvider.NPCLoader.LoadNPC(key);
-
-            if (npc.Portrait != null)
-                npcPortraits.Add(key, npc.Portrait);
-        }*/
-
-        return npcPortraits;
+		return personPortraits;
     }
 }

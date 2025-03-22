@@ -75,7 +75,7 @@ internal class Text(List<string> textFragments) : IText
 		return text;
 	}
 
-	public IText GetTextBlock(int index)
+    public IText GetTextBlock(int index)
 	{
 		if (index < 0 || index >= textBlockOffsets.Count)
 			throw new AmberException(ExceptionScope.Application, "Text block index out of range");
@@ -179,7 +179,7 @@ internal class Text(List<string> textFragments) : IText
 
 		paragraphs.Add(lines.Skip(paragraphOffset).ToArray());
 
-		return lines.ToArray();
+		return [..lines];
 	}
 
 	public const int OpenBracket = 1580;

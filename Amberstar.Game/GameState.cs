@@ -634,15 +634,22 @@ internal class GameState
 		TileChanges.Add(tileChange);
 	}
 
-	#endregion
+    #endregion
 
 
-	#region Misc
+    #region Conversation
 
-	/// <summary>
-	/// ?, docs say (0 / -1)
-	/// </summary>
-	bool MusicBlock { get; set; } = false;
+    public int? CurrentConversationCharacterIndex { get; set; } = null;
+
+    #endregion
+
+
+    #region Misc
+
+    /// <summary>
+    /// ?, docs say (0 / -1)
+    /// </summary>
+    bool MusicBlock { get; set; } = false;
 	/// <summary>
 	/// 32 bytes = 256 bits
 	/// </summary>
