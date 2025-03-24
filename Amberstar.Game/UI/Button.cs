@@ -15,8 +15,9 @@ internal class Button
 	readonly ISprite highlightOverlay;
 	readonly ISprite disabledOverlay;
 	bool pressed = false;
+	ButtonType buttonType = ButtonType.Empty;
 
-	public event Action? ClickAction;
+    public event Action? ClickAction;
 
 	public byte PaletteIndex
 	{
@@ -30,14 +31,15 @@ internal class Button
 
 	public bool Disabled
 	{
-		get => disabledOverlay.Visible;
+		get => disabledOverlay.Visible || buttonType == ButtonType.Empty;
 		set => disabledOverlay.Visible = value;
 	}
 
 	public Button(Game game, int x, int y, ButtonType buttonType, byte displayLayer, byte? paletteIndex = null)
 	{
 		this.game = game;
-		var layer = game.GetRenderLayer(Layer.UI);
+		this.buttonType = buttonType;
+        var layer = game.GetRenderLayer(Layer.UI);
 		var textureAtlas = layer.Config.Texture!;
 		paletteIndex ??= game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
@@ -83,7 +85,8 @@ internal class Button
 		var layer = game.GetRenderLayer(Layer.UI);
 		var textureAtlas = layer.Config.Texture!;
 		sprite.TextureOffset = textureAtlas.GetOffset(game.GraphicIndexProvider.GetButtonIndex(buttonType));
-	}
+        this.buttonType = buttonType;
+    }
 
 	public bool MouseClick(Position position)
 	{

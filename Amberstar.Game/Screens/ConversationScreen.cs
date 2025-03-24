@@ -45,6 +45,7 @@ internal class ConversationScreen : ButtonGridScreen
         var palette = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 
         game.SetLayout(Layout.Conversation, palette);
+        game.Cursor.CursorType = CursorType.Sword;
 
         if (game.State.CurrentConversationCharacterIndex is not int personIndex)
             throw new AmberException(ExceptionScope.Application, "No conversation character specified.");

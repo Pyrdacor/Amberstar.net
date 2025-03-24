@@ -2,11 +2,10 @@
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
-using System;
 
 namespace Amberstar.Game.Screens;
 
-internal class InventoryScreen : Screen
+internal class InventoryScreen : ButtonGridScreen
 {
 	Game? game;
     IPartyMember? partyMember;
@@ -55,6 +54,38 @@ internal class InventoryScreen : Screen
     }
 
     public override ScreenType Type { get; } = ScreenType.Inventory;
+
+    protected override byte ButtonGridPaletteIndex => game?.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI] ?? 0;
+
+    protected override void SetupButtons(ButtonGrid buttonGrid)
+    {
+        if (partyMember == null)
+            return;
+
+        // Upper row
+        buttonGrid.SetButton(0, ButtonType.Stats);
+        buttonGrid.SetButton(1, ButtonType.DropItem);
+        buttonGrid.SetButton(2, ButtonType.Exit);
+        // Middle row
+        buttonGrid.SetButton(3, ButtonType.UseItem);
+        buttonGrid.SetButton(4, ButtonType.GatherGold);
+        buttonGrid.SetButton(5, ButtonType.ExamineItem);
+        // Lower row
+        buttonGrid.SetButton(6, ButtonType.GiveItem);
+        buttonGrid.SetButton(7, ButtonType.GiveGold);
+        buttonGrid.SetButton(8, ButtonType.GiveFood);
+
+        bool hasInventoryItems = partyMember!.Inventory.Any(itemSlot => itemSlot.Count > 0);
+        buttonGrid.EnableButton(1, hasInventoryItems);
+        buttonGrid.EnableButton(6, hasInventoryItems);
+
+        bool hasAnyItems = hasInventoryItems && partyMember.Equipment.Any(itemSlot => itemSlot.Value.Count > 0);
+        buttonGrid.EnableButton(3, hasInventoryItems);
+        buttonGrid.EnableButton(5, hasAnyItems);
+
+        buttonGrid.EnableButton(7, partyMember.Gold > 0);
+        buttonGrid.EnableButton(8, partyMember.Food > 0);
+    }
 
     private void SetupEventHandlers()
     {
@@ -143,7 +174,10 @@ internal class InventoryScreen : Screen
 
     public override void KeyDown(Key key, KeyModifiers keyModifiers)
 	{
-		game!.ScreenHandler.PopScreen();
+        if (key == Key.Escape)
+            game!.ScreenHandler.PopScreen();
+
+        base.KeyDown(key, keyModifiers);
 	}
 
 	public override void MouseDown(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
@@ -165,6 +199,8 @@ internal class InventoryScreen : Screen
             if (equippedItemSlot.Value.MouseClick(position, buttons))
                 return;
         }
+
+        base.MouseDown(position, buttons, keyModifiers);
     }
 
     public override void MouseMove(Position position, MouseButtons buttons)
@@ -218,5 +254,42 @@ internal class InventoryScreen : Screen
 
         personInfoView?.Destroy();
         personInfoView = new(game, partyMember, partyMemberIndex, uiPaletteIndex);
+
+        RequestButtonSetup();
+    }
+
+    protected override void ButtonClicked(int index)
+    {
+        switch (index)
+        {
+            case 0: // Stats
+                game?.ScreenHandler.PopScreen();
+                game?.ScreenHandler.PushScreen(ScreenType.CharacterStats);
+                break;
+            case 1: // Drop item
+                // TODO
+                break;
+            case 2:
+                game?.ScreenHandler.PopScreen();
+                break;
+            case 3: // Use item
+                // TODO
+                break;
+            case 4: // Gather gold?
+                // TODO
+                break;
+            case 5: // Examine item
+                // TODO
+                break;
+            case 6: // Give item
+                // TODO
+                break;
+            case 7: // Give gold
+                // TODO
+                break;
+            case 8: // Give food
+                // TODO
+                break;
+        }
     }
 }

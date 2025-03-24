@@ -116,6 +116,7 @@ internal class ScreenHandler(Game game) : IDisposable
 			ScreenType.PictureText => new PictureTextScreen(),
 			ScreenType.TextBox => new TextBoxScreen(),
             ScreenType.Inventory => new InventoryScreen(),
+            ScreenType.CharacterStats => new CharacterStatsScreen(),
             ScreenType.Conversation => new ConversationScreen(),
 			ScreenType.Place => new PlaceScreen(),
             _ => throw new NotImplementedException()

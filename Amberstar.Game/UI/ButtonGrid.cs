@@ -32,7 +32,7 @@ internal class ButtonGrid
 				int index = x + y * 3;
 				buttons[index] = new(game, OffsetX + x * Button.Width, OffsetY + y * Button.Height, ButtonType.Empty, 10);
 				buttons[index].ClickAction += () => ClickButtonAction?.Invoke(index);
-			}
+            }
 		}
 	}
 
@@ -42,7 +42,7 @@ internal class ButtonGrid
 			return;
 
 		buttons[index].SetType(buttonType);
-	}
+    }
 
 	public void EnableButton(int index, bool enable)
 	{
