@@ -90,9 +90,36 @@ namespace Amberstar.GameData.Legacy
 			for (int i = 1; i <= 7 * 30; i++)
 				SpellNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per spell name
 
-			#endregion
-			#region Read embedded graphics
-			if (!dataSeeker(EmbeddedDataOffset.Graphics, dataReader))
+            #endregion
+            #region Read UI Texts
+            if (!dataSeeker(EmbeddedDataOffset.UITexts, dataReader))
+                throw new AmberException(ExceptionScope.Application, "Could not find the UI texts in the program file.");
+
+            UITexts = [];
+
+			byte[] ReadNullTerminatedText()
+			{
+                var buffer = new List<byte>();
+
+                while (true)
+                {
+                    var b = dataReader.ReadByte();
+
+                    if (b == 0)
+                        break;
+
+                    buffer.Add(b);
+                }
+
+                return [..buffer];
+            }
+
+            foreach (var uiText in Enum.GetValues<UIText>())
+                UITexts.Add((int)uiText, new DataReader(ReadNullTerminatedText()));
+
+            #endregion
+            #region Read embedded graphics
+            if (!dataSeeker(EmbeddedDataOffset.Graphics, dataReader))
 				throw new AmberException(ExceptionScope.Application, "Could not find the graphics in the program file.");
 
 			#region Load layout bottom corner info
@@ -325,5 +352,6 @@ namespace Amberstar.GameData.Legacy
 		public List<string> TextFragments { get; } = [];
 		public byte[] GlyphMappings { get; } = [];
 		public string Version { get; } = string.Empty;
+        public Dictionary<int, IDataReader> UITexts { get; } = [];
     }
 }

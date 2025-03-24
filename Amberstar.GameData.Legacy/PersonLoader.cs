@@ -16,7 +16,9 @@ namespace Amberstar.GameData.Legacy
 				if (asset == null)
 					throw new AmberException(ExceptionScope.Data, $"Person {index} not found.");
 
-				person = Person.Load(asset, textLoader.Value);
+                // Normally the join chance determines if it is a party member or NPC.
+                // But for the hero (index 1) this is also 0, so we need to check the index here.
+                person = index == 1 ? PartyMember.Load(asset, textLoader.Value) : Person.Load(asset, textLoader.Value);
 				persons.Add(index, person);
 			}
 

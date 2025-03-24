@@ -2,6 +2,7 @@
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
+using System;
 
 namespace Amberstar.Game.Screens;
 
@@ -16,6 +17,7 @@ internal class InventoryScreen : Screen
     readonly Dictionary<EquipmentSlot, ItemContainer> equippedItemSlots = [];
     readonly static Dictionary<EquipmentSlot, Position> EquipmentSlotPositions = [];
     readonly static Position[] InventorySlotPositions = new Position[ICharacter.InventorySlotCount];
+    PersonInfoView? personInfoView;
 
     static InventoryScreen()
     {
@@ -53,8 +55,6 @@ internal class InventoryScreen : Screen
     }
 
     public override ScreenType Type { get; } = ScreenType.Inventory;
-
-
 
     private void SetupEventHandlers()
     {
@@ -110,12 +110,20 @@ internal class InventoryScreen : Screen
 
         CleanUpItems();
 
+        personInfoView?.Destroy();
+
         base.Close(game);
     }
 
     public override void ScreenPushed(Game game, Screen screen)
     {
         CleanUpEventHandlers();
+
+        if (!screen.Transparent)
+        {
+            if (personInfoView != null)
+                personInfoView.Visible = false;
+        }
 
         base.ScreenPushed(game, screen);
     }
@@ -125,6 +133,12 @@ internal class InventoryScreen : Screen
         base.ScreenPopped(game, screen);
 
         SetupEventHandlers();
+
+        if (!screen.Transparent)
+        {
+            if (personInfoView != null)
+                personInfoView.Visible = true;
+        }
     }
 
     public override void KeyDown(Key key, KeyModifiers keyModifiers)
@@ -201,5 +215,8 @@ internal class InventoryScreen : Screen
 
             inventoryItemSlots[i].SetItem(itemSlot.Count, itemSlot.Item);
         }
+
+        personInfoView?.Destroy();
+        personInfoView = new(game, partyMember, partyMemberIndex, uiPaletteIndex);
     }
 }

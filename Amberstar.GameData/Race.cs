@@ -9,6 +9,6 @@ public enum Race : byte
 	Halfling,
 	HalfElf,
 	HalfOrc,
-	Animal = 13,
+	Animal,
 	Monster
 }

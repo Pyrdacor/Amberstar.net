@@ -8,9 +8,9 @@ public interface IText
 	/// If the text fragment reference is 0, an empty string is returned.
 	/// </summary>
 	string GetString();
-	string[] GetLines(int maxWidthInCharacters);
-	List<string[]> GetParagraphs(int maxWidthInCharacters);
-	IText GetTextBlock(int index);
+    string[] GetLines(int maxWidthInCharacters);
+    List<string[]> GetParagraphs(int maxWidthInCharacters);
+    IText GetTextBlock(int index);
 
     int TextBlockCount { get; }
 }

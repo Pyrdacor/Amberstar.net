@@ -10,18 +10,19 @@ internal class Text(List<string> textFragments) : IText
 	readonly List<word> textIndices = [];
 	readonly List<int> textBlockOffsets = [];
 
-	public int TextBlockCount => textBlockOffsets.Count;
+    public int TextBlockCount => textBlockOffsets.Count;
 
-	public static Text FromString(string text)
+    public static Text FromString(string text)
 	{
+		// Note: We need to use fragment index 1, as 0 is treated as empty.
         // First byte is the number of text:	1
         // Then padding byte:					0
         // Then offset to first text:			0 0 (word: value = 0)
         // Then offset to second text:			0 1 (word: value = 1)
-        // Then the index to text fragment:		0 0 (word: value = 0)
-        byte[] data = [1, 0, 0, 0, 0, 1, 0, 0];
+        // Then the index to text fragment:		0 1 (word: value = 1)
+        byte[] data = [1, 0, 0, 0, 0, 1, 0, 1];
 
-		return Read(new DataReader(data), [text]);
+		return Read(new DataReader(data), [string.Empty, text]);
 	}
 
 	// [1, 0, offHi, offLo, offHi2, offLo2, 0, 0]
@@ -90,12 +91,12 @@ internal class Text(List<string> textFragments) : IText
 		return textBlock;
 	}
 
-	public string GetString()
+    public string GetString()
 	{
 		return textIndices.Count == 0 || textIndices[0] == 0 ? string.Empty : textFragments[textIndices[0]];
 	}
 
-	public List<string[]> GetParagraphs(int maxWidthInCharacters)
+    public List<string[]> GetParagraphs(int maxWidthInCharacters)
 	{
 		GetLines(maxWidthInCharacters, out var paragraphs);
 		return paragraphs;
@@ -106,7 +107,7 @@ internal class Text(List<string> textFragments) : IText
 		return GetLines(maxWidthInCharacters, out _);
 	}
 
-	private string[] GetLines(int maxWidthInCharacters, out List<string[]> paragraphs)
+    private string[] GetLines(int maxWidthInCharacters, out List<string[]> paragraphs)
 	{
 		paragraphs = [];
 

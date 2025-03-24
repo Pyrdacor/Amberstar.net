@@ -1,5 +1,4 @@
 ﻿using Amber.Common;
-using Amber.Renderer;
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
@@ -11,6 +10,8 @@ internal class ConversationScreen : ButtonGridScreen
 	Game? game;
     IPerson? person;
     PersonInfoView? personInfoView;
+    IRenderText? title;
+    // TODO: paper = 2, ink = 15
 
     public override ScreenType Type { get; } = ScreenType.Conversation;
 
@@ -50,11 +51,14 @@ internal class ConversationScreen : ButtonGridScreen
 
         person = game!.AssetProvider.PersonLoader.LoadPerson(personIndex);
         personInfoView = new(game, person, personIndex, palette);
+
+        title = game.TextManager.Create("Gespräch", 1, TextManager.TransparentPaper, palette);
     }
 
     public override void Close(Game game)
     {
         personInfoView?.Destroy();
+        title?.Delete();
 
         base.Close(game);
     }
@@ -65,6 +69,8 @@ internal class ConversationScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = false;
+            if (title != null)
+                title.Visible = false;
         }
 
         base.ScreenPushed(game, screen);        
@@ -78,6 +84,8 @@ internal class ConversationScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = true;
+            if (title != null)
+                title.Visible = true;
         }
     }
 

@@ -25,7 +25,8 @@ public enum EmbeddedDataOffset
 	Graphics,
 	TextConversionTab,
 	Windows,
-	Cursors
+	Cursors,
+	UITexts,
 }
 
 public class AssetProvider : IAssetProvider
@@ -266,7 +267,8 @@ public class AssetProvider : IAssetProvider
 			AssetType.Font => CreateAssets(Data.Fonts),
 			AssetType.Window => CreateAssets(Data.Windows),
 			AssetType.Cursor => CreateAssets(Data.Cursors),
-			_ => throw new AmberException(ExceptionScope.Application, $"Unsupported asset type {type} for legacy asset provider")
+            AssetType.UIText => CreateAssets(Data.UITexts),
+            _ => throw new AmberException(ExceptionScope.Application, $"Unsupported asset type {type} for legacy asset provider")
 		};
 	}
 
@@ -453,7 +455,13 @@ public class AssetProvider : IAssetProvider
 					return false;
 				dataReader.Position -= 6;
 				return true;
-			default:
+            case EmbeddedDataOffset.UITexts:
+                if (!FindAndGotoByteSequence(dataReader, 0x10000, 0x23, 0x21, 0x12, 0x14))
+                    return false;
+                if (!FindAndGotoByteSequence(dataReader, dataReader.Position + 4 + 30, 0x07, 0x65)) // Two palettes are there, search into end of first
+                    return false;
+				return FindAndGotoByteSequence(dataReader, dataReader.Position + 32, 0x01, 0x08); // Set ink 8 (01 08) is start of the texts           
+            default:
 				return false;
 		}
 	}

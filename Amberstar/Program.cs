@@ -67,8 +67,9 @@ namespace Amberstar
 			WriteTexts(AssetType.MapText, 152, 1, true, true);
 			WriteTexts(AssetType.PuzzleText, 1, 1, false, true);
 			WriteTexts(AssetType.ItemText, 2, 1, false, true);
+            WriteTexts(AssetType.UIText, 2, 1, false, true);
 
-			byte[] uiPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.UI).GetData();
+            byte[] uiPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.UI).GetData();
             byte[] itemPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.Item).GetData();
 
             for (int i = 1; i <= 11; i++)

@@ -21,7 +21,8 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 
 	public IText LoadText(AssetIdentifier assetIdentifier)
 	{
-		bool singleString;
+		bool singleString = true;
+		bool usingFragments = true;
 
 		switch (assetIdentifier.Type)
 		{
@@ -34,14 +35,16 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 			case AssetType.ConditionName:
 			case AssetType.ItemTypeName:
 				singleString = true;
-				// TODO: add more text asset types
-				break;
+                break;
 			case AssetType.MapText:
 			case AssetType.ItemText:
 			case AssetType.PuzzleText:
 				singleString = false;
 				break;
-			default:
+            case AssetType.UIText:
+                usingFragments = false;
+				break;
+            default:
 				throw new AmberException(ExceptionScope.Application, $"Invalid text asset type {assetIdentifier.Type}.");
 		}
 
@@ -52,8 +55,17 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 			if (asset == null)
 				throw new AmberException(ExceptionScope.Data, $"Asset {assetIdentifier} not found.");
 
-			text = singleString ? Text.LoadSingleString(asset, textFragments) : Text.Load(asset, textFragments);
-			texts.Add(assetIdentifier, text);
+			if (usingFragments)
+			{
+				text = singleString ? Text.LoadSingleString(asset, textFragments) : Text.Load(asset, textFragments);
+			}
+			else
+			{
+				var reader = asset.GetReader();
+				text = Text.FromString(reader.ReadString(reader.Size));
+			}
+
+            texts.Add(assetIdentifier, text);
 		}
 
 		return text;
