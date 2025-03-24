@@ -8,10 +8,28 @@ namespace Amberstar.Game.Screens;
 
 internal class PersonInfoView
 {
+    enum InfoText : int
+    {
+        Race,
+        Gender,
+        Age,
+        ClassAndLevel,
+        EP,
+        LP,
+        SP,
+        SLP,
+        GoldAndFood,
+        Damage,
+        Protection,
+        Count,
+    }
+
     readonly IColoredRect portraitBackground;
     readonly ISprite portrait;
     readonly IRenderText name;
-    readonly IRenderText?[] personInfoTexts = new IRenderText?[4];
+    readonly IRenderText?[] personInfoTexts = new IRenderText?[(int)InfoText.Count];
+    readonly ISprite? swordIcon;
+    readonly ISprite? shieldIcon;
     bool visible = true;
 
     public PersonInfoView(Game game, IPerson person, int personIndex, byte palette)
@@ -26,7 +44,7 @@ internal class PersonInfoView
         portraitBackground!.DisplayLayer = 0;
         portrait!.DisplayLayer = 2;
 
-        name = game.TextManager.Create(person.Name, 1, paperColor, palette);
+        name = game.TextManager.Create(/*person.Name*/"LYRA", 1, paperColor, palette);
         name.ShowInArea(portraitPosition.X, portraitPosition.Y + portraitSize.Height + 1, 96, 7, 2, TextAlignment.Center);
 
         var textLoader = game.AssetProvider.TextLoader;
@@ -38,47 +56,123 @@ internal class PersonInfoView
         {
             // Race
             var raceName = textLoader.LoadText(new AssetIdentifier(AssetType.RaceName, (int)person.Race));
-            personInfoTexts[0] = game.TextManager.Create(raceName, maxTextWidth, 15, paperColor, palette);
+            personInfoTexts[(int)InfoText.Race] = game.TextManager.Create(raceName, maxTextWidth, 15, paperColor, palette);
         }
         else
         {
-            personInfoTexts[0] = null; // hidden
+            personInfoTexts[(int)InfoText.Race] = null; // hidden
         }
+
         // Gender
         var genderText = person.Gender == Gender.Male ? UIText.Male : UIText.Female;
         var genderName = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)genderText)).GetString();
-        personInfoTexts[1] = game.TextManager.Create(genderName, 15, paperColor, palette);
+        personInfoTexts[(int)InfoText.Gender] = game.TextManager.Create(genderName, 15, paperColor, palette);
+
         if (person.Race < Race.Monster)
         {
             // Age
             var ageLabelName = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.Age)).GetString();
             var ageString = $"{ageLabelName}{person.Age.CurrentValue}";
-            personInfoTexts[2] = game.TextManager.Create(ageString, 15, paperColor, palette);
+            personInfoTexts[(int)InfoText.Age] = game.TextManager.Create(ageString, 15, paperColor, palette);
+
             // Class + Level
             if (person.Class != Class.None)
             {
                 var className = textLoader.LoadText(new AssetIdentifier(AssetType.ClassName, (int)person.Class));
                 var classAndLevelString = textLoader.Concat(className, $" {person.Level}");
-                personInfoTexts[3] = game.TextManager.Create(classAndLevelString, maxTextWidth, 15, paperColor, palette);
+                personInfoTexts[(int)InfoText.ClassAndLevel] = game.TextManager.Create(classAndLevelString, maxTextWidth, 15, paperColor, palette);
             }
             else
             {
-                personInfoTexts[3] = null; // hidden
+                personInfoTexts[(int)InfoText.ClassAndLevel] = null; // hidden
             }
         }
         else
         {
-            personInfoTexts[2] = null; // hidden
-            personInfoTexts[3] = null; // hidden
+            personInfoTexts[(int)InfoText.Age] = null; // hidden
+            personInfoTexts[(int)InfoText.ClassAndLevel] = null; // hidden
         }
 
-        int lineHeight = personInfoTexts[1]!.LineHeight; // personInfoTexts[1] (gender) is always given, the rest is optional
+        if (person is IPartyMember partyMember)
+        {
+            // EP
+            var epString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.EP)).GetString();
+            epString = Game.InsertNumberIntoString(epString, ":", true, partyMember.ExperiencePoints, int.MaxValue);
+            personInfoTexts[(int)InfoText.EP] = game.TextManager.Create(epString, 15, paperColor, palette);
+
+            // LP
+            var lpString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.LP)).GetString();
+            lpString = Game.InsertNumberIntoString(lpString, "/", false, partyMember.HitPoints.CurrentValue, 3, '0');
+            lpString = Game.InsertNumberIntoString(lpString, "/", true, partyMember.HitPoints.MaxValue, 3, '0');
+            personInfoTexts[(int)InfoText.LP] = game.TextManager.Create(lpString, 15, paperColor, palette);
+
+            if (partyMember.LearnedSpellSchools != SpellSchoolFlags.None)
+            {
+                // SP
+                var spString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.SP)).GetString();
+                spString = Game.InsertNumberIntoString(spString, "/", false, partyMember.SpellPoints.CurrentValue, 3, '0');
+                spString = Game.InsertNumberIntoString(spString, "/", true, partyMember.SpellPoints.MaxValue, 3, '0');
+                personInfoTexts[(int)InfoText.SP] = game.TextManager.Create(spString, 15, paperColor, palette);
+
+                // SLP
+                var slpString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.SLP)).GetString();
+                slpString = Game.InsertNumberIntoString(slpString, "  ", false, partyMember.SpellLearningPoints, 3, '0');
+                personInfoTexts[(int)InfoText.SLP] = game.TextManager.Create(slpString, 15, paperColor, palette);
+            }
+            else
+            {
+                personInfoTexts[(int)InfoText.SP] = null;
+                personInfoTexts[(int)InfoText.SLP] = null;
+            }
+
+            // Gold and Food
+            var goldFoodString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.GoldFood)).GetString();
+            goldFoodString = Game.FormatValueString(goldFoodString, partyMember.Gold, partyMember.Food);
+            personInfoTexts[(int)InfoText.GoldAndFood] = game.TextManager.Create(goldFoodString, 15, paperColor, palette);
+
+            // Damage and proection
+            var placeholderString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.Colon)).GetString();
+            var damageString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Damage, 3, '0');
+            var protectionString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Defense, 3, '0');
+            personInfoTexts[(int)InfoText.Damage] = game.TextManager.Create(damageString, 15, paperColor, palette);
+            personInfoTexts[(int)InfoText.Protection] = game.TextManager.Create(protectionString, 15, paperColor, palette);
+            swordIcon = game.CreateSprite(Layer.UI, new Position(208, 120), new Size(16, 10), (int)UIGraphic.Sword, palette);
+            shieldIcon = game.CreateSprite(Layer.UI, new Position(256, 120), new Size(16, 10), (int)UIGraphic.Shield, palette);
+            swordIcon!.Opaque = true;
+            shieldIcon!.Opaque = true;
+        }
+
+        int lineHeight = personInfoTexts[(int)InfoText.Gender]!.LineHeight; // personInfoTexts[1] (gender) is always given, the rest is optional
 
         for (int i = 0; i < personInfoTexts.Length; i++)
         {
             var text = personInfoTexts[i];
             text?.Show(textPositionX, textPositionY, 2);
             textPositionY += lineHeight;
+
+            if (i == (int)InfoText.EP)
+            {
+                textPositionX = portraitPosition.X + 12;
+                textPositionY += lineHeight + 1; // extra space between EP and next text (LP)
+            }
+            else if (i == (int)InfoText.SLP)
+            {
+                textPositionX -= 6;
+            }
+            else if (i == (int)InfoText.GoldAndFood)
+            {
+                if (swordIcon != null)
+                    textPositionX = swordIcon.Position.X + swordIcon.Size.Width + 2;
+
+                textPositionY += 2;
+            }
+            else if (i == (int)InfoText.Damage)
+            {
+                if (shieldIcon != null)
+                    textPositionX = shieldIcon.Position.X + shieldIcon.Size.Width + 2;
+
+                textPositionY -= lineHeight;
+            }
         }
     }
 
@@ -103,6 +197,11 @@ internal class PersonInfoView
                 if (text != null)
                     text.Visible = value;
             }
+
+            if (swordIcon != null)
+                swordIcon.Visible = value;
+            if (shieldIcon != null)
+                shieldIcon.Visible = value;
         }
     }
 
@@ -114,10 +213,14 @@ internal class PersonInfoView
 
         for (int i = 0; i < personInfoTexts.Length; i++)
         {
-            var text = personInfoTexts[i];
-
-            if (text != null)
-                text.Delete();
+            personInfoTexts[i]?.Delete();
+            personInfoTexts[i] = null;
         }
+
+        if (swordIcon != null)
+            swordIcon.Visible = false;
+
+        if (shieldIcon != null)
+            shieldIcon.Visible = false;
     }
 }

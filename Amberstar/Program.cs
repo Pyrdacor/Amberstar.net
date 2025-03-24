@@ -1,6 +1,7 @@
 ﻿using Amber.Assets.Common;
 using Amber.Common;
 using Amber.IO.FileSystem;
+using Amberstar.GameData;
 using Amberstar.GameData.Legacy;
 using Amberstar.GameData.Serialization;
 using System.Drawing;
@@ -67,7 +68,7 @@ namespace Amberstar
 			WriteTexts(AssetType.MapText, 152, 1, true, true);
 			WriteTexts(AssetType.PuzzleText, 1, 1, false, true);
 			WriteTexts(AssetType.ItemText, 2, 1, false, true);
-            WriteTexts(AssetType.UIText, 2, 1, false, true);
+            WriteTexts(AssetType.UIText, Enum.GetValues<UIText>().Length);
 
             byte[] uiPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.UI).GetData();
             byte[] itemPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.Item).GetData();

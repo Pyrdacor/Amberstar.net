@@ -128,7 +128,7 @@ internal class Text(List<string> textFragments) : IText
 					currentLine += "(";
 					break;
 				case CarriageReturn:
-					lines.Add(currentLine.TrimEnd(' '));
+					lines.Add(currentLine);
 					currentLine = string.Empty;
 					break;
 				case ParagraphMarker:
@@ -176,9 +176,9 @@ internal class Text(List<string> textFragments) : IText
 		}
 
 		if (currentLine.Length != 0)
-			lines.Add(currentLine.TrimEnd(' '));
+			lines.Add(currentLine);
 
-		paragraphs.Add(lines.Skip(paragraphOffset).ToArray());
+		paragraphs.Add([.. lines.Skip(paragraphOffset)]);
 
 		return [..lines];
 	}

@@ -14,6 +14,8 @@ public enum UIText
     GoldFood, // G:01234 R:0123
     Male,
     Female,
+    MaleShort,
+    FemaleShort,
     Both,
     Gender, // ink 1
     Hands,
@@ -26,12 +28,14 @@ public enum UIText
     Skill,
     Magic,
     Cursed,
+    Dialog,
     EP,
     LP,
     SP,
     SLP,
     Colon,
     PercentTwoValues,
+    NormalTwoValues,
     WeightTwoValues,
     Grams,
     LPMax,

@@ -8,7 +8,7 @@ public interface IPartyMember : IBattleCharacter, IPerson
     word HitPointsPerLevel { get; init; }
     word SpellPointsPerLevel { get; init; }
     word SpellLearningPointsPerLevel { get; init; }
-    word TrainingPointsPerLevel { get; init; }
+    word SpellLearningPoints { get; init; }
     dword ExperiencePoints { get; set; }
     SpellSchoolFlags LearnedSpellSchools { get; set; }
     dword LearnedWhiteSpells { get; set; }

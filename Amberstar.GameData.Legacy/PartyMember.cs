@@ -11,7 +11,7 @@ internal class PartyMember : BattleCharacter, IPartyMember
     private word hitPointsPerLevel;
     private word spellPointsPerLevel;
     private word spellLearningPointsPerLevel;
-    private word trainingPointsPerLevel;
+    private word spellLearningPoints;
     private IConversationData? conversationData;
 
     public static PartyMember Load(IAsset asset, ITextLoader textLoader)
@@ -36,7 +36,9 @@ internal class PartyMember : BattleCharacter, IPartyMember
         partyMember.hitPointsPerLevel = reader.ReadWord();
         partyMember.spellPointsPerLevel = reader.ReadWord();
         partyMember.spellLearningPointsPerLevel = reader.ReadWord();
-        partyMember.trainingPointsPerLevel = reader.ReadWord();
+
+        reader.Position = 0x8e;
+        partyMember.spellLearningPoints = reader.ReadWord();
 
         reader.Position = 0xcc;
         partyMember.ExperiencePoints = reader.ReadDword();
@@ -55,7 +57,7 @@ internal class PartyMember : BattleCharacter, IPartyMember
     public word HitPointsPerLevel { get => hitPointsPerLevel; init => hitPointsPerLevel = value; }
     public word SpellPointsPerLevel { get => spellPointsPerLevel; init => spellPointsPerLevel = value; }
     public word SpellLearningPointsPerLevel { get => spellLearningPointsPerLevel; init => spellLearningPointsPerLevel = value; }
-    public word TrainingPointsPerLevel { get => trainingPointsPerLevel; init => trainingPointsPerLevel = value; }
+    public word SpellLearningPoints { get => spellLearningPoints; init => spellLearningPoints = value; }
     public dword ExperiencePoints { get; set; }
     public SpellSchoolFlags LearnedSpellSchools { get; set; }
     public dword LearnedWhiteSpells { get; set; }

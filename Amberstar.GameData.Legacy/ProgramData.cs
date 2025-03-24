@@ -99,14 +99,20 @@ namespace Amberstar.GameData.Legacy
 
 			byte[] ReadNullTerminatedText()
 			{
+				byte last = 0xff;
                 var buffer = new List<byte>();
 
                 while (true)
                 {
                     var b = dataReader.ReadByte();
 
-                    if (b == 0)
-                        break;
+                    if (b == 0 && last > 2)
+                        break; // avoid breaking when the 0 is the ink/paper index
+
+					if (b < 3 && last < 3)
+						last = 0xff; // we want to detect a 0, after a pair of ink/paper settings like 1 0
+					else
+						last = b;
 
                     buffer.Add(b);
                 }
