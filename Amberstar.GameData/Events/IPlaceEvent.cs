@@ -2,6 +2,7 @@
 
 public enum PlaceType : byte
 {
+	None,
 	// TODO (guilds are based on classes)
 	WarriorGuild,
 	PaladinGuild,

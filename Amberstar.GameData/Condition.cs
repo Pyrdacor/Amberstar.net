@@ -1,4 +1,6 @@
-﻿namespace Amberstar.GameData;
+﻿using Amberstar.GameData.Serialization;
+
+namespace Amberstar.GameData;
 
 [Flags]
 public enum PhysicalCondition : byte
@@ -49,4 +51,28 @@ public static class ConditionExtensions
 	public static MentalCondition ToMental(this Condition condition) => (MentalCondition)((int)condition);
 	public static Condition ToCondition(this PhysicalCondition condition) => (Condition)((int)condition << 8);
 	public static Condition ToCondition(this MentalCondition condition) => (Condition)((int)condition);
+
+	public static StatusIcon ToStatusIcon(this PhysicalCondition condition) => condition switch
+    {
+        PhysicalCondition.Stunned => StatusIcon.Stunned,
+        PhysicalCondition.Poisoned => StatusIcon.Poisoned,
+        PhysicalCondition.Petrified => StatusIcon.Petrified,
+        PhysicalCondition.Diseased => StatusIcon.Diseased,
+        PhysicalCondition.Aging => StatusIcon.Aging,
+        PhysicalCondition.Dead => StatusIcon.Dead,
+        PhysicalCondition.Ashes => StatusIcon.Dead,
+        PhysicalCondition.Dust => StatusIcon.Dead,
+        _ => throw new ArgumentOutOfRangeException(nameof(condition)),
+    };
+
+    public static StatusIcon ToStatusIcon(this MentalCondition condition) => condition switch
+    {
+        MentalCondition.Irritated => StatusIcon.Irritated,
+        MentalCondition.Mad => StatusIcon.Mad,
+        MentalCondition.Sleeping => StatusIcon.Sleeping,
+        MentalCondition.Panicked => StatusIcon.Panicked,
+        MentalCondition.Blind => StatusIcon.Blind,
+        MentalCondition.Overloaded => StatusIcon.Overloaded,
+        _ => throw new ArgumentOutOfRangeException(nameof(condition)),
+    };
 }

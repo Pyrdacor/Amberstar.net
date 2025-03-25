@@ -58,9 +58,11 @@ namespace Amberstar
 			}
 
 			WriteTexts(AssetType.ClassName, 11);
-			WriteTexts(AssetType.SkillName, 10);
+            WriteTexts(AssetType.RaceName, 15);
+            WriteTexts(AssetType.AttributeName, 9);
+            WriteTexts(AssetType.SkillName, 10);
 			WriteTexts(AssetType.CharInfoText, 5);
-			WriteTexts(AssetType.RaceName, 7);
+			WriteTexts(AssetType.LanguageName, 7);
 			WriteTexts(AssetType.ConditionName, 16, 1);
 			WriteTexts(AssetType.ItemTypeName, 19);
 			WriteTexts(AssetType.SpellSchoolName, 7, 1);

@@ -75,7 +75,8 @@ partial class Game
 
 	internal void OpenPlace(PlaceEvent placeEvent)
 	{
-		if (placeEvent.PlaceType == PlaceType.Unused ||
+		if (placeEvent.PlaceType == PlaceType.None || 
+			placeEvent.PlaceType == PlaceType.Unused ||
 			placeEvent.PlaceType >= PlaceType.Invalid)
 			throw new AmberException(ExceptionScope.Data, "Invalid place type");
 

@@ -17,4 +17,12 @@ public interface IBattleCharacter : ICharacter
     CharacterValue SpellPoints { get; }
     ReadOnlyDictionary<Skill, CharacterValue> Skills { get; }
     ReadOnlyDictionary<Attribute, CharacterValue> Attributes { get; }
-}    
+}
+
+public static class BattleCharacterExtensions
+{
+    public static bool IsDead(this IBattleCharacter character) =>
+        character.PhysicalConditions.HasFlag(PhysicalCondition.Dead) ||
+        character.PhysicalConditions.HasFlag(PhysicalCondition.Ashes) ||
+        character.PhysicalConditions.HasFlag(PhysicalCondition.Dust);
+}

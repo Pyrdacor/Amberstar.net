@@ -44,7 +44,7 @@ internal class PersonInfoView
         portraitBackground!.DisplayLayer = 0;
         portrait!.DisplayLayer = 2;
 
-        name = game.TextManager.Create(/*person.Name*/"LYRA", 1, paperColor, palette);
+        name = game.TextManager.Create(person.Name, 1, paperColor, palette);
         name.ShowInArea(portraitPosition.X, portraitPosition.Y + portraitSize.Height + 1, 96, 7, 2, TextAlignment.Center);
 
         var textLoader = game.AssetProvider.TextLoader;

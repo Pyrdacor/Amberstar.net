@@ -9,7 +9,7 @@ namespace Amberstar.GameData.Legacy
 	{
 		public ProgramData(IDataReader dataReader, Func<EmbeddedDataOffset, IDataReader, bool> dataSeeker)
 		{
-			Graphic ReadGraphic(int width, int height)
+            Graphic ReadGraphic(int width, int height)
 			{
 				return Graphic.FromBitPlanes(width, height, dataReader.ReadBytes(width * height / 2), 4);
 			}
@@ -43,18 +43,41 @@ namespace Amberstar.GameData.Legacy
 			if (dataReader.ReadByte() != 0)
 				throw new AmberException(ExceptionScope.Application, "Invalid text fragment terminator.");
 
-			#endregion
-			#region Read all kind of names
-			if (!dataSeeker(EmbeddedDataOffset.Names, dataReader))
-				throw new AmberException(ExceptionScope.Application, "Could not find the class names in the program file.");
+            #endregion
+            #region Read all kind of names
 
-			ClassNames = [];
-			SkillNames = [];
-			CharInfoTexts = [];
-			SpellSchoolNames = [];
-			SpellNames = [];
+            if (!dataSeeker(EmbeddedDataOffset.RaceNames, dataReader))
+                throw new AmberException(ExceptionScope.Application, "Could not find the class names in the program file.");
 
-			for (int i = 0; i < 11; i++)
+            RaceNames = [];
+            ClassNames = [];
+            AttributeNames = [];
+            SkillNames = [];
+            CharInfoTexts = [];
+            SpellSchoolNames = [];
+            SpellNames = [];
+
+            for (int i = 0; i < 15; i++)
+                RaceNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per race name
+            for (int i = 0; i < 10; i++)
+                AttributeNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per attriute name
+
+            if (!dataSeeker(EmbeddedDataOffset.ClassNames, dataReader))
+                throw new AmberException(ExceptionScope.Application, "Could not find the class names in the program file.");
+
+            // Note: The file CLASSDAT.DAT contains some information for classes, the class names and the skill names.
+            // 
+            // There are 394 bytes per class.
+            // - 10 unknown bytes
+            // - 90 longs which store the needed experience for the next level. So for level 1 to level 90.
+            // - 11 unknown words
+            // - 2 unknown bytes
+            //
+            // Amberstar limits the max level to 20.
+            //
+            // After that data, the 11 class names follow and then the skill names.
+
+            for (int i = 0; i < 11; i++)
 				ClassNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per class name
 
 			for (int i = 0; i < 10; i++)
@@ -65,10 +88,10 @@ namespace Amberstar.GameData.Legacy
 
 			dataReader.Position += 12; // TODO: unknown data
 
-			for (int i = 0; i < 7; i++)
-				RaceNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per race name
+            for (int i = 0; i < 7; i++)
+				LanguageNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per race name
 
-			dataReader.Position += 2; // either an additional empty race name or an empty string for condition "none"
+			dataReader.Position += 2; // either an additional empty language name or an empty string for condition "none"
 
 			// Note: First the physical conditions, then the mental conditions.
 			// Note: There are only 5 mental conditions and I guess overloaded is not shown in the UI as a text.
@@ -341,7 +364,9 @@ namespace Amberstar.GameData.Legacy
 		public Dictionary<int, IDataReader> SkillNames { get; } = [];
 		public Dictionary<int, IDataReader> CharInfoTexts { get; } = [];
 		public Dictionary<int, IDataReader> RaceNames { get; } = [];
-		public Dictionary<int, IDataReader> ConditionNames { get; } = [];
+        public Dictionary<int, IDataReader> AttributeNames { get; } = [];
+        public Dictionary<int, IDataReader> LanguageNames { get; } = [];
+        public Dictionary<int, IDataReader> ConditionNames { get; } = [];
 		public Dictionary<int, IDataReader> ItemTypeNames { get; } = [];
 		public Dictionary<int, Graphic> LayoutBlocks { get; } = [];
 		public List<word> LayoutBottomCorners { get; } = [];

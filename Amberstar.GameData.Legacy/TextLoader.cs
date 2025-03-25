@@ -29,9 +29,11 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 			case AssetType.SpellName:
 			case AssetType.SpellSchoolName:
 			case AssetType.ClassName:
-			case AssetType.SkillName:
+            case AssetType.RaceName:
+            case AssetType.AttributeName:
+            case AssetType.SkillName:
 			case AssetType.CharInfoText:
-			case AssetType.RaceName:
+			case AssetType.LanguageName:
 			case AssetType.ConditionName:
 			case AssetType.ItemTypeName:
 				singleString = true;

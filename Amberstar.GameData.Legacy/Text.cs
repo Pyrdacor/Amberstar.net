@@ -151,7 +151,7 @@ internal class Text(List<string> textFragments) : IText
 			{
 				currentLine += text;
 
-				while (currentLine.Length > maxWidthInCharacters)
+				while (currentLine.Count(c => c >= ' ') > maxWidthInCharacters)
 				{
 					int lastSpaceIndexWhichFits = FindLastSpaceIndexWhichFits();
 

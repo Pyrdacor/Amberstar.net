@@ -20,7 +20,8 @@ public enum EmbeddedDataOffset
 {
 	Version,
 	GlyphMappings,
-	Names,
+	RaceNames, // RACEDAT.DAT
+	ClassNames, // CLASSDAT.DAT
 	SpellSchoolNames,
 	Graphics,
 	TextConversionTab,
@@ -253,9 +254,11 @@ public class AssetProvider : IAssetProvider
 			AssetType.SpellName => CreateAssets(Data.SpellNames),
 			AssetType.SpellSchoolName => CreateAssets(Data.SpellSchoolNames),
 			AssetType.ClassName => CreateAssets(Data.ClassNames),
-			AssetType.SkillName => CreateAssets(Data.SkillNames),
+            AssetType.RaceName => CreateAssets(Data.RaceNames),
+            AssetType.AttributeName => CreateAssets(Data.AttributeNames),
+            AssetType.SkillName => CreateAssets(Data.SkillNames),
 			AssetType.CharInfoText => CreateAssets(Data.CharInfoTexts),
-			AssetType.RaceName => CreateAssets(Data.RaceNames),
+			AssetType.LanguageName => CreateAssets(Data.LanguageNames),
 			AssetType.ConditionName => CreateAssets(Data.ConditionNames),
 			AssetType.ItemTypeName => CreateAssets(Data.ItemTypeNames),
 			AssetType.Layout => CreateAssets(Data.Layouts),
@@ -429,7 +432,12 @@ public class AssetProvider : IAssetProvider
 				return FindAndGotoText(dataReader, 0x250, "Version");
 			case EmbeddedDataOffset.GlyphMappings:
 				return FindAndGotoByteSequence(dataReader, 0x700, 0x20, 0xff, 0xff, 0xff);
-			case EmbeddedDataOffset.Names:
+            case EmbeddedDataOffset.RaceNames:
+				if (!FindAndGotoByteSequence(dataReader, 0x28000, 0xff, 0x00, 0x01, 0x00, 0x02))
+					return false;
+				dataReader.Position++;
+				return true;
+            case EmbeddedDataOffset.ClassNames:
 				return FindAndGotoByteSequence(dataReader, 0x2a000, 0x00, 0x13, 0x00, 0x14, 0x00, 0x15);
 			case EmbeddedDataOffset.SpellSchoolNames:
 				return FindAndGotoByteSequence(dataReader, 0x2a000, 0x00, 0x38, 0x00, 0x56, 0x00, 0x71);
