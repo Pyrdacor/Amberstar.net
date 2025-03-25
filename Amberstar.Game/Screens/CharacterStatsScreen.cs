@@ -209,11 +209,27 @@ internal class CharacterStatsScreen : ButtonGridScreen
             skill.Show(position.X, position.Y, 2);
         }
 
-        // TODO: Languages
+        // Languages
+        for (int i = 0; i < 7; i++)
+        {
+            languages[i]?.Delete();
+        }
 
-        // TODO: REMOVE
-        partyMember.PhysicalConditions = PhysicalCondition.Stunned | PhysicalCondition.Poisoned;
-        partyMember.MentalConditions = (MentalCondition)0x1f;
+        int y = LanguageOffset.Y;
+
+        for (int i = 0; i < 7; i++)
+        {
+            var languageValue = (LanguageFlags)(1 << i);
+
+            if ((partyMember.ConversationData.LearnedLanguages & languageValue) == 0)
+                continue;
+
+            var languageName = game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.LanguageName, i)).GetString();
+            var language = languages[i] = game.TextManager.Create(languageName, 15);
+
+            language.Show(LanguageOffset.X, y, 2);
+            y += 7;
+        }
 
         // Physical conditions
         if (partyMember.IsDead())
