@@ -287,6 +287,42 @@ internal class InventoryScreen : ButtonGridScreen
         RequestButtonSetup();
     }
 
+    // Understanding original mouse and key events:
+    //
+    // Mouse events start with 2 longs.
+    // - First long gives the mask which should be applied to the incoming event.
+    // - Second long is compared against the masked event data.
+    //
+    // If the result matches, the event is triggered.
+    //
+    // The event data is created like this: TUCB XXXX YYYY ZZZZ (every letter is a 2 bit value = 32 bits total)
+    // - T: Trespass (low bit: X trespass, high bit Y trespass), trespass means out of bounds
+    // - U: Unclick state (which mouse buttons have been released)
+    // - C: Click state (which mouse buttons have been pressed)
+    // - B: Button state (which mouse buttons are currently pressed)
+    // - X: First layer index (1 byte)
+    // - Y: Second layer index (1 byte)
+    // - Z: Third layer index (1 byte)
+    //
+    // Layers are defined elsewhere and specify some areas in the UI.
+    // Mouse buttons: 2 = left, 1 = right
+    //
+    // Button state stores the current mouse button states.
+    // Click and unclick store the mouse button states at the time of the event.
+    // They are cleared after each successful event. This means that if two events
+    // listen for a left click, the second one won't be triggered if the first one
+    // is. The button state can still be used to allow both to be triggered.
+    //
+    // For example: .DC.l $02ff0000,$02010000,Member_left
+    //
+    // This will mask the trespass, unclick and click state away (do not care).
+    // It will also mask the button state to only care for left mouse down (2).
+    // The ff masks the first layer. The other layers are ignored (00 and 00).
+    // It then checks for layer 0 is 1, which is the portrait area.
+    // The second layer would contain the member index (1 to 6) which can
+    // be filtered out be the handler later. The event data is passed in d0
+    // to the handler. Here Member_left.
+
     protected override void ButtonClicked(int index)
     {
         switch (index)
