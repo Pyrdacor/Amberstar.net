@@ -34,12 +34,12 @@ internal class CharacterStatsScreen : ButtonGridScreen
     Game? game;
     IPartyMember? partyMember;
     PersonInfoView? personInfoView;
-    IRenderText?[] headers = new IRenderText?[5];
-    IRenderText?[] attributes = new IRenderText?[8];
-    IRenderText?[] skills = new IRenderText?[10];
-    IRenderText?[] languages = new IRenderText?[7];
-    ISprite?[] physicalConditions = new ISprite?[5];
-    ISprite?[] mentalConditions = new ISprite?[5];
+    readonly IRenderText?[] headers = new IRenderText?[5];
+    readonly IRenderText?[] attributes = new IRenderText?[8];
+    readonly IRenderText?[] skills = new IRenderText?[10];
+    readonly IRenderText?[] languages = new IRenderText?[7];
+    readonly ISprite?[] physicalConditions = new ISprite?[5];
+    readonly ISprite?[] mentalConditions = new ISprite?[5];
 
     public override ScreenType Type { get; } = ScreenType.CharacterStats;
 
@@ -73,6 +73,22 @@ internal class CharacterStatsScreen : ButtonGridScreen
     {
         personInfoView?.Destroy();
 
+        DeleteTexts(headers);
+        DeleteTexts(attributes);
+        DeleteTexts(skills);
+        DeleteTexts(languages);
+
+        headers.SetAllNull();
+        attributes.SetAllNull();
+        skills.SetAllNull();
+        languages.SetAllNull();
+
+        DeleteSprites(physicalConditions);
+        DeleteSprites(mentalConditions);
+
+        physicalConditions.SetAllNull();
+        mentalConditions.SetAllNull();
+
         base.Close(game);
     }
 
@@ -82,6 +98,14 @@ internal class CharacterStatsScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = false;
+
+            ShowTexts(headers, false);
+            ShowTexts(attributes, false);
+            ShowTexts(skills, false);
+            ShowTexts(languages, false);
+
+            ShowSprites(physicalConditions, false);
+            ShowSprites(mentalConditions, false);
         }
 
         base.ScreenPushed(game, screen);
@@ -95,6 +119,14 @@ internal class CharacterStatsScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = true;
+
+            ShowTexts(headers, true);
+            ShowTexts(attributes, true);
+            ShowTexts(skills, true);
+            ShowTexts(languages, true);
+
+            ShowSprites(physicalConditions, true);
+            ShowSprites(mentalConditions, true);
         }
     }
 
@@ -160,6 +192,24 @@ internal class CharacterStatsScreen : ButtonGridScreen
             var position = AttributeOffset + new Position(0, i * 7);
             attribute.Show(position.X, position.Y, 2);
         }
+
+        // Skills
+        var percentageValueDivider = game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.PercentTwoValues)).GetString();
+        for (int i = 0; i < 10; i++)
+        {
+            skills[i]?.Delete();
+
+            var skillValue = partyMember.Skills[(Skill)i];
+            var skillName = game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.SkillName, i)).GetString()[..3];
+            var skillString = Game.InsertNumberIntoString(percentageValueDivider, "%", false, skillValue.CurrentValue, 2, '0');
+            skillString = Game.InsertNumberIntoString(skillString, "/", true, skillValue.MaxValue, 2, '0');
+            var skill = skills[i] = game.TextManager.Create(skillName + "  " + skillString, 15);
+
+            var position = SkillOffset + new Position(0, i * 7);
+            skill.Show(position.X, position.Y, 2);
+        }
+
+        // TODO: Languages
 
         // TODO: REMOVE
         partyMember.PhysicalConditions = PhysicalCondition.Stunned | PhysicalCondition.Poisoned;

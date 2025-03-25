@@ -1,4 +1,6 @@
 ﻿using Amber.Common;
+using Amber.Renderer;
+using Amberstar.Game.UI;
 
 namespace Amberstar.Game.Screens;
 
@@ -97,6 +99,36 @@ internal abstract class Screen
 	{
 		// default: empty
 	}
+
+	#region Helper functions
+	protected static void ShowSprites(IEnumerable<ISprite?> sprites, bool show = true)
+    {
+        foreach (var sprite in sprites)
+        {
+            if (sprite != null)
+                sprite.Visible = show;
+        }
+    }
+
+    protected static void ShowTexts(IEnumerable<IRenderText?> texts, bool show = true)
+    {
+        foreach (var text in texts)
+        {
+            if (text != null)
+                text.Visible = show;
+        }
+    }
+
+	protected static void DeleteSprites(IEnumerable<ISprite?> sprites) => ShowSprites(sprites, false);
+
+    protected static void DeleteTexts(IEnumerable<IRenderText?> texts)
+    {
+        foreach (var text in texts)
+        {
+			text?.Delete();
+        }
+    }
+    #endregion
 }
 
 internal class ScreenHandler(Game game) : IDisposable
