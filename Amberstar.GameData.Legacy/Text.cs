@@ -176,7 +176,7 @@ internal class Text(List<string> textFragments) : IText
 		}
 
 		if (currentLine.Length != 0)
-			lines.Add(currentLine);
+			lines.Add(currentLine[^1] == ' ' ? currentLine[..(currentLine.Length - 1)] : currentLine);
 
 		paragraphs.Add([.. lines.Skip(paragraphOffset)]);
 
