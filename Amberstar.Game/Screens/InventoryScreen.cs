@@ -17,6 +17,8 @@ internal class InventoryScreen : ButtonGridScreen
     readonly static Dictionary<EquipmentSlot, Position> EquipmentSlotPositions = [];
     readonly static Position[] InventorySlotPositions = new Position[ICharacter.InventorySlotCount];
     PersonInfoView? personInfoView;
+    IRenderText? weightLabel;
+    IRenderText? weightText;
 
     static InventoryScreen()
     {
@@ -123,6 +125,11 @@ internal class InventoryScreen : ButtonGridScreen
 
         SwitchToPartyMember(game.State.CurrentInventoryIndex!.Value, true);
 
+        var weightLabelName = game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.Weight));
+        weightLabel?.Delete();
+        weightLabel = game.TextManager.Create(weightLabelName, 80, 15);
+        weightLabel.ShowInArea(16, 178, 80, 10, 2, TextAlignment.Center);
+
         SetupEventHandlers();
     }
 
@@ -142,6 +149,9 @@ internal class InventoryScreen : ButtonGridScreen
         CleanUpItems();
 
         personInfoView?.Destroy();
+        personInfoView = null;
+        weightLabel?.Delete();
+        weightLabel = null;
 
         base.Close(game);
     }
@@ -154,6 +164,10 @@ internal class InventoryScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = false;
+            if (weightLabel != null)
+                weightLabel.Visible = false;
+            if (weightText != null)
+                weightText.Visible = false;
         }
 
         base.ScreenPushed(game, screen);
@@ -169,6 +183,10 @@ internal class InventoryScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = true;
+            if (weightLabel != null)
+                weightLabel.Visible = true;
+            if (weightText != null)
+                weightText.Visible = true;
         }
     }
 
@@ -254,6 +272,17 @@ internal class InventoryScreen : ButtonGridScreen
 
         personInfoView?.Destroy();
         personInfoView = new(game, partyMember, partyMemberIndex, uiPaletteIndex);
+
+        var weightString = game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.WeightTwoValues)).GetString();
+        weightString = Game.InsertNumberIntoString(weightString, " KG", false, partyMember.TotalWeight / 1000, 3, '0');
+        var maxWeight = partyMember.Attributes[GameData.Attribute.Strength].CurrentValue; // TODO: bonus value?
+        weightString = Game.InsertNumberIntoString(weightString, "/", true, maxWeight, 3, '0');
+        int colorIndex = partyMember.MentalConditions.HasFlag(MentalCondition.Overloaded) ? 1 : 15; // TODO: is the mental condition correct?
+        if (weightString[0] == 1) // The weight string might contain a SetInk command. We overwrite it to match the color.
+            weightString = $"\x1{(char)colorIndex}{weightString[2..]}";
+        weightText?.Delete();
+        weightText = game.TextManager.Create(weightString, colorIndex);
+        weightText.ShowInArea(16, 186, 80, 10, 2, TextAlignment.Center);
 
         RequestButtonSetup();
     }
