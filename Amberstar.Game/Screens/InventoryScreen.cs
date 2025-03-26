@@ -2,6 +2,7 @@
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
+using System;
 
 namespace Amberstar.Game.Screens;
 
@@ -107,11 +108,45 @@ internal class InventoryScreen : ButtonGridScreen
 
         this.game = game;
 
+        void UpdateInventoryItem(int index)
+        {
+            if (partyMember == null)
+                return;
+
+            var slot = inventoryItemSlots[index];
+
+            partyMember.Inventory[index] = new((byte)slot.ItemCount, slot.Item);
+        }
+
+        void UpdateEquipment(EquipmentSlot equipmentSlot)
+        {
+            if (partyMember == null)
+                return;
+
+            var slot = equippedItemSlots[equipmentSlot];
+
+            if (equipmentSlot == EquipmentSlot.LeftHand && slot.ItemCount == ItemContainer.TwoHandedSecondSlotMarker)
+                partyMember.Equipment[equipmentSlot] = new(0, null);
+            else
+                partyMember.Equipment[equipmentSlot] = new((byte)slot.ItemCount, slot.Item);
+        }
+
         for (int i = 0; i < inventoryItemSlots.Length; i++)
+        {
+            int index = i; // important to capture is for the click handler
             inventoryItemSlots[i] = new ItemContainer(game, InventorySlotPositions[i], 0, null, 10) { Draggable = true };
+            inventoryItemSlots[i].Clicked += (mouseButtons, keyModifiers) => InventorySlotClicked(index, mouseButtons, keyModifiers);
+            inventoryItemSlots[i].SlotChanged += () => UpdateInventoryItem(index);
+        }
 
         foreach (var equipmentSlot in Enum.GetValues<EquipmentSlot>())
-            equippedItemSlots.Add(equipmentSlot, new ItemContainer(game, EquipmentSlotPositions[equipmentSlot], 0, null, 10) { Draggable = true });
+        {
+            var targetSlot = equipmentSlot; // important to capture is for the click handler
+            var slot = new ItemContainer(game, EquipmentSlotPositions[equipmentSlot], 0, null, 10) { Draggable = true };
+            equippedItemSlots.Add(equipmentSlot, slot);
+            slot.Clicked += (mouseButtons, keyModifiers) => EquipmentSlotClicked(targetSlot, mouseButtons, keyModifiers);
+            slot.SlotChanged += () => UpdateEquipment(targetSlot);
+        }
     }
 
     public override void Open(Game game, Action? closeAction)
@@ -208,13 +243,13 @@ internal class InventoryScreen : ButtonGridScreen
 
         foreach (var inventorySlot in inventoryItemSlots)
         {
-            if (inventorySlot.MouseClick(position, buttons))
+            if (inventorySlot.MouseClick(position, buttons, keyModifiers))
                 return;
         }
 
         foreach (var equippedItemSlot in equippedItemSlots)
         {
-            if (equippedItemSlot.Value.MouseClick(position, buttons))
+            if (equippedItemSlot.Value.MouseClick(position, buttons, keyModifiers))
                 return;
         }
 
@@ -356,5 +391,87 @@ internal class InventoryScreen : ButtonGridScreen
                 // TODO
                 break;
         }
+    }
+
+    private void InventorySlotClicked(int index, MouseButtons mouseButtons, KeyModifiers keyModifiers)
+    {
+        var slot = inventoryItemSlots[index];
+
+        if (slot.ItemCount <= 0)
+            return;
+
+        var item = slot.Item!;
+
+        if (item.Type == ItemType.MonsterItem)
+            return;
+
+        // TODO: If in battle, check if can be equipped during battle here
+
+        var targetSlot = item.EquipmentSlot;
+
+        if (targetSlot == null) // Not equipable
+            return; // TODO: Print message 8
+
+        if (targetSlot == EquipmentSlot.RightFinger && partyMember!.Equipment[targetSlot.Value].Count > 0)
+            targetSlot = EquipmentSlot.LeftFinger;
+
+        var targetItemSlot = equippedItemSlots[targetSlot.Value];
+
+        if (targetItemSlot.ItemCount > 0)
+            return; // TODO: Print message 8
+
+        if (!item.UsableClasses.HasFlag((ClassFlags)(1 << (int)partyMember!.Class)))
+            return; // TODO: Print message 9
+
+        if (item.Genders != GenderFlags.Both && !item.Genders.HasFlag((GenderFlags)(1 << (int)partyMember.Gender)))
+            return; // TODO: Print message 10
+
+        if (item.Hands > 2 - partyMember.UsedHands)
+            return; // TODO: Print message 11
+
+        if (item.Fingers > 2 - partyMember.UsedFingers)
+            return; // TODO: Print message 12
+
+        targetItemSlot.AddItem(1, item);
+        slot.ReduceItemCount(1);
+
+        // TODO: update values of party, etc
+    }
+
+    private void EquipmentSlotClicked(EquipmentSlot equipmentSlot, MouseButtons mouseButtons, KeyModifiers keyModifiers)
+    {
+        var slot = equippedItemSlots[equipmentSlot];
+
+        if (slot.ItemCount == 0)
+            return;
+
+        var item = slot.Item!;
+
+        if (item.Type == ItemType.MonsterItem)
+            return;
+
+        // TODO: If in battle, check if can be unequipped during battle here
+
+        if (item.Flags.HasFlag(ItemFlags.Cursed))
+            return; // TODO: Print message 17
+
+        int targetSlotIndex = -1;
+        var inventorySlots = inventoryItemSlots.ToList();
+
+        if (item.Flags.HasFlag(ItemFlags.Stackable))
+        {
+            targetSlotIndex = inventorySlots.FindIndex(slot => slot.Item?.Index == item.Index && slot.ItemCount < 99);
+        }
+
+        if (targetSlotIndex == -1)
+            targetSlotIndex = inventorySlots.FindIndex(slot => slot.Empty);
+
+        if (targetSlotIndex == -1)
+            return; // Print message 13
+
+        var targetSlot = inventoryItemSlots[targetSlotIndex];
+
+        targetSlot.AddItem(1, item);
+        slot.ReduceItemCount(1);
     }
 }

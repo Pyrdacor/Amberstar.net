@@ -11,5 +11,5 @@ public enum Skill : byte
 	PickLocks,
 	Search,
 	ReadMagic,
-	UseMagic
+	UseMagic,
 }

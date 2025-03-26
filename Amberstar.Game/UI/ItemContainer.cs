@@ -5,6 +5,12 @@ using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.UI;
 
+public enum ItemContainerClickMode
+{
+	Event,
+	DragAndDrop
+}
+
 internal class ItemContainer
 {
 	public const int Width = 16;
@@ -19,9 +25,12 @@ internal class ItemContainer
 	byte displayLayer;
 	static ItemContainer? draggedSourceSlot;
     static ItemContainer? DraggedItem { get; set; }
+	public static ItemContainerClickMode ClickMode { get; set; } = ItemContainerClickMode.Event;
 
+    public event Action<MouseButtons, KeyModifiers>? Clicked;
     public event Action<IItem, int>? Dragged;
     public event Action<IItem, int>? Dropped;
+	public event Action? SlotChanged;
     public static event Action? DraggingStarted;
     public static event Action? DraggingEnded;
 
@@ -155,7 +164,7 @@ internal class ItemContainer
 
 			count -= dropCount;
 
-			return count;
+            return count;
 		}
 		else
 		{
@@ -204,10 +213,47 @@ internal class ItemContainer
             sprite.Visible = true;
 
             // TODO: item count display, broken overlay
+
+            SlotChanged?.Invoke();
         }
     }
 
-	public void ClearItem()
+	public void AddItem(int amount, IItem item)
+	{
+		if (Item != null && Item.Index != item.Index)
+			throw new AmberException(ExceptionScope.Application, "Items with different index were put on same slot.");
+
+		if (ItemCount + amount > 99)
+            throw new AmberException(ExceptionScope.Application, "Item count exceeds maximum.");
+
+		if (Empty)
+			SetItem(amount, item);
+		else
+		{
+			ItemCount += amount;
+
+            // TODO: update item count display
+
+            SlotChanged?.Invoke();
+        }
+    }
+
+    public void ReduceItemCount(int amount)
+    {
+        if (amount >= ItemCount)
+        {
+            ClearItem();
+            return;
+        }
+
+        ItemCount -= amount;
+
+        // TODO: update item count display
+
+        SlotChanged?.Invoke();
+    }
+
+    public void ClearItem()
 	{
 		Item = null;
 		ItemCount = 0;
@@ -224,7 +270,9 @@ internal class ItemContainer
             brokenOverlay = null;
         }
 
-		// TODO: item count display
+        // TODO: item count display
+
+        SlotChanged?.Invoke();
     }
 
 	public static void UpdateDragPosition(Game game, Position position)
@@ -278,13 +326,19 @@ internal class ItemContainer
         // TODO: item count display
     }
 
-    public bool MouseClick(Position position, MouseButtons mouseButtons)
+    public bool MouseClick(Position position, MouseButtons mouseButtons, KeyModifiers keyModifiers)
 	{
         var upperLeft = Position;
         var lowerRight = new Position(upperLeft.X + Width, upperLeft.Y + Height);
 
         if (position.X < upperLeft.X || position.Y < upperLeft.Y || position.X >= lowerRight.X || position.Y >= lowerRight.Y)
             return false; // Not hit
+
+		if (ClickMode == ItemContainerClickMode.Event)
+		{
+			Clicked?.Invoke(mouseButtons, keyModifiers);
+            return true;
+		}
 
         if (DraggedItem == null && ItemCount <= 0)
 			return false; // No drop and no item in slot

@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum SpellSchool
+public enum SpellSchool : byte
 {
 	None,
 	White,

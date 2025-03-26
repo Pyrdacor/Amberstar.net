@@ -19,6 +19,7 @@ public enum Class : byte
 public enum ClassFlags : word
 {
     None = 0,
+    Classless = 1 << Class.None,
     Warrior = 1 << Class.Warrior,
     Paladin = 1 << Class.Paladin,
     Ranger = 1 << Class.Ranger,

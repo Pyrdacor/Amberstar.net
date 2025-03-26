@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum ItemType
+public enum ItemType : byte
 {
 	Armor,
 	Headgear,

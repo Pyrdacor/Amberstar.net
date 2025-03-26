@@ -80,7 +80,7 @@ internal class Character : ICharacter
     public byte Level { get; set; }
     public ushort Gold { get; set; }
     public ushort Food { get; set; }
-    public ReadOnlyDictionary<EquipmentSlot, ItemSlot> Equipment => equipment.AsReadOnly();
+    public Dictionary<EquipmentSlot, ItemSlot> Equipment => equipment;
     public ItemSlot[] Inventory => inventory;
     string ICharacter.Name { get => name; init => name = value; }
 }

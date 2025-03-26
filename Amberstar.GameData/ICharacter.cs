@@ -13,7 +13,7 @@ public interface ICharacter
     byte Level { get; set; }
     word Gold { get; set; }
     word Food { get; set; }
-    ReadOnlyDictionary<EquipmentSlot, ItemSlot> Equipment { get; }
+    Dictionary<EquipmentSlot, ItemSlot> Equipment { get; }
     ItemSlot[] Inventory { get; } // 12
     string Name { get; init; }
 }    

@@ -1,6 +1,6 @@
 ﻿namespace Amberstar.GameData;
 
-public enum WhiteSpell
+public enum WhiteSpell : byte
 {
 	None,
 	Healing1, // 1
@@ -35,7 +35,7 @@ public enum WhiteSpell
 	Unused30, // 30
 }
 
-public enum GraySpell
+public enum GraySpell : byte
 {
     None,
     Light1, // 1
@@ -70,7 +70,7 @@ public enum GraySpell
     Unused30, // 30
 }
 
-public enum BlackSpell
+public enum BlackSpell : byte
 {
     None,
     BeamOfFire, // 1
@@ -105,7 +105,7 @@ public enum BlackSpell
     Unused30, // 30
 }
 
-public enum SpecialSpell
+public enum SpecialSpell : byte
 {
     None,
     Stun, // 1
