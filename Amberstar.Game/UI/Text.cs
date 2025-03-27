@@ -27,6 +27,14 @@ internal interface IRenderText
     bool ScrollFullHeight();
 }
 
+internal static class RenderTextExtensions
+{
+    public static void ShowInArea(this IRenderText text, Rect area, byte displayLayer, TextAlignment textAlignment = TextAlignment.Left)
+    {
+        text.ShowInArea(area.Position.X, area.Position.Y, area.Size.Width, area.Size.Height, displayLayer, textAlignment);
+    }
+}
+
 internal class TextManager(Game game, IFont font,
     IFontInfoProvider fontInfoProvider)
 {

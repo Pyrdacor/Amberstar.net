@@ -149,7 +149,7 @@ internal class ConversationData : IConversationData
 
         return new(primaryInteractions, secondaryInteractions)
         {
-            Age = new(currentAge, maxAge),
+            Age = new(currentAge, maxAge, 0),
             LearnedLanguages = learnedLanguages,
             JoinChance = joinChance,
             QuestCompletionIndex = questCompletionIndex,

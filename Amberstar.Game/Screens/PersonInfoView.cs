@@ -103,7 +103,7 @@ internal class PersonInfoView
             // LP
             var lpString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.LP)).GetString();
             lpString = Game.InsertNumberIntoString(lpString, "/", false, partyMember.HitPoints.CurrentValue, 3, '0');
-            lpString = Game.InsertNumberIntoString(lpString, "/", true, partyMember.HitPoints.MaxValue, 3, '0');
+            lpString = Game.InsertNumberIntoString(lpString, "/", true, partyMember.HitPoints.TotalMax, 3, '0');
             personInfoTexts[(int)InfoText.LP] = game.TextManager.Create(lpString, 15, paperColor, palette);
 
             if (partyMember.LearnedSpellSchools != SpellSchoolFlags.None)
@@ -111,7 +111,7 @@ internal class PersonInfoView
                 // SP
                 var spString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.SP)).GetString();
                 spString = Game.InsertNumberIntoString(spString, "/", false, partyMember.SpellPoints.CurrentValue, 3, '0');
-                spString = Game.InsertNumberIntoString(spString, "/", true, partyMember.SpellPoints.MaxValue, 3, '0');
+                spString = Game.InsertNumberIntoString(spString, "/", true, partyMember.SpellPoints.TotalMax, 3, '0');
                 personInfoTexts[(int)InfoText.SP] = game.TextManager.Create(spString, 15, paperColor, palette);
 
                 // SLP
@@ -132,8 +132,8 @@ internal class PersonInfoView
 
             // Damage and proection
             var placeholderString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.Colon)).GetString();
-            var damageString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Damage, 3, '0');
-            var protectionString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Defense, 3, '0');
+            var damageString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Damage + partyMember.BonusDamage, 3, '0');
+            var protectionString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Defense + partyMember.BonusDefense, 3, '0');
             personInfoTexts[(int)InfoText.Damage] = game.TextManager.Create(damageString, 15, paperColor, palette);
             personInfoTexts[(int)InfoText.Protection] = game.TextManager.Create(protectionString, 15, paperColor, palette);
             swordIcon = game.CreateSprite(Layer.UI, new Position(208, 120), new Size(16, 10), (int)UIGraphic.Sword, palette);

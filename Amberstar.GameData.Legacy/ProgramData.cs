@@ -56,6 +56,8 @@ namespace Amberstar.GameData.Legacy
             CharInfoTexts = [];
             SpellSchoolNames = [];
             SpellNames = [];
+			SpellLocationNames = [];
+			SpellTargetNames = [];
 
             for (int i = 0; i < 15; i++)
                 RaceNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per race name
@@ -113,6 +115,33 @@ namespace Amberstar.GameData.Legacy
 			for (int i = 1; i <= 7 * 30; i++)
 				SpellNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per spell name
 
+			for (int i = 0; i < 5; i++)
+				SpellLocationNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per spell location name
+
+			dataReader.Position += 4;
+
+            for (int i = 0; i < 8; i++)
+                SpellTargetNames.Add(i, new DataReader(dataReader.ReadBytes(2))); // one word per spell location name
+
+            dataReader.Position += 2;
+            #endregion
+			#region Place Data
+			// Place data follows the above texts
+            // 47 places
+            // Header gives amount as word (00 2f)
+            // First 24 bytes per place (= data)
+            // Then 30 bytes per place (= name)
+            int placeCount = dataReader.ReadWord();
+            PlacesData = new(placeCount);
+            PlaceNames = new(placeCount);
+            for (int i = 0; i < placeCount; i++)
+                PlacesData[i] = new DataReader(dataReader.ReadBytes(24));
+            for (int i = 0; i < placeCount; i++)
+                PlaceNames[i] = new DataReader(dataReader.ReadBytes(30));
+            #endregion
+            #region Messages
+            // The messages directly follow the place names.
+            MessageData = new DataReader(Text.DetermineLengthAndReadAsBytes(dataReader));
             #endregion
             #region Read UI Texts
             if (!dataSeeker(EmbeddedDataOffset.UITexts, dataReader))
@@ -280,12 +309,10 @@ namespace Amberstar.GameData.Legacy
 			}
 			for (int i = 0; i <= (int)CursorType.LastCursor; i++)
 				AddCursor(i);
-			#endregion
+            #endregion
+        }
 
-			// TODO: places
-		}
-
-		private static string ReadString(IDataReader dataReader, byte endByte = 0)
+        private static string ReadString(IDataReader dataReader, byte endByte = 0)
 		{
 			var bytes = ReadUntilByte(dataReader, endByte);
 			return DataReader.Encoding.GetString(bytes);
@@ -305,7 +332,7 @@ namespace Amberstar.GameData.Legacy
 				buffer.Add(b);
 			}
 
-			return buffer.ToArray();
+			return [.. buffer];
 		}
 
 		private static bool FindAndGotoText(IDataReader dataReader, int offset, string text)
@@ -360,7 +387,9 @@ namespace Amberstar.GameData.Legacy
 		public Dictionary<int, IDataReader> PlaceNames { get; } = [];
 		public Dictionary<int, IDataReader> SpellSchoolNames { get; } = [];
 		public Dictionary<int, IDataReader> SpellNames { get; } = [];
-		public Dictionary<int, IDataReader> ClassNames { get; } = [];
+        public Dictionary<int, IDataReader> SpellLocationNames { get; } = [];
+        public Dictionary<int, IDataReader> SpellTargetNames { get; } = [];
+        public Dictionary<int, IDataReader> ClassNames { get; } = [];
 		public Dictionary<int, IDataReader> SkillNames { get; } = [];
 		public Dictionary<int, IDataReader> CharInfoTexts { get; } = [];
 		public Dictionary<int, IDataReader> RaceNames { get; } = [];
@@ -384,5 +413,6 @@ namespace Amberstar.GameData.Legacy
 		public byte[] GlyphMappings { get; } = [];
 		public string Version { get; } = string.Empty;
         public Dictionary<int, IDataReader> UITexts { get; } = [];
+		public IDataReader MessageData { get; }
     }
 }

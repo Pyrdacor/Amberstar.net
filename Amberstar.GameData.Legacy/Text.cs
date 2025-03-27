@@ -25,7 +25,37 @@ internal class Text(List<string> textFragments) : IText
 		return Read(new DataReader(data), [string.Empty, text]);
 	}
 
-	// [1, 0, offHi, offLo, offHi2, offLo2, 0, 0]
+	public static byte[] DetermineLengthAndReadAsBytes(IDataReader reader)
+	{
+		int startPosition = reader.Position;
+        int textCount = reader.ReadByte();
+        reader.Position++; // skip fill byte
+
+		if (textCount == 0)
+			return [];
+
+        var lengths = new int[textCount];
+        int offset = reader.ReadWord();
+
+        for (int i = 0; i < textCount; i++)
+        {
+            int nextOffset = reader.ReadWord();
+            lengths[i] = nextOffset - offset;
+            offset = nextOffset;
+        }
+
+		int length = reader.Position - startPosition;
+
+        for (int i = 0; i < textCount; i++)
+        {
+			length += lengths[i] * 2; // 2 bytes per word
+        }
+
+		reader.Position = startPosition;
+		
+		return reader.ReadBytes(length);
+    }
+
     public static Text Read(IDataReader reader, List<string> textFragments)
 	{
         int textCount = reader.ReadByte();

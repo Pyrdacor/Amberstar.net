@@ -8,6 +8,8 @@ public interface IBattleCharacter : ICharacter
     byte UsedFingers { get; set; }
     byte Defense { get; set; }
     byte Damage { get; set; }
+    word BonusDefense { get; set; }
+    word BonusDamage { get; set; }
     PhysicalCondition PhysicalConditions { get; set; }
     MentalCondition MentalConditions { get; set; }
     public byte MagicBonusWeapon { get; set; }

@@ -2,7 +2,6 @@
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
-using System;
 
 namespace Amberstar.Game.Screens;
 
@@ -17,7 +16,9 @@ internal class InventoryScreen : ButtonGridScreen
     readonly Dictionary<EquipmentSlot, ItemContainer> equippedItemSlots = [];
     readonly static Dictionary<EquipmentSlot, Position> EquipmentSlotPositions = [];
     readonly static Position[] InventorySlotPositions = new Position[ICharacter.InventorySlotCount];
+    readonly static Rect MessageDisplayArea = new(16, 50, 176, 14);
     PersonInfoView? personInfoView;
+    IRenderText? message;
     IRenderText? weightLabel;
     IRenderText? weightText;
 
@@ -179,6 +180,8 @@ internal class InventoryScreen : ButtonGridScreen
 
     public override void Close(Game game)
     {
+        HideMessage();
+
         CleanUpEventHandlers();
 
         CleanUpItems();
@@ -199,6 +202,8 @@ internal class InventoryScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = false;
+            if (message != null)
+                message.Visible = false;
             if (weightLabel != null)
                 weightLabel.Visible = false;
             if (weightText != null)
@@ -218,6 +223,8 @@ internal class InventoryScreen : ButtonGridScreen
         {
             if (personInfoView != null)
                 personInfoView.Visible = true;
+            if (message != null)
+                message.Visible = true;
             if (weightLabel != null)
                 weightLabel.Visible = true;
             if (weightText != null)
@@ -410,7 +417,10 @@ internal class InventoryScreen : ButtonGridScreen
         var targetSlot = item.EquipmentSlot;
 
         if (targetSlot == null) // Not equipable
-            return; // TODO: Print message 8
+        {
+            ShowMessage(8);
+            return;
+        }
 
         if (targetSlot == EquipmentSlot.RightFinger && partyMember!.Equipment[targetSlot.Value].Count > 0)
             targetSlot = EquipmentSlot.LeftFinger;
@@ -418,19 +428,34 @@ internal class InventoryScreen : ButtonGridScreen
         var targetItemSlot = equippedItemSlots[targetSlot.Value];
 
         if (targetItemSlot.ItemCount > 0)
-            return; // TODO: Print message 8
+        {
+            ShowMessage(8);
+            return;
+        }
 
         if (!item.UsableClasses.HasFlag((ClassFlags)(1 << (int)partyMember!.Class)))
-            return; // TODO: Print message 9
+        {
+            ShowMessage(9);
+            return;
+        }
 
         if (item.Genders != GenderFlags.Both && !item.Genders.HasFlag((GenderFlags)(1 << (int)partyMember.Gender)))
-            return; // TODO: Print message 10
+        {
+            ShowMessage(10);
+            return;
+        }
 
         if (item.Hands > 2 - partyMember.UsedHands)
-            return; // TODO: Print message 11
+        {
+            ShowMessage(11);
+            return;
+        }
 
         if (item.Fingers > 2 - partyMember.UsedFingers)
-            return; // TODO: Print message 12
+        {
+            ShowMessage(12);
+            return;
+        }
 
         targetItemSlot.AddItem(1, item);
         slot.ReduceItemCount(1);
@@ -453,7 +478,10 @@ internal class InventoryScreen : ButtonGridScreen
         // TODO: If in battle, check if can be unequipped during battle here
 
         if (item.Flags.HasFlag(ItemFlags.Cursed))
-            return; // TODO: Print message 17
+        {
+            ShowMessage(17);
+            return;
+        }
 
         int targetSlotIndex = -1;
         var inventorySlots = inventoryItemSlots.ToList();
@@ -467,11 +495,35 @@ internal class InventoryScreen : ButtonGridScreen
             targetSlotIndex = inventorySlots.FindIndex(slot => slot.Empty);
 
         if (targetSlotIndex == -1)
-            return; // Print message 13
+        {
+            ShowMessage(13);
+            return;
+        }
 
         var targetSlot = inventoryItemSlots[targetSlotIndex];
 
         targetSlot.AddItem(1, item);
         slot.ReduceItemCount(1);
+    }
+
+    private void ShowMessage(int messageIndex, bool waitForClick = true)
+    {
+        message?.Delete();
+
+        message = game!.TextManager.Create(game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.Message, messageIndex)), MessageDisplayArea.Size.Width, 15);
+        message.ShowInArea(MessageDisplayArea, 20, TextAlignment.Left);
+
+        // TODO: Scrolling
+
+        if (waitForClick)
+        {
+            //game.Cursor.CursorType = CursorType.C
+        }
+    }
+
+    private void HideMessage()
+    {
+        message?.Delete();
+        message = null;
     }
 }

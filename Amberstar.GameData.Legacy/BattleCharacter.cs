@@ -35,17 +35,6 @@ internal class BattleCharacter : Character, IBattleCharacter
         var maxReadMagic = reader.ReadByte();
         var maxUseMagic = reader.ReadByte();
 
-        character.skills[Skill.Attack] = new(currentAttack, maxAttack);
-        character.skills[Skill.Parry] = new(currentParry, maxParry);
-        character.skills[Skill.Swim] = new(currentSwim, maxSwim);
-        character.skills[Skill.Listen] = new(currentListen, maxListen);
-        character.skills[Skill.FindTraps] = new(currentFindTraps, maxFindTraps);
-        character.skills[Skill.DisarmTraps] = new(currentDisarmTraps, maxDisarmTraps);
-        character.skills[Skill.PickLocks] = new(currentPickLocks, maxPickLocks);
-        character.skills[Skill.Search] = new(currentSearch, maxSearch);
-        character.skills[Skill.ReadMagic] = new(currentReadMagic, maxReadMagic);
-        character.skills[Skill.UseMagic] = new(currentUseMagic, maxUseMagic);
-
         // Used hand & fingers, def & dmg
         reader.Position = 0x1c;
         character.UsedHands = reader.ReadByte();
@@ -87,35 +76,75 @@ internal class BattleCharacter : Character, IBattleCharacter
         var maxAge = reader.ReadWord();
         var maxUnusedAttribute = reader.ReadWord();
 
-        character.attributes[Attribute.Strength] = new(currentStrength, maxStrength);
-        character.attributes[Attribute.Intelligence] = new(currentIntelligence, maxIntelligence);
-        character.attributes[Attribute.Dexterity] = new(currentDexterity, maxDexterity);
-        character.attributes[Attribute.Speed] = new(currentSpeed, maxSpeed);
-        character.attributes[Attribute.Stamina] = new(currentStamina, maxStamina);
-        character.attributes[Attribute.Charisma] = new(currentCharisma, maxCharisma);
-        character.attributes[Attribute.Luck] = new(currentLuck, maxLuck);
-        character.attributes[Attribute.AntiMagic] = new(currentAntiMagic, maxAntiMagic);
-
         reader.Position = 0x86;
         var currentHitPoints = reader.ReadWord();
         var maxHitPoints = reader.ReadWord();
         var currentSpellPoints = reader.ReadWord();
         var maxSpellPoints = reader.ReadWord();
-        character.HitPoints = new(currentHitPoints, maxHitPoints);
-        character.SpellPoints = new(currentSpellPoints, maxSpellPoints);
+
+        reader.Position = 0x94;
+        character.BonusDefense = reader.ReadWord();
+        character.BonusDamage = reader.ReadWord();
+        var bonusHitPoints = reader.ReadWord();
+        var bonusSpellPoints = reader.ReadWord();
+        var bonusStrength = reader.ReadWord();
+        var bonusIntelligence = reader.ReadWord();
+        var bonusDexterity = reader.ReadWord();
+        var bonusSpeed = reader.ReadWord();
+        var bonusStamina = reader.ReadWord();
+        var bonusCharisma = reader.ReadWord();
+        var bonusLuck = reader.ReadWord();
+        var bonusAntiMagic = reader.ReadWord();
+        var bonusAge = reader.ReadWord();
+        var bonusUnusedAttribute = reader.ReadWord();
+        var bonusAttack = reader.ReadByte();
+        var bonusParry = reader.ReadByte();
+        var bonusSwim = reader.ReadByte();
+        var bonusListen = reader.ReadByte();
+        var bonusFindTraps = reader.ReadByte();
+        var bonusDisarmTraps = reader.ReadByte();
+        var bonusPickLocks = reader.ReadByte();
+        var bonusSearch = reader.ReadByte();
+        var bonusReadMagic = reader.ReadByte();
+        var bonusUseMagic = reader.ReadByte();
+
+        character.attributes[Attribute.Strength] = new(currentStrength, maxStrength, bonusStrength);
+        character.attributes[Attribute.Intelligence] = new(currentIntelligence, maxIntelligence, bonusIntelligence);
+        character.attributes[Attribute.Dexterity] = new(currentDexterity, maxDexterity, bonusDexterity);
+        character.attributes[Attribute.Speed] = new(currentSpeed, maxSpeed, bonusSpeed);
+        character.attributes[Attribute.Stamina] = new(currentStamina, maxStamina, bonusStamina);
+        character.attributes[Attribute.Charisma] = new(currentCharisma, maxCharisma, bonusCharisma);
+        character.attributes[Attribute.Luck] = new(currentLuck, maxLuck, bonusLuck);
+        character.attributes[Attribute.AntiMagic] = new(currentAntiMagic, maxAntiMagic, bonusAntiMagic);
+
+        character.skills[Skill.Attack] = new(currentAttack, maxAttack, bonusAttack);
+        character.skills[Skill.Parry] = new(currentParry, maxParry, bonusParry);
+        character.skills[Skill.Swim] = new(currentSwim, maxSwim, bonusSwim);
+        character.skills[Skill.Listen] = new(currentListen, maxListen, bonusListen);
+        character.skills[Skill.FindTraps] = new(currentFindTraps, maxFindTraps, bonusFindTraps);
+        character.skills[Skill.DisarmTraps] = new(currentDisarmTraps, maxDisarmTraps, bonusDisarmTraps);
+        character.skills[Skill.PickLocks] = new(currentPickLocks, maxPickLocks, bonusPickLocks);
+        character.skills[Skill.Search] = new(currentSearch, maxSearch, bonusSearch);
+        character.skills[Skill.ReadMagic] = new(currentReadMagic, maxReadMagic, bonusReadMagic);
+        character.skills[Skill.UseMagic] = new(currentUseMagic, maxUseMagic, bonusUseMagic);
+
+        character.HitPoints = new(currentHitPoints, maxHitPoints, bonusHitPoints);
+        character.SpellPoints = new(currentSpellPoints, maxSpellPoints, bonusSpellPoints);
     }
 
     public byte UsedHands { get; set; }
     public byte UsedFingers { get; set; }
     public byte Defense { get; set; }
     public byte Damage { get; set; }
+    public word BonusDefense { get; set; }
+    public word BonusDamage { get; set; }
     public PhysicalCondition PhysicalConditions { get; set; }
     public MentalCondition MentalConditions { get; set; }
     public byte MagicBonusWeapon { get; set; }
     public byte MagicBonusArmor { get; set; }
     public byte AttacksPerRound { get; set; }
-    public CharacterValue HitPoints { get; private set; } = new(0, 0);
-    public CharacterValue SpellPoints { get; private set; } = new(0, 0);
+    public CharacterValue HitPoints { get; private set; } = new(0, 0, 0);
+    public CharacterValue SpellPoints { get; private set; } = new(0, 0, 0);
     public ReadOnlyDictionary<Skill, CharacterValue> Skills => skills.AsReadOnly();
     public ReadOnlyDictionary<Attribute, CharacterValue> Attributes => attributes.AsReadOnly();
 }

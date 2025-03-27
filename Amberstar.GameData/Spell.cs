@@ -1,5 +1,36 @@
 ﻿namespace Amberstar.GameData;
 
+public enum SpellLocation : byte
+{
+    Wilderness,
+    City,
+    Cave,
+    Camp,
+    Battle,
+}
+
+[Flags]
+public enum SpellLocations : byte
+{
+    Wilderness,
+    City,
+    Cave,
+    Camp,
+    Battle,
+}
+
+public enum SpellTarget : byte
+{
+    None,
+    Member,
+    Party,
+    Monster,
+    MonsterGroup,
+    AllMonsters,
+    Item,
+    Spell
+}
+
 public enum WhiteSpell : byte
 {
 	None,

@@ -48,6 +48,9 @@ internal class PartyMember : BattleCharacter, IPartyMember
         reader.Position += 3 * 4; // Skip unused spells
         partyMember.LearnedSpecialSpells = reader.ReadDword();
 
+        // We ensure that some equipment related values are correctly set.
+
+
         return partyMember;
     }
 
