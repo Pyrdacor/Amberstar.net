@@ -140,8 +140,8 @@ namespace Amberstar.GameData.Legacy
                 PlaceNames[i] = new DataReader(dataReader.ReadBytes(30));
             #endregion
             #region Messages
-            // The messages directly follow the place names.
-            MessageData = new DataReader(Text.DetermineLengthAndReadAsBytes(dataReader));
+            // The inventory messages directly follow the place names.
+            InventoryMessageData = new DataReader(Text.DetermineLengthAndReadAsBytes(dataReader));
             #endregion
             #region Read UI Texts
             if (!dataSeeker(EmbeddedDataOffset.UITexts, dataReader))
@@ -413,6 +413,6 @@ namespace Amberstar.GameData.Legacy
 		public byte[] GlyphMappings { get; } = [];
 		public string Version { get; } = string.Empty;
         public Dictionary<int, IDataReader> UITexts { get; } = [];
-		public IDataReader MessageData { get; }
+		public IDataReader InventoryMessageData { get; }
     }
 }

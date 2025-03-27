@@ -19,7 +19,9 @@ public enum ScreenType
 	TextBox,
 	Conversation,
 	Place,
-	// TODO ...
+    // Inventory sub screens
+    InventoryDropItem,
+    // TODO ...
 }
 
 internal abstract class Screen
@@ -151,6 +153,8 @@ internal class ScreenHandler(Game game) : IDisposable
             ScreenType.CharacterStats => new CharacterStatsScreen(),
             ScreenType.Conversation => new ConversationScreen(),
 			ScreenType.Place => new PlaceScreen(),
+            // Inventory sub screens
+            ScreenType.InventoryDropItem => new InventoryScreen.DropItemScreen(),
             _ => throw new NotImplementedException()
 		};
 

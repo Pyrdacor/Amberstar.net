@@ -44,7 +44,7 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 			case AssetType.PuzzleText:
                 singleString = false;
 				break;
-            case AssetType.Message:
+            case AssetType.InventoryMessage:
                 containerAsset = true;                
 				break;
             case AssetType.UIText:

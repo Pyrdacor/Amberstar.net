@@ -21,6 +21,7 @@ internal class InventoryScreen : ButtonGridScreen
     IRenderText? message;
     IRenderText? weightLabel;
     IRenderText? weightText;
+    bool ignoreItemChangeEvents = false;
 
     static InventoryScreen()
     {
@@ -111,7 +112,7 @@ internal class InventoryScreen : ButtonGridScreen
 
         void UpdateInventoryItem(int index)
         {
-            if (partyMember == null)
+            if (ignoreItemChangeEvents || partyMember == null)
                 return;
 
             var slot = inventoryItemSlots[index];
@@ -121,7 +122,7 @@ internal class InventoryScreen : ButtonGridScreen
 
         void UpdateEquipment(EquipmentSlot equipmentSlot)
         {
-            if (partyMember == null)
+            if (ignoreItemChangeEvents || partyMember == null)
                 return;
 
             var slot = equippedItemSlots[equipmentSlot];
@@ -171,11 +172,15 @@ internal class InventoryScreen : ButtonGridScreen
 
     private void CleanUpItems()
     {
+        ignoreItemChangeEvents = true;
+
         foreach (var equippedItemGraphic in equippedItemSlots)
             equippedItemGraphic.Value.ClearItem();
 
         for (int i = 0; i < inventoryItemSlots.Length; i++)
             inventoryItemSlots[i].ClearItem();
+
+        ignoreItemChangeEvents = false;
     }
 
     public override void Close(Game game)
@@ -190,6 +195,8 @@ internal class InventoryScreen : ButtonGridScreen
         personInfoView = null;
         weightLabel?.Delete();
         weightLabel = null;
+        weightText?.Delete();
+        weightText = null;
 
         base.Close(game);
     }
@@ -374,7 +381,7 @@ internal class InventoryScreen : ButtonGridScreen
                 game?.ScreenHandler.PushScreen(ScreenType.CharacterStats);
                 break;
             case 1: // Drop item
-                // TODO
+                game?.ScreenHandler.PushScreen(ScreenType.InventoryDropItem);
                 break;
             case 2:
                 game?.ScreenHandler.PopScreen();
@@ -418,7 +425,7 @@ internal class InventoryScreen : ButtonGridScreen
 
         if (targetSlot == null) // Not equipable
         {
-            ShowMessage(8);
+            ShowMessage(InventoryMessage.ItemNotEquippable);
             return;
         }
 
@@ -429,31 +436,31 @@ internal class InventoryScreen : ButtonGridScreen
 
         if (targetItemSlot.ItemCount > 0)
         {
-            ShowMessage(8);
+            ShowMessage(InventoryMessage.ItemNotEquippable);
             return;
         }
 
         if (!item.UsableClasses.HasFlag((ClassFlags)(1 << (int)partyMember!.Class)))
         {
-            ShowMessage(9);
+            ShowMessage(InventoryMessage.WrongClass);
             return;
         }
 
         if (item.Genders != GenderFlags.Both && !item.Genders.HasFlag((GenderFlags)(1 << (int)partyMember.Gender)))
         {
-            ShowMessage(10);
+            ShowMessage(InventoryMessage.WrongGender);
             return;
         }
 
         if (item.Hands > 2 - partyMember.UsedHands)
         {
-            ShowMessage(11);
+            ShowMessage(InventoryMessage.NotEnoughFreeHands);
             return;
         }
 
         if (item.Fingers > 2 - partyMember.UsedFingers)
         {
-            ShowMessage(12);
+            ShowMessage(InventoryMessage.NotEnoughFreeFingers);
             return;
         }
 
@@ -479,7 +486,7 @@ internal class InventoryScreen : ButtonGridScreen
 
         if (item.Flags.HasFlag(ItemFlags.Cursed))
         {
-            ShowMessage(17);
+            ShowMessage(InventoryMessage.ItemIsCursed);
             return;
         }
 
@@ -496,7 +503,7 @@ internal class InventoryScreen : ButtonGridScreen
 
         if (targetSlotIndex == -1)
         {
-            ShowMessage(13);
+            ShowMessage(InventoryMessage.NoRoomForItem);
             return;
         }
 
@@ -506,24 +513,69 @@ internal class InventoryScreen : ButtonGridScreen
         slot.ReduceItemCount(1);
     }
 
-    private void ShowMessage(int messageIndex, bool waitForClick = true)
+    private void ShowMessage(InventoryMessage messageIndex, bool waitForClick = true)
     {
         message?.Delete();
 
-        message = game!.TextManager.Create(game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.Message, messageIndex)), MessageDisplayArea.Size.Width, 15);
+        message = game!.TextManager.Create(game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.InventoryMessage, (int)messageIndex)), MessageDisplayArea.Size.Width, 15);
         message.ShowInArea(MessageDisplayArea, 20, TextAlignment.Left);
 
         // TODO: Scrolling
-
-        if (waitForClick)
-        {
-            //game.Cursor.CursorType = CursorType.C
-        }
     }
 
     private void HideMessage()
     {
         message?.Delete();
         message = null;
+    }
+
+    internal class DropItemScreen : Screen
+    {
+        Game? game;
+        InventoryScreen? inventoryScreen;
+
+        public override bool Transparent => true;
+
+        public override ScreenType Type { get; } = ScreenType.InventoryDropItem;
+
+        public override void Init(Game game)
+        {
+            base.Init(game);
+
+            this.game = game;
+
+            // Note: During Init the ActiveScreen is still the last one.
+            inventoryScreen = game.ScreenHandler.ActiveScreen as InventoryScreen;
+        }
+
+        public override void Open(Game game, Action? closeAction)
+        {
+            base.Open(game, closeAction);
+
+            inventoryScreen?.ShowMessage(InventoryMessage.DropWhichItem);
+        }
+
+        public override void Close(Game game)
+        {
+            inventoryScreen?.HideMessage();
+
+            base.Close(game);
+        }
+
+        public override void MouseDown(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
+        {
+            base.MouseDown(position, buttons, keyModifiers);
+        }
+
+        public override void KeyDown(Key key, KeyModifiers keyModifiers)
+        {
+            if (key == Key.Escape)
+            {
+                game?.ScreenHandler.PopScreen();
+                return;
+            }
+
+            base.KeyDown(key, keyModifiers);
+        }
     }
 }

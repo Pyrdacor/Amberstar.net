@@ -272,7 +272,7 @@ public class AssetProvider : IAssetProvider
 			AssetType.Window => CreateAssets(Data.Windows),
 			AssetType.Cursor => CreateAssets(Data.Cursors),
             AssetType.UIText => CreateAssets(Data.UITexts),
-            AssetType.Message => new Dictionary<int, Asset>() { { 1, new Asset(new(AssetType.Message, 1), Data.MessageData) } },
+            AssetType.InventoryMessage => new Dictionary<int, Asset>() { { 1, new Asset(new(AssetType.InventoryMessage, 1), Data.InventoryMessageData) } },
             _ => throw new AmberException(ExceptionScope.Application, $"Unsupported asset type {type} for legacy asset provider")
 		};
 	}
