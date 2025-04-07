@@ -219,11 +219,14 @@ internal class HippelCosoSong : ISong
     internal class NotePlayer
     {
         private record NoteInfo(double Time, int Note, int Volume);
+        private record NoiseInfo(double Time, int Period);
 
         private readonly Queue<NoteInfo> notes = [];
+        private readonly Queue<NoiseInfo> noisePeriods = [];
 
         private int volume = 64;
         private int note = -1;
+        private int noisePeriod = 1;
 
         // This happens every tick as long as the channel is active.
         public void PlayNote(double time, int note, int volume)
@@ -234,6 +237,15 @@ internal class HippelCosoSong : ISong
             this.note = note;
             this.volume = volume;
             notes.Enqueue(new(time, note, volume));
+        }
+
+        public void ChangeNoise(double time, int period)
+        {
+            if (this.noisePeriod == period)
+                return;
+
+            this.noisePeriod = period;
+            noisePeriods.Enqueue(new(time, period));
         }
 
         public void SampleData(sbyte[] buffer, double time, Action<int> noisePeriodChanger, Func<byte> nextNoiseTick, bool useTone, bool useNoise)
@@ -257,9 +269,12 @@ internal class HippelCosoSong : ISong
                     notePeriod = NotePeriods[note];
                     noteFrequency = 3546894.6 / notePeriod;
                     noteVolume = volume / 64.0;
+                }
 
-                    if (useNoise)
-                        noisePeriodChanger(notePeriod);
+                if (noisePeriods.Count != 0 && noisePeriods.Peek().Time <= time)
+                {
+                    var noiseInfo = noisePeriods.Dequeue();
+                    noisePeriodChanger(noiseInfo.Period);
                 }
 
                 int div = useTone ? 1 : 0;
@@ -304,6 +319,7 @@ internal class HippelCosoSong : ISong
         0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
     ];
 
+    // TODO: Normally it should be 20ms per tick, but 120 works much better for some reason...
     const int TickTime = 120; // ms
     const int SampleRate = 44100; // Hz
     const int BufferSize = SampleRate / 4; // 0.25 second of audio
@@ -441,20 +457,34 @@ internal class HippelCosoSong : ISong
                 return;
             }
 
+            bool wasNotUsingNoise = Noise;
+
             currentPattern!.ProcessNextCommand(player);
             currentTimbre!.VolumeEnvelop.ProcessNextCommand(player); // TODO: order?
             currentInstrument!.ProcessNextCommand(player);
 
-            int note = Note;
+            int note = Pitch;
 
             if ((note & 0x80) == 0)
-                note += Pitch + currentDivision.Transpose;
+                note += Note + currentDivision.Transpose;
             
             note &= 0x7f;
 
             int volume = Math.Max(0, Volume - currentDivision.VolumeReduction);
 
             notePlayer.PlayNote(totalTime, note, volume);
+
+            if (wasNotUsingNoise && Noise)
+            {
+                if ((Pitch & 0x80) == 0)
+                {
+                    notePlayer.ChangeNoise(totalTime, (byte)~(player.GetNoisePeriod() + Pitch));
+                }
+                else
+                {
+                    notePlayer.ChangeNoise(totalTime, (byte)~(Pitch & 0x7f));
+                }
+            }
         }
     }
 
@@ -597,7 +627,7 @@ internal class HippelCosoSong : ISong
             byte GetNextNoiseTick()
             {
                 if (noiseTickIndex < noiseData.Length)
-                    return noiseData[noiseTickIndex++] = noiseGenerator.Tick();
+                    return noiseData[noiseTickIndex++] = noiseGenerator.Tick(1);
 
                 return noiseData[noiseTickIndex++ % noiseData.Length];
             }
@@ -697,6 +727,11 @@ internal class HippelCosoSong : ISong
         channels[currentVoice].Sample = index;
     }
 
+    public void SetNoisePeriod(int noisePeriod)
+    {
+        noiseGenerator.Period = noisePeriod;
+    }
+
     public void NextDivision()
     {
         channels[currentVoice].NextDivision();
@@ -704,21 +739,15 @@ internal class HippelCosoSong : ISong
 
     public int GetPitch() => channels[currentVoice].Pitch;
 
-    public int GetNote() => channels[currentVoice].Note;
-
-    public int GetVolume() => channels[currentVoice].Volume;
-
-    public int GetTimbre() => channels[currentVoice].CurrentTimbre;
-
-    public int GetInstrument() => channels[currentVoice].CurrentInstrument;
-
-    public int GetSample() => channels[currentVoice].Sample;
+    public int GetNoisePeriod() => noiseGenerator.Period;
 
     public class YmNoiseGenerator
     {
         private uint lfsr = 0x1FFFF; // 17-bit LFSR initialized with all 1s
-        private int counter = 0;
         private int period = 1; // Adjust based on YM noise period register (0-31)
+        private byte currentOutput = 0;
+        private double accumulator = 0;
+        private double noiseClock;  // Hz
 
         public YmNoiseGenerator(int noisePeriod)
         {
@@ -733,18 +762,21 @@ internal class HippelCosoSong : ISong
                 if (period == value)
                     return;
 
-                counter = 0;
-                period = value <= 0 ? 1 : value;
+                period = Math.Clamp(value, 0, 31);
+                noiseClock = 2_000_000.0 / (16.0 * (period + 1));
             }
         }
 
         // Simulate YM noise clock tick (should be called at the correct tick rate)
-        public byte Tick()
+        public byte Tick(double sampleRate)
         {
-            if (++counter >= period)
-            {
-                counter = 0;
+            // TODO: ...
+            return 0;
 
+            accumulator += noiseClock / sampleRate;
+
+            if (accumulator >= 1.0)
+            {
                 // XOR taps: bit 0 and bit 3 (based on real YM behavior)
                 bool bit0 = (lfsr & 1) != 0;
                 bool bit3 = (lfsr & (1 << 3)) != 0;
@@ -752,13 +784,15 @@ internal class HippelCosoSong : ISong
 
                 // Shift right and insert feedback at bit 16
                 lfsr >>= 1;
+
                 if (feedback)
                     lfsr |= (1u << 16);
 
-                // Return noise output (LSB)
+                accumulator -= 1.0;
+                currentOutput = (byte)(lfsr & 1);
             }
 
-            return (byte)(lfsr & 1);
+            return currentOutput;
         }
     }
 

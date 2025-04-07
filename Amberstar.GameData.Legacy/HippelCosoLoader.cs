@@ -1,7 +1,5 @@
-﻿using Amber.Assets.Common;
-using Amber.Common;
+﻿using Amber.Common;
 using Amber.Serialization;
-using Amberstar.GameData.Serialization;
 using System.Text;
 
 namespace Amberstar.GameData.Legacy;
@@ -317,10 +315,6 @@ internal static class HippelCosoLoader
                         commands.Add(new(HippelCosoSong.Instrument.CommandType.SetAbsolutePitch, pitch));
                         break;
                 }
-
-                // TODO...
-
-                // commands.Add(new(...))
             }
 
             instruments[i] = new([..commands]);
