@@ -1,12 +1,11 @@
-﻿using Amber.Common;
+﻿using Amber.Audio;
+using Amber.Common;
 using Amber.Renderer;
 using Amber.Renderer.Common;
 using Amberstar.Game.Screens;
 using Amberstar.Game.UI;
 using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
-using static System.Net.Mime.MediaTypeNames;
-using System.Reflection.Emit;
 using EventHandler = Amberstar.Game.Events.EventHandler;
 using IAssetProvider = Amberstar.GameData.IAssetProvider;
 
@@ -26,8 +25,9 @@ public partial class Game : IDisposable
 	long gameTicks = 0;
     readonly ISprite portraitBackgroundSprite;
 	readonly ISprite layoutSprite;
+	readonly IAudioOutput audioOutput;
 
-	public Game(IRenderer renderer, IAssetProvider assetProvider,
+    public Game(IRenderer renderer, IAssetProvider assetProvider, IAudioOutput audioOutput,
 		IGraphicIndexProvider uiGraphicIndexProvider, IPaletteIndexProvider paletteIndexProvider,
 		IPaletteColorProvider paletteColorProvider, IFontInfoProvider fontInfoProvider,
 		Func<List<Key>> pressedKeyProvider)
@@ -37,7 +37,8 @@ public partial class Game : IDisposable
 		GraphicIndexProvider = uiGraphicIndexProvider;
 		PaletteIndexProvider = paletteIndexProvider;
 		PaletteColorProvider = paletteColorProvider;
-		ScreenHandler = new(this);
+		this.audioOutput = audioOutput;
+        ScreenHandler = new(this);
 		try
 		{
 			State = new(assetProvider.SavegameLoader.LoadSavegame());
@@ -99,7 +100,7 @@ public partial class Game : IDisposable
 	internal IAssetProvider AssetProvider { get; }
 	internal IGraphicIndexProvider GraphicIndexProvider { get; }
 	internal IPaletteIndexProvider PaletteIndexProvider { get; }
-	internal IPaletteColorProvider PaletteColorProvider { get; }	
+	internal IPaletteColorProvider PaletteColorProvider { get; }
 	internal ScreenHandler ScreenHandler { get; }
 	internal GameState State { get; }
 	internal EventHandler EventHandler { get; }
@@ -109,6 +110,8 @@ public partial class Game : IDisposable
 
 	public void Update(double delta)
 	{
+		UpdateMusic(delta);
+
 		totalTime += delta;
 		gameTicks = (long)Math.Round(totalTime * TicksPerSecond);
 

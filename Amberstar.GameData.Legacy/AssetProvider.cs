@@ -28,7 +28,7 @@ public enum EmbeddedDataOffset
 	Windows,
 	Cursors,
 	UITexts,
-	PlaceData,
+	Music
 }
 
 public class AssetProvider : IAssetProvider
@@ -124,6 +124,7 @@ public class AssetProvider : IAssetProvider
     readonly Lazy<IMonsterLoader> monsterLoader;
     readonly Lazy<IPersonLoader> personLoader;
     readonly Lazy<IItemLoader> itemLoader;
+    readonly Lazy<ISongLoader> songLoader;
 
     private ProgramData Data => programData.Value;
 	public ITextLoader TextLoader => textLoader.Value;
@@ -141,6 +142,7 @@ public class AssetProvider : IAssetProvider
     public IMonsterLoader MonsterLoader => monsterLoader.Value;
     public IPersonLoader PersonLoader => personLoader.Value;
     public IItemLoader ItemLoader => itemLoader.Value;
+    public ISongLoader SongLoader => songLoader.Value;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AssetProvider(IReadOnlyFileSystem fileSystem)
@@ -186,6 +188,7 @@ public class AssetProvider : IAssetProvider
         monsterLoader = new(() => new MonsterLoader(this));
         personLoader = new(() => new PersonLoader(this, textLoader));
         itemLoader = new(() => new ItemLoader());
+        songLoader = new(() => new SongLoader(this));
     }
 
 	public LegacyPlatform Platform { get; } = LegacyPlatform.Source;
@@ -226,7 +229,7 @@ public class AssetProvider : IAssetProvider
 			programDataReader = new DataReader(prgFile.DataSegment);
 		}
 
-		return new ProgramData(programDataReader, FindAtariOffset);
+        return new ProgramData(programDataReader, FindAtariOffset);
 	}
 
 	private static ProgramData LoadAmigaProgramData(IReadOnlyFile file)
@@ -272,6 +275,7 @@ public class AssetProvider : IAssetProvider
 			AssetType.Window => CreateAssets(Data.Windows),
 			AssetType.Cursor => CreateAssets(Data.Cursors),
             AssetType.UIText => CreateAssets(Data.UITexts),
+			AssetType.Music => CreateAssets(Data.Songs),
             AssetType.InventoryMessage => new Dictionary<int, Asset>() { { 1, new Asset(new(AssetType.InventoryMessage, 1), Data.InventoryMessageData) } },
             _ => throw new AmberException(ExceptionScope.Application, $"Unsupported asset type {type} for legacy asset provider")
 		};
@@ -471,6 +475,8 @@ public class AssetProvider : IAssetProvider
                 if (!FindAndGotoByteSequence(dataReader, dataReader.Position + 4 + 30, 0x07, 0x65)) // Two palettes are there, search into end of first
                     return false;
 				return FindAndGotoByteSequence(dataReader, dataReader.Position + 32, 0x01, 0x08); // Set ink 8 (01 08) is start of the texts
+			case EmbeddedDataOffset.Music:
+				return FindAndGotoText(dataReader, 0x2a000, "COSO");
             default:
 				return false;
 		}

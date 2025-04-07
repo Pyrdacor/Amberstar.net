@@ -14,6 +14,7 @@ using Amberstar.GameData.Legacy;
 using Amber.IO.FileSystem;
 using Amberstar.net;
 using Silk.NET.OpenGL;
+using Amber.Audio.OpenAL;
 
 namespace Amberstar
 {
@@ -260,8 +261,10 @@ namespace Amberstar
             LayerSetup.Run(assetProvider, renderer, out var uiGraphicIndexProvider,
                 out var paletteIndexProvider, out var paletteColorProvider, out var fontInfoProvider);
 
-			game = new Game.Game(renderer, assetProvider, uiGraphicIndexProvider, paletteIndexProvider,
-                paletteColorProvider, fontInfoProvider, QueryPressedKeys);
+            var audioOuput = new AudioOutput();
+
+			game = new Game.Game(renderer, assetProvider, audioOuput, uiGraphicIndexProvider,
+                paletteIndexProvider, paletteColorProvider, fontInfoProvider, QueryPressedKeys);
         }
 
         void Window_Render(double delta)

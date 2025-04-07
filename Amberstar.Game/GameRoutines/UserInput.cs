@@ -12,6 +12,9 @@ partial class Game
 
 	public void KeyDown(Key key, KeyModifiers keyModifiers)
 	{
+		if (key == Key.F10)
+			PlaySong(1);
+
 		if (!InputEnabled)
 			return;
 

@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Amber.Audio.Common\Amber.Audio.Common.csproj" />
     <ProjectReference Include="..\Amber.Common\Amber.Common.csproj" />
     <ProjectReference Include="..\Amber.Renderer.Common\Amber.Renderer.Common.csproj" />
     <ProjectReference Include="..\Amberstar.GameData\Amberstar.GameData.csproj" />
