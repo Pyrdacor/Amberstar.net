@@ -314,10 +314,7 @@ internal static class HippelCosoLoader
                         break;
                     default: // Pitch
                         var pitch = instrumentData[++b];
-                        if ((pitch & 0x80) != 0)
-                            commands.Add(new(HippelCosoSong.Instrument.CommandType.SetAbsolutePitch, pitch & 0x7f));
-                        else
-                            commands.Add(new(HippelCosoSong.Instrument.CommandType.SetRelativePitch, pitch));
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetAbsolutePitch, pitch));
                         break;
                 }
 
