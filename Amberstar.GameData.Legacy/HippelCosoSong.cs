@@ -94,7 +94,8 @@ internal class HippelCosoSong : ISong
                     ProcessNextCommand(player);
                     break;
                 case CommandType.Portando:
-                    // TODO: argument = portando slope
+                    player.channels[player.currentVoice].Portando = true;
+                    player.channels[player.currentVoice].PortandoSlope = unchecked((sbyte)command.Params[0]);
                     ProcessNextCommand(player);
                     break;
                 case CommandType.NextCommand:
@@ -391,6 +392,8 @@ internal class HippelCosoSong : ISong
         public int CurrentVibratoDelay { get; set; }
         public int CurrentVibratoDepth { get; set; }
         public int CurrentVibratoDirection { get; set; }
+        public int PortandoSlope { get; set; }
+        public int CurrentPortandoDelta { get; set; }
         public bool Portando { get; set; }
         public bool Noise { get; set; }
         public bool Tone { get; set; }
@@ -423,7 +426,9 @@ internal class HippelCosoSong : ISong
             CurrentVibratoDelay = 0;
             CurrentVibratoDepth = 0;
             CurrentVibratoDirection = -1;
-            Portando = false;            
+            Portando = false;
+            PortandoSlope = 0;
+            CurrentPortandoDelta = 0;
             currentInstrumentIndex = -1;
             currentTimbreIndex = -1;
             currentInstrument = null;
@@ -535,6 +540,14 @@ internal class HippelCosoSong : ISong
             else
             {
                 --CurrentVibratoDelay;
+            }
+
+            // Portando
+            if (Portando)
+            {
+                CurrentPortandoDelta += PortandoSlope;
+
+                period *= (1 - (CurrentPortandoDelta * period) / 1024);
             }
 
             notePlayer.PlayNote(totalTime, period, volume);
