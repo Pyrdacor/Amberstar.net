@@ -1,7 +1,6 @@
 ﻿using Amber.Audio;
 using Amber.Common;
 using Amber.Renderer;
-using Amber.Renderer.Common;
 using Amberstar.Game.Screens;
 using Amberstar.Game.UI;
 using Amberstar.GameData;

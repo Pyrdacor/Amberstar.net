@@ -298,11 +298,20 @@ namespace Amberstar.GameData.Legacy
             #region Music
             if (!dataSeeker(EmbeddedDataOffset.Music, dataReader))
                 throw new AmberException(ExceptionScope.Application, "Could not find the music data in the program file.");
-            int position = dataReader.Position;
-            dataReader.Position += 0x1c; // there is the total size
-            int songDataSize = (int)dataReader.ReadDword();
-            dataReader.Position = position;
-            Songs.Add(1, new DataReader(dataReader.ReadBytes(songDataSize)));
+
+            const int SongCount = 16; // TODO
+
+            for (int i = 1; i <= SongCount; i++)
+            {
+                int position = dataReader.Position;
+                dataReader.Position += 0x1c; // there is the total size
+                int songDataSize = (int)dataReader.ReadDword();
+                dataReader.Position = position;
+                Songs.Add(i, new DataReader(dataReader.ReadBytes(songDataSize)));
+
+                if (dataReader.PeekDword() != 0x434f534f)
+                    throw new AmberException(ExceptionScope.Application, $"Could not find data for song {i}.");
+            }
             // TODO
             #endregion
             #region Cursors

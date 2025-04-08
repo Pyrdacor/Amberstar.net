@@ -283,21 +283,29 @@ internal static class HippelCosoLoader
                     case 0xe3:
                         break;
                     case 0xe4:
-                        commands.Add(new(HippelCosoSong.Instrument.CommandType.EnableToneAndNoise));
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.EnableToneAndNoise, instrumentData[++b]));
                         break;
                     case 0xe5:
-                        commands.Add(new(HippelCosoSong.Instrument.CommandType.DisableToneEnabnleNoise));
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.DisableToneEnableNoise));
                         break;
                     case 0xe6:
                         commands.Add(new(HippelCosoSong.Instrument.CommandType.EnableToneDisableNoise));
                         break;
-                    case 0xe7:
+                    case 0xe7: // Set timbre
+                        // Note: In some versions (with 4 byte indices) this defaults to command ed instead.
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetTimbre, instrumentData[++b]));
                         break;
-                    case 0xe8:
+                    case 0xe8: // Delay
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.Delay, instrumentData[++b]));                        
                         break;
                     case 0xe9:
+                        // It seems this is just skipping data and immediately processes the next command.
+                        b++;
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.NextCommand));
                         break;
-                    case 0xea:
+                    case 0xea: // Portando (arg = slope)
+                        // Note: In some versions (with 4 byte indices) this defaults to command ec instead.
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.Portando, instrumentData[++b]));
                         break;
                     case 0xeb:
                         break;
@@ -308,11 +316,9 @@ internal static class HippelCosoLoader
                     case 0xee:
                         break;
                     case 0xef:
-                        // TODO
                         break;
                     default: // Pitch
-                        var pitch = instrumentData[++b];
-                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetAbsolutePitch, pitch));
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetAbsolutePitch, command));
                         break;
                 }
             }
@@ -424,19 +430,22 @@ internal static class HippelCosoLoader
                     var note = command;
                     var arg = patternData[++b];
                     int instrument = -1;
-                    int timbre = -1;
+                    int timbreAdjust = -1;
 
                     if ((arg & 0xe0) != 0)
                     {
                         instrument = patternData[++b];
                     }
 
-                    if ((command & 0x80) == 0)
+                    if ((arg & 0x80) == 0)
                     {
-                        timbre = arg & 0x1f;
+                        timbreAdjust = arg & 0x1f;
+
+                        if ((arg & 0x40) != 0)
+                            instrument = -1;
                     }
 
-                    commands.Add(new(HippelCosoSong.Pattern.CommandType.SetNote, note, timbre, instrument));
+                    commands.Add(new(HippelCosoSong.Pattern.CommandType.SetNote, note, timbreAdjust, instrument));
                 }
             }
 

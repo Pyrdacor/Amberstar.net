@@ -16,21 +16,30 @@ internal class HippelCosoSong : ISong
             ResetVolume,
             ResetTimbreAdjust,
             EnableToneAndNoise,
-            DisableToneEnabnleNoise,
+            DisableToneEnableNoise,
             EnableToneDisableNoise,
+            Portando,
+            NextCommand,
+            Delay,
+            SetTimbre,
         }
 
         public record Command(CommandType Type, params int[] Params);
 
         private int currentCommandIndex = 0;
+        private int tickCounter = 0;
 
         public void Reset()
         {
             currentCommandIndex = 0;
+            tickCounter = 0;
         }
 
         public void ProcessNextCommand(HippelCosoSong player)
         {
+            if (--tickCounter > 0)
+                return;
+
             var command = Commands[currentCommandIndex];
 
             switch (command.Type)
@@ -66,12 +75,13 @@ internal class HippelCosoSong : ISong
                     ProcessNextCommand(player);
                     break;
                 case CommandType.EnableToneAndNoise:
+                    player.channels[player.currentVoice].NoisePeriod = command.Params[0];
                     player.channels[player.currentVoice].Tone = true;
                     player.channels[player.currentVoice].Noise = true;
                     ++currentCommandIndex;
                     ProcessNextCommand(player);
                     break;
-                case CommandType.DisableToneEnabnleNoise:
+                case CommandType.DisableToneEnableNoise:
                     player.channels[player.currentVoice].Tone = false;
                     player.channels[player.currentVoice].Noise = true;
                     ++currentCommandIndex;
@@ -81,6 +91,20 @@ internal class HippelCosoSong : ISong
                     player.channels[player.currentVoice].Tone = true;
                     player.channels[player.currentVoice].Noise = false;
                     ++currentCommandIndex;
+                    ProcessNextCommand(player);
+                    break;
+                case CommandType.Portando:
+                    // TODO: argument = portando slope
+                    ProcessNextCommand(player);
+                    break;
+                case CommandType.NextCommand:
+                    ProcessNextCommand(player);
+                    break;
+                case CommandType.Delay:
+                    tickCounter = command.Params[0];
+                    break;
+                case CommandType.SetTimbre:
+                    player.channels[player.currentVoice].SetTimbre(command.Params[0]);
                     ProcessNextCommand(player);
                     break;
             }
@@ -180,10 +204,10 @@ internal class HippelCosoSong : ISong
             {
                 case CommandType.SetNote:
                     player.SetNote(command.Params[0]);
-                    if (command.Params.Length > 1 && command.Params[1] != -1)
+                    if (command.Params.Length > 1 && command.Params[1] != 0)
                     {
                         // Set timbre
-                        player.SetTimbre(command.Params[1]);
+                        player.SetTimbre(player.GetTimbre() + command.Params[1]);
                     }
                     if (command.Params.Length > 2 && command.Params[2] != -1)
                     {
@@ -204,7 +228,6 @@ internal class HippelCosoSong : ISong
                     tickCounter = speed;
                     break;
                 case CommandType.EndPattern:
-                    // TODO
                     player.NextDivision();
                     break;
             }
@@ -221,26 +244,33 @@ internal class HippelCosoSong : ISong
         private record NoteInfo(double Time, int Note, int Volume);
         private record NoiseInfo(double Time, int Period);
 
-        private readonly Queue<NoteInfo> notes = [];
+        private readonly Queue<NoteInfo> notePeriods = [];
         private readonly Queue<NoiseInfo> noisePeriods = [];
 
         private int volume = 64;
-        private int note = -1;
+        private int notePeriod = -1;
         private int noisePeriod = 1;
 
         // This happens every tick as long as the channel is active.
-        public void PlayNote(double time, int note, int volume)
+        public void PlayNote(double time, int period, int volume)
         {
-            if (this.note != -1 && note == this.note && volume == this.volume)
+            if (notePeriod != -1 && period == notePeriod && volume == this.volume)
                 return;
 
-            this.note = note;
+            this.notePeriod = period;
             this.volume = volume;
-            notes.Enqueue(new(time, note, volume));
+            notePeriods.Enqueue(new(time, period, volume));
         }
 
         public void ChangeNoise(double time, int period)
         {
+            //period = NotePeriods[period];
+            if (period == 0)
+                return;
+
+            period = (byte)~period;
+            period &= 0x1f;
+
             if (this.noisePeriod == period)
                 return;
 
@@ -251,22 +281,19 @@ internal class HippelCosoSong : ISong
         public void SampleData(sbyte[] buffer, double time, Action<int> noisePeriodChanger, Func<byte> nextNoiseTick, bool useTone, bool useNoise)
         {
             const double timePerSample = 1000.0 / SampleRate;
-            int note = this.note;
             int volume = this.volume;
-
-            var notePeriod = NotePeriods[note];
+            int notePeriod = this.notePeriod;
             var noteFrequency = 3546894.6 / notePeriod;
             var noteVolume = volume / 64.0;
 
             for (int i = 0; i < buffer.Length; i++)
             {
-                if (notes.Count != 0 && notes.Peek().Time <= time)
+                if (notePeriods.Count != 0 && notePeriods.Peek().Time <= time)
                 {
-                    var noteInfo = notes.Dequeue();
-                    note = noteInfo.Note;
+                    var noteInfo = notePeriods.Dequeue();
+                    notePeriod = noteInfo.Note;
                     volume = noteInfo.Volume;
 
-                    notePeriod = NotePeriods[note];
                     noteFrequency = 3546894.6 / notePeriod;
                     noteVolume = volume / 64.0;
                 }
@@ -361,10 +388,13 @@ internal class HippelCosoSong : ISong
         public int Note { get; set; }
         public int Sample { get; set; }
         public bool IsPlaying { get; set; }
-        public bool Vibrato { get; set; }
+        public int CurrentVibratoDelay { get; set; }
+        public int CurrentVibratoDepth { get; set; }
+        public int CurrentVibratoDirection { get; set; }
         public bool Portando { get; set; }
         public bool Noise { get; set; }
         public bool Tone { get; set; }
+        public int NoisePeriod { get; set; }
         public int CurrentInstrument
         {
             get => currentInstrumentIndex;
@@ -390,7 +420,9 @@ internal class HippelCosoSong : ISong
             Pitch = 0;
             Note = 0;
             Sample = 0;
-            Vibrato = false;
+            CurrentVibratoDelay = 0;
+            CurrentVibratoDepth = 0;
+            CurrentVibratoDirection = -1;
             Portando = false;            
             currentInstrumentIndex = -1;
             currentTimbreIndex = -1;
@@ -401,16 +433,24 @@ internal class HippelCosoSong : ISong
             IsPlaying = false;
         }
 
-        public void ResetTimbreAdjust()
+        public void ResetTimbreAdjust() => SetTimbre(currentDivision!.TimbreIndex);
+
+        public void SetTimbre(int index)
         {
-            CurrentTimbre = currentDivision!.TimbreIndex;
+            if (CurrentTimbre == index)
+                return;
+
+            CurrentTimbre = index;
             CurrentInstrument = currentTimbre!.Instrument;
 
             int speed = player.songInfo.InitialSpeed;
             speed *= currentTimbre.Speed;
-            speed *= currentDivision.SpeedFactor;
+            speed *= currentDivision!.SpeedFactor;
 
             currentPattern!.ResetSpeed(speed);
+            CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
+            CurrentVibratoDepth = currentTimbre.Vibrato.Depth;
+            CurrentVibratoDirection = -1;
         }
 
         public void NextDivision()
@@ -441,6 +481,10 @@ internal class HippelCosoSong : ISong
 
             currentPattern = player.patterns[currentDivision!.PatternIndex];
             currentPattern!.Reset(speed);
+
+            CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
+            CurrentVibratoDepth = currentTimbre.Vibrato.Depth;
+            CurrentVibratoDirection = -1;
         }
 
         public void Update(double totalTime)
@@ -471,14 +515,39 @@ internal class HippelCosoSong : ISong
             note &= 0x7f;
 
             int volume = Math.Max(0, Volume - currentDivision.VolumeReduction);
+            int period = NotePeriods[note];
 
-            notePlayer.PlayNote(totalTime, note, volume);
+            // Vibrato
+            if (CurrentVibratoDelay == 0)
+            {
+                CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
+                CurrentVibratoDepth += CurrentVibratoDirection;
+
+                if (CurrentVibratoDepth <= 0 || CurrentVibratoDepth >= 2 * currentTimbre.Vibrato.Depth)
+                    CurrentVibratoDirection = -CurrentVibratoDirection;
+
+                CurrentVibratoDepth = Math.Clamp(CurrentVibratoDepth, 0, 2 * currentTimbre.Vibrato.Depth);
+
+                int diff = CurrentVibratoDepth - currentTimbre.Vibrato.Depth;
+
+                period += (period * diff) / 1024;
+            }
+            else
+            {
+                --CurrentVibratoDelay;
+            }
+
+            notePlayer.PlayNote(totalTime, period, volume);
 
             if (wasNotUsingNoise && Noise)
             {
-                if ((Pitch & 0x80) == 0)
+                if (Tone) // If both (tone and noise) are active, e4 was used which set the NoisePeriod property.
                 {
-                    notePlayer.ChangeNoise(totalTime, (byte)~(player.GetNoisePeriod() + Pitch));
+                    notePlayer.ChangeNoise(totalTime, NoisePeriod);
+                }
+                else if ((Pitch & 0x80) == 0) // Otherwise, e5 was used, so use the pitch logic.
+                {
+                    notePlayer.ChangeNoise(totalTime, (byte)~(Note + Pitch));
                 }
                 else
                 {
@@ -714,7 +783,7 @@ internal class HippelCosoSong : ISong
 
     public void SetTimbre(int index)
     {
-        channels[currentVoice].CurrentTimbre = index < timbres.Length ? index : 0;
+        channels[currentVoice].SetTimbre(index < timbres.Length ? index : 0);
     }
 
     public void SetInstrument(int index)
@@ -727,19 +796,14 @@ internal class HippelCosoSong : ISong
         channels[currentVoice].Sample = index;
     }
 
-    public void SetNoisePeriod(int noisePeriod)
-    {
-        noiseGenerator.Period = noisePeriod;
-    }
-
     public void NextDivision()
     {
         channels[currentVoice].NextDivision();
     }
 
-    public int GetPitch() => channels[currentVoice].Pitch;
+    public int GetTimbre() => channels[currentVoice].CurrentTimbre;
 
-    public int GetNoisePeriod() => noiseGenerator.Period;
+    public int GetPitch() => channels[currentVoice].Pitch;
 
     public class YmNoiseGenerator
     {
@@ -770,9 +834,6 @@ internal class HippelCosoSong : ISong
         // Simulate YM noise clock tick (should be called at the correct tick rate)
         public byte Tick(double sampleRate)
         {
-            // TODO: ...
-            return 0;
-
             accumulator += noiseClock / sampleRate;
 
             if (accumulator >= 1.0)
