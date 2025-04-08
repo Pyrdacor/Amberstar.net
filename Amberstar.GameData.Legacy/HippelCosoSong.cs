@@ -250,6 +250,8 @@ internal class HippelCosoSong : ISong
         private int volume = 64;
         private int notePeriod = -1;
         private int noisePeriod = 1;
+        private int playedVolume = 64;
+        private int playedNotePeriod = NotePeriods[0];
 
         // This happens every tick as long as the channel is active.
         public void PlayNote(double time, int period, int volume)
@@ -281,21 +283,19 @@ internal class HippelCosoSong : ISong
         public void SampleData(sbyte[] buffer, double time, Action<int> noisePeriodChanger, Func<byte> nextNoiseTick, bool useTone, bool useNoise)
         {
             const double timePerSample = 1000.0 / SampleRate;
-            int volume = this.volume;
-            int notePeriod = this.notePeriod;
-            var noteFrequency = 3546894.6 / notePeriod;
-            var noteVolume = volume / 64.0;
+            var noteFrequency = 3546894.6 / playedNotePeriod;
+            var noteVolume = playedVolume / 64.0;
 
             for (int i = 0; i < buffer.Length; i++)
             {
                 if (notePeriods.Count != 0 && notePeriods.Peek().Time <= time)
                 {
                     var noteInfo = notePeriods.Dequeue();
-                    notePeriod = noteInfo.Note;
-                    volume = noteInfo.Volume;
+                    playedNotePeriod = noteInfo.Note;
+                    playedVolume = noteInfo.Volume;
 
-                    noteFrequency = 3546894.6 / notePeriod;
-                    noteVolume = volume / 64.0;
+                    noteFrequency = 3546894.6 / playedNotePeriod;
+                    noteVolume = playedVolume / 64.0;
                 }
 
                 if (noisePeriods.Count != 0 && noisePeriods.Peek().Time <= time)
