@@ -525,7 +525,6 @@ internal class HippelCosoSong : ISong
             // Vibrato
             if (CurrentVibratoDelay == 0)
             {
-                CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
                 CurrentVibratoDepth += CurrentVibratoDirection;
 
                 if (CurrentVibratoDepth <= 0 || CurrentVibratoDepth >= 2 * currentTimbre.Vibrato.Depth)
