@@ -250,7 +250,7 @@ internal class HippelCosoSong : ISong
 
         private int volume = 64;
         private int notePeriod = -1;
-        private int noisePeriod = 1;
+        private int noisePeriod = -1;
         private int playedVolume = 64;
         private int playedNotePeriod = 0;
         private bool useTone = true;
@@ -280,20 +280,17 @@ internal class HippelCosoSong : ISong
 
         public void ChangeNoise(double time, int period)
         {
-            if (period == 0)
-                return;
-
-            if (period == -1)
+            if (period <= 0)
             {
                 if (this.noisePeriod == -1)
                     return;
 
-                this.noisePeriod = period;
-                noisePeriods.Enqueue(new(time, period));
+                this.noisePeriod = -1;
+                noisePeriods.Enqueue(new(time, -1));
                 return;
             }
 
-            period = (byte)~period;
+            period = (byte)period;
             period &= 0x1f;
 
             if (this.noisePeriod == period)
@@ -446,9 +443,9 @@ internal class HippelCosoSong : ISong
         public int PortandoSlope { get; set; }
         public int CurrentPortandoDelta { get; set; }
         public bool Portando { get; set; }
-        public bool Noise { get; set; } = false;
+        public bool Noise { get; set; } = true;
         public bool Tone { get; set; } = true;
-        public int NoisePeriod { get; set; }
+        public int NoisePeriod { get; set; } = -1;
         public int CurrentInstrument
         {
             get => currentInstrumentIndex;
@@ -608,6 +605,12 @@ internal class HippelCosoSong : ISong
             else if (wasUsingTone)
                 channelPlayer.PlayNote(totalTime, -1, 0);
 
+            if (NoisePeriod == -1 && Noise) // Init
+            {
+                NoisePeriod = period;
+                wasUsingNoise = false;
+            }
+
             if (!wasUsingNoise && Noise)
             {
                 if (Tone) // If both (tone and noise) are active, e4 was used which set the NoisePeriod property.
@@ -616,11 +619,11 @@ internal class HippelCosoSong : ISong
                 }
                 else if ((Pitch & 0x80) == 0) // Otherwise, e5 was used, so use the pitch logic.
                 {
-                    channelPlayer.ChangeNoise(totalTime, (byte)~(Note + Pitch));
+                    channelPlayer.ChangeNoise(totalTime, (byte)(Note + Pitch));
                 }
                 else
                 {
-                    channelPlayer.ChangeNoise(totalTime, (byte)~(Pitch & 0x7f));
+                    channelPlayer.ChangeNoise(totalTime, (byte)(Pitch & 0x7f));
                 }
             }
             else if (wasUsingNoise && !Noise)
@@ -783,6 +786,7 @@ internal class HippelCosoSong : ISong
             void ChangeNoisePeriod(int period)
             {
                 noiseGenerator.Period = period;
+                Console.WriteLine("Change noise period to " + period);
             }
 
             for (int i = 0; i < voiceCount; i++)
@@ -904,13 +908,15 @@ internal class HippelCosoSong : ISong
             get => period;
             set
             {
+                value = 1 + Math.Clamp(value, 0, 31) * 7;
+
                 if (period == value)
                     return;
 
-                period = Math.Clamp(value, 0, 31);
+                period = value;
 
                 // YM2149 noise frequency: 2 MHz / (16 * (period + 1))
-                double noiseFreq = 2_000_000.0 / (16.0 * (period + 1));
+                double noiseFreq = 2_000_000.0 / (16.0 * period);
                 sampleTicksPerNoiseStep = Math.Max(1, (int)(sampleRate / noiseFreq));
             }
         }
