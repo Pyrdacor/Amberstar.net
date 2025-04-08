@@ -240,7 +240,7 @@ internal class HippelCosoSong : ISong
         public record Channel(int PatternIndex, int Transpose, int TimbreIndex, int VolumeReduction, int SpeedFactor, int TimbreAdjust);
     }
 
-    internal class NotePlayer
+    internal class ChannelPlayer
     {
         private record NoteInfo(double Time, int Note, int Volume);
         private record NoiseInfo(double Time, int Period);
@@ -252,7 +252,20 @@ internal class HippelCosoSong : ISong
         private int notePeriod = -1;
         private int noisePeriod = 1;
         private int playedVolume = 64;
-        private int playedNotePeriod = NotePeriods[0];
+        private int playedNotePeriod = 0;
+        private bool useTone = true;
+        private bool useNoise = false;
+
+        public void Reset()
+        {
+            volume = 64;
+            notePeriod = -1;
+            noisePeriod = 1;
+            playedVolume = 64;
+            playedNotePeriod = 0;
+            useTone = true;
+            useNoise = false;
+        }
 
         // This happens every tick as long as the channel is active.
         public void PlayNote(double time, int period, int volume)
@@ -267,9 +280,18 @@ internal class HippelCosoSong : ISong
 
         public void ChangeNoise(double time, int period)
         {
-            //period = NotePeriods[period];
             if (period == 0)
                 return;
+
+            if (period == -1)
+            {
+                if (this.noisePeriod == -1)
+                    return;
+
+                this.noisePeriod = period;
+                noisePeriods.Enqueue(new(time, period));
+                return;
+            }
 
             period = (byte)~period;
             period &= 0x1f;
@@ -281,10 +303,11 @@ internal class HippelCosoSong : ISong
             noisePeriods.Enqueue(new(time, period));
         }
 
-        public void SampleData(sbyte[] buffer, double time, Action<int> noisePeriodChanger, Func<byte> nextNoiseTick, bool useTone, bool useNoise)
+        public void SampleData(sbyte[] buffer, double time, Action<int> noisePeriodChanger, Func<byte> nextNoiseTick)
         {
+            const double frequencyFactor = 2_000_000.0 / 16.0;
             const double timePerSample = 1000.0 / SampleRate;
-            var noteFrequency = 3546894.6 / playedNotePeriod;
+            var noteFrequency = frequencyFactor / playedNotePeriod;
             var noteVolume = playedVolume / 64.0;
 
             for (int i = 0; i < buffer.Length; i++)
@@ -295,14 +318,16 @@ internal class HippelCosoSong : ISong
                     playedNotePeriod = noteInfo.Note;
                     playedVolume = noteInfo.Volume;
 
-                    noteFrequency = 3546894.6 / playedNotePeriod;
+                    noteFrequency = frequencyFactor / playedNotePeriod;
                     noteVolume = playedVolume / 64.0;
+                    useTone = playedNotePeriod > 0;
                 }
 
                 if (noisePeriods.Count != 0 && noisePeriods.Peek().Time <= time)
                 {
                     var noiseInfo = noisePeriods.Dequeue();
                     noisePeriodChanger(noiseInfo.Period);
+                    useNoise = noisePeriod != -1;
                 }
 
                 int div = useTone ? 1 : 0;
@@ -314,8 +339,16 @@ internal class HippelCosoSong : ISong
                 }
                 else
                 {
-                    double tone = useTone ? Math.Sin(2 * Math.PI * noteFrequency * time / SampleRate) : 0.0;
+                    double tone = useTone ? Math.Sin(2 * Math.PI * noteFrequency * (0.001 * time)) : 0.0;
                     double noise = useNoise ? (nextNoiseTick() != 0 ? 1.0 : -1.0) : 0.0;
+
+                    if (useTone)
+                    {
+                        if (tone > 0.0)
+                            tone = 1.0;
+                        else
+                            tone = -1.0;
+                    }
 
                     double sample = ((tone + noise) / div) * noteVolume;
 
@@ -327,7 +360,7 @@ internal class HippelCosoSong : ISong
         }
     }
 
-    private static readonly word[] NotePeriods =
+    private static readonly int[] NotePeriods =
     [
         0x0eee, 0x0e17, 0x0d4d, 0x0c8e, 0x0bd9, 0x0b2f, 0x0a8e, 0x09f7,
         0x0967, 0x08e0, 0x0861, 0x07e8, 0x0777, 0x070b, 0x06a6, 0x0647,
@@ -347,6 +380,24 @@ internal class HippelCosoSong : ISong
         0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
     ];
 
+    // TODO: This is also used for something. Also indexed by total note/pitch but limited to 96.
+    /*0x00000400, 0x0000043c, 0x0000047d, 0x000004c1, 0x0000050a, 0x00000556, 0x000005a8, 0x000005fe,
+    0x00000659, 0x000006ba, 0x00000720, 0x0000078d, 0x00000800, 0x00000879, 0x000008fa, 0x00000983,
+    0x00000a14, 0x00000aad, 0x00000b50, 0x00000bfc, 0x00000cb2, 0x00000d74, 0x00000e41, 0x00000f1a,
+    0x00001000, 0x000010f3, 0x000011f5, 0x00001306, 0x00001428, 0x0000155b, 0x000016a0, 0x000017f9,
+    0x00001965, 0x00001ae8, 0x00001c82, 0x00001e34, 0x00002000, 0x000021e7, 0x000023eb, 0x0000260d,
+    0x00002851, 0x00002ab7, 0x00002d41, 0x00002ff2, 0x000032cb, 0x000035d1, 0x00003904, 0x00003c68,
+    0x00004000, 0x000043ce, 0x000047d6, 0x00004c1b, 0x000050a2, 0x0000556e, 0x00005a82, 0x00005fe4,
+    0x00006597, 0x00006ba2, 0x00007208, 0x000078d0, 0x00008000, 0x0000879c, 0x00008fac, 0x00009837,
+    0x0000a145, 0x0000aadc, 0x0000b504, 0x0000bfc8, 0x0000cb2f, 0x0000d744, 0x0000e411, 0x0000f1a1,
+    0x00010000, 0x00010f38, 0x00011f59, 0x0001306f, 0x0001428a, 0x000155b8, 0x00016a09, 0x00017f91,
+    0x0001965f, 0x0001ae89, 0x0001c823, 0x0001e343, 0x00020000, 0x00021e71, 0x00023eb3, 0x000260df,
+    0x00028514, 0x0002ab70, 0x0002d413, 0x0002ff22, 0x00032cbf, 0x00035d13, 0x00039047, 0x0003c686, // 96
+    0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686,
+    0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686,
+    0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686,
+    0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686, 0x0003c686,*/
+
     // TODO: Normally it should be 20ms per tick, but 120 works much better for some reason...
     const int TickTime = 120; // ms
     const int SampleRate = 44100; // Hz
@@ -365,7 +416,7 @@ internal class HippelCosoSong : ISong
     readonly Pattern[] patterns;
     readonly Channel[] channels;
     readonly SongInfo songInfo;
-    readonly NotePlayer[] channelPlayers;
+    readonly ChannelPlayer[] channelPlayers;
     readonly sbyte[][] channelPcmData;
     readonly short[] mixedData;
     readonly byte[] pcmData;
@@ -374,7 +425,7 @@ internal class HippelCosoSong : ISong
     bool prebuffered = false;
     double endOfStreamTime = 0.0;
 
-    private class Channel(HippelCosoSong player, NotePlayer notePlayer, int channelIndex)
+    private class Channel(HippelCosoSong player, ChannelPlayer channelPlayer, int channelIndex)
     {
         private int currentDivisionIndex = -1;
         private int currentInstrumentIndex = -1;
@@ -395,8 +446,8 @@ internal class HippelCosoSong : ISong
         public int PortandoSlope { get; set; }
         public int CurrentPortandoDelta { get; set; }
         public bool Portando { get; set; }
-        public bool Noise { get; set; }
-        public bool Tone { get; set; }
+        public bool Noise { get; set; } = false;
+        public bool Tone { get; set; } = true;
         public int NoisePeriod { get; set; }
         public int CurrentInstrument
         {
@@ -423,6 +474,8 @@ internal class HippelCosoSong : ISong
             Pitch = 0;
             Note = 0;
             Sample = 0;
+            Tone = true;
+            Noise = false;
             CurrentVibratoDelay = 0;
             CurrentVibratoDepth = 0;
             CurrentVibratoDirection = -1;
@@ -506,7 +559,8 @@ internal class HippelCosoSong : ISong
                 return;
             }
 
-            bool wasNotUsingNoise = Noise;
+            bool wasUsingNoise = Noise;
+            bool wasUsingTone = Tone;
 
             currentPattern!.ProcessNextCommand(player);
             currentTimbre!.VolumeEnvelop.ProcessNextCommand(player); // TODO: order?
@@ -549,22 +603,29 @@ internal class HippelCosoSong : ISong
                 period *= (1 - (CurrentPortandoDelta * period) / 1024);
             }
 
-            notePlayer.PlayNote(totalTime, period, volume);
+            if (Tone)
+                channelPlayer.PlayNote(totalTime, period, volume);
+            else if (wasUsingTone)
+                channelPlayer.PlayNote(totalTime, -1, 0);
 
-            if (wasNotUsingNoise && Noise)
+            if (!wasUsingNoise && Noise)
             {
                 if (Tone) // If both (tone and noise) are active, e4 was used which set the NoisePeriod property.
                 {
-                    notePlayer.ChangeNoise(totalTime, NoisePeriod);
+                    channelPlayer.ChangeNoise(totalTime, NoisePeriod);
                 }
                 else if ((Pitch & 0x80) == 0) // Otherwise, e5 was used, so use the pitch logic.
                 {
-                    notePlayer.ChangeNoise(totalTime, (byte)~(Note + Pitch));
+                    channelPlayer.ChangeNoise(totalTime, (byte)~(Note + Pitch));
                 }
                 else
                 {
-                    notePlayer.ChangeNoise(totalTime, (byte)~(Pitch & 0x7f));
+                    channelPlayer.ChangeNoise(totalTime, (byte)~(Pitch & 0x7f));
                 }
+            }
+            else if (wasUsingNoise && !Noise)
+            {
+                channelPlayer.ChangeNoise(totalTime, -1);
             }
         }
     }
@@ -578,7 +639,7 @@ internal class HippelCosoSong : ISong
         this.divisions = divisions;
         this.patterns = patterns;
         channels = new Channel[voiceCount];
-        channelPlayers = new NotePlayer[voiceCount];
+        channelPlayers = new ChannelPlayer[voiceCount];
         channelPcmData = new sbyte[voiceCount][];
         mixedData = new short[BufferSize];
         pcmData = new byte[BufferSize];
@@ -590,6 +651,7 @@ internal class HippelCosoSong : ISong
             var channelPlayer = channelPlayers[i] = new();
             var channel = channels[i] = new Channel(this, channelPlayer, i);
             channel.Reset();
+            channelPlayer.Reset();
         }
 
         PreBuffer();
@@ -650,6 +712,11 @@ internal class HippelCosoSong : ISong
             channel.Reset();
         }
 
+        foreach (var channelPlayer in channelPlayers)
+        {
+            channelPlayer.Reset();
+        }
+
         PreBuffer();
     }
 
@@ -708,7 +775,7 @@ internal class HippelCosoSong : ISong
             byte GetNextNoiseTick()
             {
                 if (noiseTickIndex < noiseData.Length)
-                    return noiseData[noiseTickIndex++] = noiseGenerator.Tick(1);
+                    return noiseData[noiseTickIndex++] = noiseGenerator.Tick();
 
                 return noiseData[noiseTickIndex++ % noiseData.Length];
             }
@@ -721,7 +788,7 @@ internal class HippelCosoSong : ISong
             for (int i = 0; i < voiceCount; i++)
             {
                 channelPlayers[i].SampleData(channelPcmData[i], lastSampleTime,
-                    ChangeNoisePeriod, GetNextNoiseTick, channels[i].Tone, channels[i].Noise);
+                    ChangeNoisePeriod, GetNextNoiseTick);
 
                 for (int b = 0; b < BufferSize; b++)
                 {
@@ -820,14 +887,16 @@ internal class HippelCosoSong : ISong
     public class YmNoiseGenerator
     {
         private uint lfsr = 0x1FFFF; // 17-bit LFSR initialized with all 1s
-        private int period = 1; // Adjust based on YM noise period register (0-31)
+        private int period = 0; // Adjust based on YM noise period register (0-31)
         private byte currentOutput = 0;
-        private double accumulator = 0;
-        private double noiseClock;  // Hz
+        private int counter = 0;
+        private int sampleTicksPerNoiseStep = 1;
+        private readonly int sampleRate;
 
-        public YmNoiseGenerator(int noisePeriod)
+        public YmNoiseGenerator(int noisePeriod, int sampleRate = 44100)
         {
             Period = noisePeriod;
+            this.sampleRate = sampleRate;
         }
 
         public int Period
@@ -839,17 +908,22 @@ internal class HippelCosoSong : ISong
                     return;
 
                 period = Math.Clamp(value, 0, 31);
-                noiseClock = 2_000_000.0 / (16.0 * (period + 1));
+
+                // YM2149 noise frequency: 2 MHz / (16 * (period + 1))
+                double noiseFreq = 2_000_000.0 / (16.0 * (period + 1));
+                sampleTicksPerNoiseStep = Math.Max(1, (int)(sampleRate / noiseFreq));
             }
         }
 
         // Simulate YM noise clock tick (should be called at the correct tick rate)
-        public byte Tick(double sampleRate)
+        public byte Tick()
         {
-            accumulator += noiseClock / sampleRate;
+            counter++;
 
-            if (accumulator >= 1.0)
+            if (counter >= sampleTicksPerNoiseStep)
             {
+                counter = 0;
+
                 // XOR taps: bit 0 and bit 3 (based on real YM behavior)
                 bool bit0 = (lfsr & 1) != 0;
                 bool bit3 = (lfsr & (1 << 3)) != 0;
@@ -861,12 +935,10 @@ internal class HippelCosoSong : ISong
                 if (feedback)
                     lfsr |= (1u << 16);
 
-                accumulator -= 1.0;
                 currentOutput = (byte)(lfsr & 1);
             }
 
             return currentOutput;
         }
     }
-
 }
