@@ -278,9 +278,10 @@ internal static class HippelCosoLoader
                         commands.Add(new(HippelCosoSong.Instrument.CommandType.Complete));
                         break;
                     case 0xe2:
-                        commands.Add(new(HippelCosoSong.Instrument.CommandType.ResetTimbreAdjust));
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.ResetTimbre));
                         break;
                     case 0xe3:
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.Vibrato, instrumentData[++b], instrumentData[++b]));
                         break;
                     case 0xe4:
                         commands.Add(new(HippelCosoSong.Instrument.CommandType.EnableToneAndNoise, instrumentData[++b]));

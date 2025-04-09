@@ -14,7 +14,7 @@ internal class HippelCosoSong : ISong
             Complete,
             SetSample,
             ResetVolume,
-            ResetTimbreAdjust,
+            ResetTimbre,
             EnableToneAndNoise,
             DisableToneEnableNoise,
             EnableToneDisableNoise,
@@ -22,6 +22,7 @@ internal class HippelCosoSong : ISong
             NextCommand,
             Delay,
             SetTimbre,
+            Vibrato
         }
 
         public record Command(CommandType Type, params int[] Params);
@@ -69,8 +70,8 @@ internal class HippelCosoSong : ISong
                     ++currentCommandIndex;
                     ProcessNextCommand(player);
                     break;
-                case CommandType.ResetTimbreAdjust:
-                    player.ResetTimbreAdjust();
+                case CommandType.ResetTimbre:
+                    player.ResetTimbre();
                     ++currentCommandIndex;
                     ProcessNextCommand(player);
                     break;
@@ -97,6 +98,10 @@ internal class HippelCosoSong : ISong
                     player.channels[player.currentVoice].Portando = true;
                     player.channels[player.currentVoice].PortandoSlope = unchecked((sbyte)command.Params[0]);
                     ProcessNextCommand(player);
+                    break;
+                case CommandType.Vibrato:
+                    player.channels[player.currentVoice].CurrentVibratoSlope = command.Params[0];
+                    player.channels[player.currentVoice].CurrentVibratoDepth = command.Params[1];
                     break;
                 case CommandType.NextCommand:
                     ProcessNextCommand(player);
@@ -130,38 +135,59 @@ internal class HippelCosoSong : ISong
 
         private int currentCommandIndex = 0;
         private int tickCounter = 0;
+        private int delayCounter = 0;
 
         public void Reset()
         {
             currentCommandIndex = 0;
             tickCounter = 0;
+            delayCounter = 0;
         }
 
         public void ProcessNextCommand(HippelCosoSong player)
         {
-            if (--tickCounter > 0)
-                return;
-
-            var command = Commands[currentCommandIndex];
-
-            switch (command.Type)
+            if (delayCounter > 0)
             {
-                case CommandType.SetVolume:
-                    player.SetVolume(command.Params[0]);
-                    ++currentCommandIndex;
-                    tickCounter = Speed;
-                    break;
-                case CommandType.Sustain:
-                    ++currentCommandIndex;
-                    tickCounter = command.Params[0];
-                    break;
-                case CommandType.Loop:
-                    currentCommandIndex = command.Params[0];
-                    ProcessNextCommand(player);
-                    break;
-                case CommandType.Hold:
-                    // Just do nothing and don't increase the index.
-                    break;
+                --delayCounter;
+                return;
+            }
+
+            if (tickCounter > 0)
+            {
+                --tickCounter;
+                return;
+            }
+
+            tickCounter = Speed;
+
+            bool processCommands = true;
+
+            while (processCommands)
+            {
+                var command = Commands[currentCommandIndex];
+
+                switch (command.Type)
+                {
+                    case CommandType.SetVolume:
+                        player.SetVolume(command.Params[0]);
+                        ++currentCommandIndex;
+                        processCommands = false;
+                        break;
+                    case CommandType.Sustain:
+                        ++currentCommandIndex;
+                        delayCounter = command.Params[0];
+                        processCommands = false;
+                        ProcessNextCommand(player);
+                        break;
+                    case CommandType.Loop:
+                        currentCommandIndex = command.Params[0];
+                        break;
+                    case CommandType.Hold:
+                        player.SetVolume(Commands[currentCommandIndex - 1].Params[0]);
+                        // Do not increase the index.
+                        processCommands = false;
+                        break;
+                }
             }
         }
     }
@@ -438,6 +464,7 @@ internal class HippelCosoSong : ISong
         public int Sample { get; set; }
         public bool IsPlaying { get; set; }
         public int CurrentVibratoDelay { get; set; }
+        public int CurrentVibratoSlope { get; set; }
         public int CurrentVibratoDepth { get; set; }
         public int CurrentVibratoDirection { get; set; }
         public int PortandoSlope { get; set; }
@@ -475,6 +502,7 @@ internal class HippelCosoSong : ISong
             Noise = false;
             CurrentVibratoDelay = 0;
             CurrentVibratoDepth = 0;
+            CurrentVibratoSlope = 0;
             CurrentVibratoDirection = -1;
             Portando = false;
             PortandoSlope = 0;
@@ -488,7 +516,10 @@ internal class HippelCosoSong : ISong
             IsPlaying = false;
         }
 
-        public void ResetTimbreAdjust() => SetTimbre(currentDivision!.TimbreIndex);
+        public void ResetTimbre()
+        {
+            currentTimbre!.VolumeEnvelop.Reset();
+        }
 
         public void SetTimbre(int index)
         {
@@ -504,6 +535,7 @@ internal class HippelCosoSong : ISong
 
             currentPattern!.ResetSpeed(speed);
             CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
+            CurrentVibratoSlope = currentTimbre.Vibrato.Slope;
             CurrentVibratoDepth = currentTimbre.Vibrato.Depth;
             CurrentVibratoDirection = -1;
         }
@@ -538,6 +570,7 @@ internal class HippelCosoSong : ISong
             currentPattern!.Reset(speed);
 
             CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
+            CurrentVibratoSlope = currentTimbre.Vibrato.Slope;
             CurrentVibratoDepth = currentTimbre.Vibrato.Depth;
             CurrentVibratoDirection = -1;
         }
@@ -576,7 +609,7 @@ internal class HippelCosoSong : ISong
             // Vibrato
             if (CurrentVibratoDelay == 0)
             {
-                CurrentVibratoDepth += CurrentVibratoDirection;
+                CurrentVibratoDepth += CurrentVibratoDirection * CurrentVibratoSlope;
 
                 if (CurrentVibratoDepth <= 0 || CurrentVibratoDepth >= 2 * currentTimbre.Vibrato.Depth)
                     CurrentVibratoDirection = -CurrentVibratoDirection;
@@ -859,9 +892,9 @@ internal class HippelCosoSong : ISong
         channels[currentVoice].Volume = 64; // TODO: default?
     }
 
-    public void ResetTimbreAdjust()
+    public void ResetTimbre()
     {
-        channels[currentVoice].ResetTimbreAdjust();
+        channels[currentVoice].ResetTimbre();
     }
 
     public void SetTimbre(int index)
