@@ -294,6 +294,7 @@ internal static class HippelCosoLoader
                         break;
                     case 0xe7: // Set timbre
                         // Note: In some versions (with 4 byte indices) this defaults to command ed instead.
+                        // This seems to be bugged in the original player...
                         commands.Add(new(HippelCosoSong.Instrument.CommandType.SetTimbre, instrumentData[++b]));
                         break;
                     case 0xe8: // Delay
@@ -309,17 +310,20 @@ internal static class HippelCosoLoader
                         commands.Add(new(HippelCosoSong.Instrument.CommandType.Portando, instrumentData[++b]));
                         break;
                     case 0xeb:
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetInstrumentFlags, instrumentData[++b]));
                         break;
                     case 0xec:
                         break;
                     case 0xed:
                         break;
                     case 0xee:
+                        // TODO: Param is stored in (0x36,A0), then next command
                         break;
                     case 0xef:
+                        // TODO: Param is stored in (0x37,A0), then next command
                         break;
                     default: // Pitch
-                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetAbsolutePitch, command));
+                        commands.Add(new(HippelCosoSong.Instrument.CommandType.SetPitch, command));
                         break;
                 }
             }
