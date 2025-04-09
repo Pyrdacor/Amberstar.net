@@ -254,38 +254,46 @@ internal class HippelCosoSong : ISong
             if (--tickCounter > 0)
                 return;
 
-            var command = Commands[currentCommandIndex];
+            tickCounter = speed;
+            bool processCommands = true;
 
-            switch (command.Type)
+            while (processCommands)
             {
-                case CommandType.SetNote:
-                    player.SetNote(command.Params[0]);
-                    if (command.Params.Length > 1 && command.Params[1] != 0)
-                    {
-                        // Set timbre
-                        player.SetTimbre(player.GetTimbre() + command.Params[1]);
-                    }
-                    if (command.Params.Length > 2 && command.Params[2] != -1)
-                    {
-                        // Set instrument
-                        player.SetInstrument(command.Params[2]);
-                    }
-                    ++currentCommandIndex;
-                    tickCounter = speed;
-                    break;
-                case CommandType.SetSpeed:
-                    speed = command.Params[0];
-                    ++currentCommandIndex;
-                    ProcessNextCommand(player);
-                    break;
-                case CommandType.SetSpeedWithDelay:
-                    speed = command.Params[0];
-                    ++currentCommandIndex;
-                    tickCounter = speed;
-                    break;
-                case CommandType.EndPattern:
-                    player.NextDivision();
-                    break;
+                var command = Commands[currentCommandIndex];
+
+                switch (command.Type)
+                {
+                    case CommandType.SetNote:
+                        player.SetNote(command.Params[0]);
+                        if (command.Params.Length > 1 && command.Params[1] != 0)
+                        {
+                            // Set timbre
+                            player.SetTimbre(player.GetTimbre() + command.Params[1]);
+                        }
+                        if (command.Params.Length > 2 && command.Params[2] != -1)
+                        {
+                            // Set instrument
+                            player.SetInstrument(command.Params[2]);
+                        }
+                        ++currentCommandIndex;
+                        processCommands = false;
+                        break;
+                    case CommandType.SetSpeed:
+                        speed = command.Params[0];
+                        tickCounter = speed;
+                        ++currentCommandIndex;
+                        break;
+                    case CommandType.SetSpeedWithDelay:
+                        speed = command.Params[0];
+                        tickCounter = speed;
+                        ++currentCommandIndex;
+                        processCommands = false;
+                        break;
+                    case CommandType.EndPattern:
+                        processCommands = false;
+                        player.NextDivision();
+                        break;
+                }
             }
         }
     }
