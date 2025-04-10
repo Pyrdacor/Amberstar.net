@@ -624,6 +624,8 @@ internal class HippelCosoSong : ISong
 
             currentPattern = player.patterns[currentDivision!.PatternIndex];
             currentPattern!.Reset(speed);
+            currentInstrument?.Reset();
+            currentTimbre.VolumeEnvelop.Reset();
 
             CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
             CurrentVibratoSlope = currentTimbre.Vibrato.Slope;
@@ -650,7 +652,7 @@ internal class HippelCosoSong : ISong
 
             currentPattern!.ProcessNextCommand(player);
             currentInstrument!.ProcessNextCommand(player);
-            currentTimbre!.VolumeEnvelop.ProcessNextCommand(player);            
+            currentTimbre!.VolumeEnvelop.ProcessNextCommand(player);
 
             int note = Pitch;
 
