@@ -631,6 +631,9 @@ internal class HippelCosoSong : ISong
             CurrentVibratoSlope = currentTimbre.Vibrato.Slope;
             CurrentVibratoDepth = currentTimbre.Vibrato.Depth;
             CurrentVibratoDirection = -1;
+
+            Noise = false;
+            Tone = player.channels[2] == this; // Channel C is active, rest not.
         }
 
         public void Update(double totalTime)
