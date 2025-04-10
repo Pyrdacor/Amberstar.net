@@ -499,6 +499,7 @@ internal class HippelCosoSong : ISong
     readonly YmNoiseGenerator noiseGenerator = new(1);
     bool prebuffered = false;
     double endOfStreamTime = 0.0;
+    bool resetDivisions = false;
 
     private class Channel(HippelCosoSong player, ChannelPlayer channelPlayer, int channelIndex)
     {
@@ -594,7 +595,7 @@ internal class HippelCosoSong : ISong
             CurrentVibratoDirection = -1;
         }
 
-        public void NextDivision()
+        public void NextDivision(bool processFirstPattern)
         {
             currentDivisionIndex++;
 
@@ -608,7 +609,8 @@ internal class HippelCosoSong : ISong
             currentDivision = player.divisions[currentDivisionIndex].Channels[channelIndex];
             InitDivision();
 
-            currentPattern!.ProcessNextCommand(player); // Directly process the next pattern in this case.
+            if (processFirstPattern)
+                currentPattern!.ProcessNextCommand(player); // Directly process the next pattern in this case.
         }
 
         private void InitDivision()
@@ -647,8 +649,8 @@ internal class HippelCosoSong : ISong
             bool wasUsingTone = Tone;
 
             currentPattern!.ProcessNextCommand(player);
-            currentTimbre!.VolumeEnvelop.ProcessNextCommand(player); // TODO: order?
             currentInstrument!.ProcessNextCommand(player);
+            currentTimbre!.VolumeEnvelop.ProcessNextCommand(player);            
 
             int note = Pitch;
 
@@ -835,9 +837,14 @@ internal class HippelCosoSong : ISong
 
             foreach (var channel in channels)
             {
+                if (resetDivisions)
+                    channel.NextDivision(false);
+
                 channel.Update(time);
                 currentVoice++;
             }
+
+            resetDivisions = false;
 
             EndOfStream = channels.Any(channel => !channel.IsPlaying);
 
@@ -991,7 +998,11 @@ internal class HippelCosoSong : ISong
 
     public void NextDivision()
     {
-        channels[currentVoice].NextDivision();
+        if (currentVoice != 0)
+            return;
+
+        channels[currentVoice].NextDivision(true);
+        resetDivisions = true;
     }
 
     public int GetTimbre() => channels[currentVoice].CurrentTimbre;
