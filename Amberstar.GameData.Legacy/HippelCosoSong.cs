@@ -265,6 +265,7 @@ internal class HippelCosoSong : ISong
                             // Set instrument
                             player.SetInstrument(command.Params[2]);
                         }
+                        player.channels[player.currentVoice].CurrentPortandoDelta = 0;
                         ++currentCommandIndex;
                         processCommands = false;
                         break;
@@ -524,6 +525,8 @@ internal class HippelCosoSong : ISong
                 currentInstrumentIndex = value;
                 currentInstrument = player.instruments[value];
                 currentInstrument!.Reset();
+
+                // TODO: A new instrument should reset sustain counter, instead of timbre change...
             }
         }
         public int CurrentTimbre

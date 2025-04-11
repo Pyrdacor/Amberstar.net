@@ -442,7 +442,7 @@ internal static class HippelCosoLoader
                         instrument = patternData[++b];
                     }
 
-                    if ((arg & 0x80) == 0)
+                    if ((command & 0x80) == 0)
                     {
                         timbreAdjust = arg & 0x1f;
 
