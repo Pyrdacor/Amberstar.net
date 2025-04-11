@@ -192,23 +192,13 @@ internal class HippelCosoSong : ISong
                         break;
                     case CommandType.Loop:
                         // Note: The param contains the byte offset instead of the command offset.
-                        // TODO: Test this logic.
                         int byteOffset = command.Params[0];
-                        if (byteOffset < 0)
+                        currentCommandIndex = 0;
+
+                        while (byteOffset != 0)
                         {
-                            while (byteOffset != 0)
-                            {
-                                int prevSize = CommandSizes[(int)Commands[--currentCommandIndex].Type];
-                                byteOffset += prevSize;
-                            }
-                        }
-                        else if (byteOffset > 0)
-                        {
-                            while (byteOffset != 0)
-                            {
-                                int nextSize = CommandSizes[(int)Commands[currentCommandIndex++].Type];
-                                byteOffset -= nextSize;
-                            }
+                            int currentSize = CommandSizes[(int)Commands[currentCommandIndex++].Type];
+                            byteOffset -= currentSize;
                         }
                         break;
                     case CommandType.Hold:
@@ -533,6 +523,7 @@ internal class HippelCosoSong : ISong
             {
                 currentInstrumentIndex = value;
                 currentInstrument = player.instruments[value];
+                currentInstrument!.Reset();
             }
         }
         public int CurrentTimbre
@@ -542,6 +533,7 @@ internal class HippelCosoSong : ISong
             {
                 currentTimbreIndex = value;
                 currentTimbre = player.timbres[value];
+                currentTimbre.VolumeEnvelop.Reset();
             }
         }
 
@@ -624,16 +616,25 @@ internal class HippelCosoSong : ISong
 
             currentPattern = player.patterns[currentDivision!.PatternIndex];
             currentPattern!.Reset(speed);
-            currentInstrument?.Reset();
-            currentTimbre.VolumeEnvelop.Reset();
 
             CurrentVibratoDelay = currentTimbre.Vibrato.Delay;
             CurrentVibratoSlope = currentTimbre.Vibrato.Slope;
             CurrentVibratoDepth = currentTimbre.Vibrato.Depth;
             CurrentVibratoDirection = -1;
 
+            bool isChannelC = player.channels[2] == this;
+
             Noise = false;
-            Tone = player.channels[2] == this; // Channel C is active, rest not.
+            Tone = isChannelC; // Channel C is active, rest not.
+            Volume = isChannelC ? 16 : 0;
+
+            // Channel C has the period reset to 0x400.
+            // We can only set the note where 23 is almost 0x400.
+            if (isChannelC)
+            {
+                Note = 0;
+                Pitch = 23;
+            }
         }
 
         public void Update(double totalTime)
