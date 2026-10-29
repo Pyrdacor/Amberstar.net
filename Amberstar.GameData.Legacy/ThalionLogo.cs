@@ -93,6 +93,8 @@ internal sealed class ThalionLogo : IThalionLogo
 
 	public bool Finished { get; private set; }
 
+	public bool SkipsIntro => false;
+
 	public IGraphic Frame { get; private set; }
 
 	public int Song { get; private set; }

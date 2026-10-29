@@ -322,9 +322,28 @@ public class AssetProvider : IAssetProvider
 	/// <summary>
 	/// The intro is the separate program INTRO.68K. Its data segment is LOB packed (the unpacked program has the code,
 	/// the data and the relocation table, the addresses are from 0).
+	/// On the Amiga the title picture is INTRO.UDO and the credits are the program INTRO_P.UDO (both LOB packed).
 	/// </summary>
 	private IIntroData? LoadIntroData()
 	{
+		if (Platform == LegacyPlatform.Amiga)
+		{
+			var program = LoadAmigaFile("INTRO_P.UDO");
+			var titlePicture = LoadAmigaFile("INTRO.UDO");
+
+			if (program == null || titlePicture == null)
+				return null;
+
+			try
+			{
+				return new IntroData(PrgReader.Read(new DataReader(program)).TextSegment, titlePicture);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
 		if (Platform != LegacyPlatform.Atari)
 			return null;
 
@@ -350,10 +369,42 @@ public class AssetProvider : IAssetProvider
 	}
 
 	/// <summary>
+	/// The unpacked data of a LOB packed file of the Amiga version, or null if it is missing or can't be read.
+	/// </summary>
+	private byte[]? LoadAmigaFile(string fileName)
+	{
+		var file = fileSystem.GetFile(fileName);
+
+		if (file == null)
+			return null;
+
+		try
+		{
+			using var fileReader = file.Stream.GetReader();
+			var reader = new FileReader().ReadFile(fileName, fileReader).Files.Values.First();
+			reader.Position = 0;
+
+			return reader.ReadBytes(reader.Size);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	/// <summary>
 	/// The logo of Thalion is the separate program THALION.68K (not packed, the addresses are from 0).
+	/// On the Amiga it is the picture TH_LOGO.UDO (LOB packed).
 	/// </summary>
 	private IThalionLogo? LoadThalionLogo()
 	{
+		if (Platform == LegacyPlatform.Amiga)
+		{
+			var picture = LoadAmigaFile("TH_LOGO.UDO");
+
+			return picture == null ? null : new AmigaThalionLogo(picture);
+		}
+
 		if (Platform != LegacyPlatform.Atari)
 			return null;
 

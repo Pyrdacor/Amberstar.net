@@ -49,7 +49,32 @@ The intro programs are not part of the released source code. They were disassemb
   from the right (16 pixels per vertical blank). Each page stays for 251 vertical blanks, then the next one follows
   (endless). The space key ends the intro: the palette fades out (7 steps of 3 vertical blanks).
 
+## Amiga (the loader "Amberstar", TH_LOGO.UDO, INTRO.UDO and INTRO_P.UDO)
+- The loader (the program "Amberstar" on disk A, "Amiga conversion by Udo Fischer") shows the logo of Thalion and the
+  title picture itself, then it starts INTRO_P.UDO (the credits), shows the logo again while it loads AMBERDEV.UDO and
+  starts the game. All .UDO files are LOB packed.
+- TH_LOGO.UDO: a picture (320x200, 5 bit planes, the planes of each line after another). The palette is in the loader
+  (L2ea, 32 colors). It is shown without fading until a key or the left mouse button is pressed (La48). The escape key
+  (raw key code $45) skips the title picture and the credits.
+- INTRO.UDO: 200 palettes of 16 colors (3 bits per channel, the loader doubles them), then the picture (5 bit planes
+  of 8000 bytes). The copper list (L948) sets the colors 0-15 from the first palette before the picture and the
+  colors 16-31 from the next palette at the end of each line, so line y uses the palette y (line 0 the last one).
+  It is shown without fading until a key or the mouse button is pressed.
+- INTRO_P.UDO: the same as INTRO.68K, rewritten for the Amiga (a PRG, the addresses are from 0):
+  - The background ($30d4, 4 bit planes of each line after another) fades in from black with its palette ($688,
+    4 bits per channel): 15 steps of 2 vertical blanks (L602).
+  - The logo ($794, 320x33, each line of a plane is followed by its mask) scrolls up from the bottom to line 20,
+    2 lines per vertical blank (double buffered, L440 restores the background and L3c4 draws it with the blitter).
+  - Then the music starts (the player of the Amiga outro, "Player by Jochen Hippel 1990", with a TFMX module,
+    song 1).
+  - The credits ($3a9b8) are drawn with the font ($add4) like on the Atari ST (L354). The transitions are the same,
+    but the rows show 8 pixels per vertical blank (40 steps). The lower 2 lines of the rows start at the second last
+    column (an off-by-one error of the original), so their last 8 pixels keep the page before. The port shows them.
+  - Each page stays for 251 vertical blanks. A key or the mouse button ends it: the palette fades out (15 steps of
+    2 vertical blanks, L65a) and the music stops.
+
 ## Port
 - `IntroData` loads the data (the title pictures as RGBA for each fading step, the pages with their text),
   `IntroScreen` shows it. `ThalionLogoScreen` shows the frames of `ThalionLogo` (a texture which is updated). The intro and the outro use their own layer with their own palettes.
+- On the Amiga `IntroData` has one title picture and the timing of INTRO_P, `AmigaThalionLogo` is the picture of the logo.
 - The intro is not shown for scenario scripts.

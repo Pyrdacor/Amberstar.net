@@ -9,6 +9,9 @@ namespace Amberstar.Game.Screens;
 /// stays until the space key is pressed. Then the stone background fades in, the music starts and the logo is drawn
 /// line by line. Then the credits are shown page by page (each for 5 seconds, with one of 2 transitions) until the
 /// space key is pressed. Like in the original everything is timed by vertical blanks (50 per second).
+///
+/// On the Amiga the title picture doesn't fade, the logo scrolls in from the bottom and the music starts after it
+/// (INTRO_P.UDO, see <see cref="IIntroData"/>). Any key continues.
 /// </summary>
 internal sealed class IntroScreen : Screen
 {
@@ -29,7 +32,8 @@ internal sealed class IntroScreen : Screen
 	// the title picture changes its fading step every 4 vertical blanks (24 in total)
 	const int TitleFadeVerticalBlanks = 24;
 	const int TitleVerticalBlanksPerStep = TitleFadeVerticalBlanks / (IIntroData.TitleFadeSteps - 1);
-	const int VerticalBlanksPerFadeStep = 3;
+	// the Amiga logo scrolls 2 lines per vertical blank
+	const int LogoScrollSpeed = 2;
 	// each page is shown for 251 vertical blanks after its transition
 	const int PageVerticalBlanks = 251;
 	const byte PictureDisplayLayer = 200;
@@ -40,11 +44,9 @@ internal sealed class IntroScreen : Screen
 	const int BandCount = 5;
 	const int BandHeight = 22;
 	// transition 2: rows of 4 lines, the upper 2 lines are shown from the left, the lower 2 lines from the right,
-	// 16 more pixels per vertical blank (L3a0 in the intro)
+	// 16 more pixels per vertical blank (L3a0 in the intro, 8 pixels on the Amiga)
 	const int RowCount = 28;
 	const int RowHeight = 4;
-	const int BlockWidth = 16;
-	const int BlockCount = IIntroData.PictureWidth / BlockWidth;
 
 	IIntroData intro = null!;
 	Phase phase = Phase.TitleFadeIn;
@@ -81,11 +83,14 @@ internal sealed class IntroScreen : Screen
 
 		intro = Game.AssetProvider.IntroData!;
 		Game.Cursor.Visible = false;
-		phase = Phase.TitleFadeIn;
+		// the Amiga shows the title picture without fading
+		phase = TitleFades ? Phase.TitleFadeIn : Phase.Title;
 		verticalBlanks = 0;
 		title = new Image(Game, new Position(0, 0), new Size(IIntroData.PictureWidth, IIntroData.PictureHeight),
 			Game.GraphicIndexProvider.GetIntroGraphicIndex(IntroGraphic.TitlePicture, 0), PictureDisplayLayer, Layer.TrueColor, 0, true);
 	}
+
+	bool TitleFades => intro.TitlePictures.Count > 1;
 
 	public override void Close()
 	{
@@ -101,13 +106,14 @@ internal sealed class IntroScreen : Screen
 	}
 
 	/// <summary>
-	/// The space key (or a click) continues after the title picture and ends the intro while the credits are shown.
+	/// The space key (any key on the Amiga) or a click continues after the title picture and ends the intro while
+	/// the credits are shown.
 	/// </summary>
 	internal void Continue() => spacePressed = true;
 
 	public override bool KeyDown(Key key, KeyModifiers keyModifiers)
 	{
-		if (key == Key.Space)
+		if (key == Key.Space || intro.AnyKeyContinues)
 			Continue();
 
 		return true;
@@ -146,7 +152,7 @@ internal sealed class IntroScreen : Screen
 				break;
 			case Phase.Title:
 				if (spacePressed)
-					StartPhase(Phase.TitleFadeOut);
+					StartPhase(TitleFades ? Phase.TitleFadeOut : Phase.BackgroundFadeIn);
 				break;
 			case Phase.TitleFadeOut:
 				SetTitleStep((TitleFadeVerticalBlanks - verticalBlanks) / TitleVerticalBlanksPerStep);
@@ -155,19 +161,23 @@ internal sealed class IntroScreen : Screen
 					StartPhase(Phase.BackgroundFadeIn);
 				break;
 			case Phase.BackgroundFadeIn:
-				if (verticalBlanks % VerticalBlanksPerFadeStep == 0)
+				if (verticalBlanks % intro.VerticalBlanksPerFadeStep == 0)
 				{
-					// from black (-7) to the steps 1 to 7
+					// from black (-7) to the steps 1 to 7 (-15 to 15 on the Amiga)
 					SetFadeStep(Math.Max(1, fadeStep + 1));
 
-					if (fadeStep == IIntroData.FadeSteps)
+					if (fadeStep == intro.FadeSteps)
 						StartPhase(Phase.Logo);
 				}
 				break;
 			case Phase.Logo:
-				ShowLogo(verticalBlanks);
-				if (verticalBlanks == intro.Logo.Height)
+				if (intro.LogoScrollsIn ? ScrollLogo() : ShowLogo(verticalBlanks))
+				{
+					if (intro.MusicStartsAfterLogo)
+						PlayMusic();
+
 					StartPage();
+				}
 				break;
 			case Phase.Transition:
 				if (blockTransition ? UpdateBlockTransition() : UpdateBandTransition())
@@ -188,11 +198,11 @@ internal sealed class IntroScreen : Screen
 				}
 				break;
 			case Phase.FadeOut:
-				if (verticalBlanks % VerticalBlanksPerFadeStep == 0)
+				if (verticalBlanks % intro.VerticalBlanksPerFadeStep == 0)
 				{
 					SetFadeStep(Math.Min(-1, fadeStep - 1));
 
-					if (fadeStep == -IIntroData.FadeSteps)
+					if (fadeStep == -intro.FadeSteps)
 						StartPhase(Phase.Finished);
 				}
 				break;
@@ -210,14 +220,14 @@ internal sealed class IntroScreen : Screen
 			case Phase.BackgroundFadeIn:
 				title?.Destroy();
 				title = null;
-				fadeStep = -IIntroData.FadeSteps;
+				fadeStep = -intro.FadeSteps;
 				background = new Image(Game, new Position(0, 0), new Size(IIntroData.PictureWidth, IIntroData.PictureHeight),
 					Game.GraphicIndexProvider.GetIntroGraphicIndex(IntroGraphic.Background), PictureDisplayLayer, Layer.Cutscene, PaletteIndex, true);
 				break;
 			case Phase.Logo:
 				SetFadeStep(0);
-				if (intro.Music != null)
-					Game.PlaySong(Game.IntroSong);
+				if (!intro.MusicStartsAfterLogo)
+					PlayMusic();
 				break;
 			case Phase.Finished:
 				Game.PlaySong(0);
@@ -227,6 +237,12 @@ internal sealed class IntroScreen : Screen
 	}
 
 	byte PaletteIndex => Game.PaletteIndexProvider.GetIntroPaletteIndex(fadeStep);
+
+	void PlayMusic()
+	{
+		if (intro.Music != null)
+			Game.PlaySong(Game.IntroSong);
+	}
 
 	void SetTitleStep(int step)
 	{
@@ -246,12 +262,33 @@ internal sealed class IntroScreen : Screen
 	}
 
 	/// <summary>
-	/// The logo is drawn line by line (one line per vertical blank).
+	/// The logo is drawn line by line (one line per vertical blank). Returns true when it is complete.
 	/// </summary>
-	void ShowLogo(int lines)
+	bool ShowLogo(int lines)
+	{
+		ShowLogoPart(intro.LogoY, lines);
+
+		return lines == intro.Logo.Height;
+	}
+
+	/// <summary>
+	/// The Amiga logo scrolls up from the bottom of the screen (L3c4 in INTRO_P, the first position is below the
+	/// screen). Returns true when it reached its position.
+	/// </summary>
+	bool ScrollLogo()
+	{
+		int y = IIntroData.PictureHeight + LogoScrollSpeed - verticalBlanks * LogoScrollSpeed;
+
+		if (y < IIntroData.PictureHeight)
+			ShowLogoPart(y, Math.Min(intro.Logo.Height, IIntroData.PictureHeight - y));
+
+		return y <= intro.LogoY;
+	}
+
+	void ShowLogoPart(int y, int lines)
 	{
 		logo?.Destroy();
-		logo = new Image(Game, new Position(0, IIntroData.LogoY), new Size(IIntroData.PictureWidth, lines),
+		logo = new Image(Game, new Position(0, y), new Size(IIntroData.PictureWidth, lines),
 			Game.GraphicIndexProvider.GetIntroGraphicIndex(IntroGraphic.Logo), LogoDisplayLayer, Layer.Cutscene, PaletteIndex);
 	}
 
@@ -303,12 +340,13 @@ internal sealed class IntroScreen : Screen
 	}
 
 	/// <summary>
-	/// Each row shows 16 more pixels (20 steps). The space key ends it. Returns true when the page is complete.
+	/// Each row shows 16 more pixels (20 steps, 8 pixels and 40 steps on the Amiga). The space key ends it.
+	/// Returns true when the page is complete.
 	/// </summary>
 	bool UpdateBlockTransition()
 	{
 		ClearNewPage();
-		int width = verticalBlanks * BlockWidth;
+		int width = verticalBlanks * intro.TransitionBlockWidth;
 
 		for (int row = 0; row < RowCount; row++)
 		{
@@ -317,6 +355,6 @@ internal sealed class IntroScreen : Screen
 				RowHeight / 2, NewPageDisplayLayer));
 		}
 
-		return verticalBlanks == BlockCount || spacePressed;
+		return width == IIntroData.PictureWidth || spacePressed;
 	}
 }

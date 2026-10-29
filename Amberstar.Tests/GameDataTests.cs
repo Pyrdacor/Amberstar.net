@@ -146,8 +146,46 @@ public sealed class GameDataTests
 		Assert.Equal((320, IIntroData.TextAreaHeight), (intro.TextPages[0].Width, intro.TextPages[0].Height));
 		// the title fades from dark to the normal colors, the background fades from black
 		Assert.True(intro.TitlePictures[0].GetData().Sum(b => (long)b) < intro.TitlePictures[^1].GetData().Sum(b => (long)b));
-		Assert.All(intro.GetBackgroundPalette(-IIntroData.FadeSteps).GetData(), component => Assert.True(component is 0 or 0xff));
+		Assert.All(intro.GetBackgroundPalette(-intro.FadeSteps).GetData(), component => Assert.True(component is 0 or 0xff));
 		Assert.NotNull(intro.Music);
+	}
+
+	[Theory]
+	[InlineData("German/AmberfilesAmiga", "IDEE & ENTWURF")]
+	[InlineData("English/AmberfilesAmiga", "IDEA & DESIGN")]
+	public void AmigaIntroDataLoads(string folder, string firstPage)
+	{
+		var assetProvider = TestData.CreateAssetProvider(folder);
+		var intro = assetProvider.IntroData;
+
+		Assert.NotNull(intro);
+		// the title picture is not faded, the logo scrolls in
+		Assert.Single(intro.TitlePictures);
+		Assert.Equal((320, 33), (intro.Logo.Width, intro.Logo.Height));
+		Assert.True(intro.LogoScrollsIn);
+		Assert.Equal(15, intro.FadeSteps);
+		Assert.Equal(intro.Texts.Count, intro.TextPages.Count);
+		Assert.Contains(firstPage, intro.Texts[0]);
+		Assert.Contains("Karsten Köper", intro.Texts[0]);
+		Assert.Contains(intro.Texts, text => text.Contains("Udo Fischer"));
+		// the background fades from black to its colors (4 bits per channel)
+		Assert.All(intro.GetBackgroundPalette(-intro.FadeSteps).GetData(), component => Assert.True(component is 0 or 0xff));
+		Assert.Equal(intro.GetBackgroundPalette().GetData(), intro.GetBackgroundPalette(intro.FadeSteps).GetData());
+		Assert.NotNull(intro.Music);
+
+		// the logo of Thalion is a picture which waits for a key, escape skips the intro
+		var logo = assetProvider.ThalionLogo;
+		Assert.NotNull(logo);
+		Assert.Equal(0, logo.Song);
+		logo.VerticalBlank();
+		Assert.False(logo.Finished);
+		logo.KeyPressed(0x01);
+		Assert.True(logo.Finished);
+		Assert.True(logo.SkipsIntro);
+		logo.Reset();
+		logo.Skip();
+		Assert.True(logo.Finished);
+		Assert.False(logo.SkipsIntro);
 	}
 
 	[Theory]

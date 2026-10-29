@@ -47,4 +47,23 @@ public sealed class MusicTests
 			Assert.True(counter.MaxAmplitude > 1000, $"Song {songIndex} is silent.");
 		}
 	}
+
+	[Theory]
+	[MemberData(nameof(TestData.DataFolders), MemberType = typeof(TestData))]
+	[InlineData("German/AmberfilesAmiga")]
+	[InlineData("English/AmberfilesAmiga")]
+	public void IntroMusicPlays(string folder)
+	{
+		var song = TestData.CreateAssetProvider(folder).IntroData!.Music!;
+		var counter = new SampleCounter();
+
+		song.Play();
+
+		// 10 seconds in steps of 1/60 seconds
+		for (int i = 0; i < 10 * 60; i++)
+			song.Update(1000.0 / 60.0, counter);
+
+		Assert.True(counter.SampleCount > 0);
+		Assert.True(counter.MaxAmplitude > 1000);
+	}
 }

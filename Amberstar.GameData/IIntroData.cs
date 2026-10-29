@@ -18,6 +18,10 @@ public enum IntroGraphic
 /// The intro (INTRO.68K, a separate program of the original). The title picture is shown until the space key
 /// is pressed. Then the credits are shown page by page on a stone background with the logo of the game while
 /// the music plays, until the space key is pressed.
+///
+/// On the Amiga the loader shows the title picture (INTRO.UDO) without fading and the credits are the program
+/// INTRO_P.UDO. It is the same as on the Atari ST except for the timing, the logo which scrolls in and the music
+/// which starts after the logo. Any key or the mouse button continues.
 /// </summary>
 public interface IIntroData
 {
@@ -27,7 +31,7 @@ public interface IIntroData
 	/// <summary>
 	/// The title picture (RGBA) for each fading step from dark (0) to the normal picture
 	/// (<see cref="TitleFadeSteps"/> - 1). It has 48 colors per line like the pictures of Spectrum 512
-	/// (the palette is changed 3 times in each line).
+	/// (the palette is changed 3 times in each line). The Amiga has only the normal picture (it is not faded).
 	/// </summary>
 	IReadOnlyList<IGraphic> TitlePictures { get; }
 	public const int TitleFadeSteps = 7;
@@ -43,13 +47,36 @@ public interface IIntroData
 	/// (each channel is decreased by 1 per step).
 	/// </summary>
 	IGraphic GetBackgroundPalette(int fadeStep = 0);
-	public const int FadeSteps = 7;
 
 	/// <summary>
-	/// The logo of the game (320x36, color 0 is transparent) which is drawn line by line at the top.
+	/// The steps of the fading (7 with 3 vertical blanks each on the Atari ST, 15 with 2 vertical blanks each on the Amiga).
+	/// </summary>
+	int FadeSteps { get; }
+	int VerticalBlanksPerFadeStep { get; }
+
+	/// <summary>
+	/// The logo of the game (color 0 is transparent). On the Atari ST it is drawn line by line at <see cref="LogoY"/>
+	/// (320x36), on the Amiga it scrolls up from the bottom to <see cref="LogoY"/> (320x33, 2 lines per vertical blank).
 	/// </summary>
 	IGraphic Logo { get; }
-	public const int LogoY = 17;
+	int LogoY { get; }
+	bool LogoScrollsIn { get; }
+
+	/// <summary>
+	/// On the Amiga the music starts after the logo, on the Atari ST before it.
+	/// </summary>
+	bool MusicStartsAfterLogo { get; }
+
+	/// <summary>
+	/// The width of the blocks which the second transition of the pages shows per vertical blank (16 on the Atari ST,
+	/// 8 on the Amiga).
+	/// </summary>
+	int TransitionBlockWidth { get; }
+
+	/// <summary>
+	/// On the Atari ST only the space key continues, on the Amiga any key (the mouse button on both).
+	/// </summary>
+	bool AnyKeyContinues { get; }
 
 	/// <summary>
 	/// The texts of the credits (lines separated by '\n').

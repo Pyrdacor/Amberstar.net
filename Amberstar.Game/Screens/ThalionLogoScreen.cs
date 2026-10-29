@@ -19,7 +19,8 @@ internal sealed class ThalionLogoScreen : Screen
 		0x31, 0x18, 0x19, 0x10, 0x13, 0x1f, 0x14, 0x16, 0x2f, 0x11, 0x2d, 0x15, 0x2c
 	];
 	const byte SpaceScanCode = 0x39;
-	const byte OtherScanCode = 0x01;
+	const byte EscapeScanCode = 0x01;
+	const byte OtherScanCode = 0x1c;
 
 	IThalionLogo logo = null!;
 	long verticalBlankTicks = 0;
@@ -61,6 +62,9 @@ internal sealed class ThalionLogoScreen : Screen
 	{
 		if (key == Key.Space)
 			return SpaceScanCode;
+
+		if (key == Key.Escape)
+			return EscapeScanCode;
 
 		int letter = key - Key.LetterA;
 

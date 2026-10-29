@@ -140,7 +140,7 @@ public partial class Game : IDisposable
     {
         ScreenHandler.ClearAllScreens();
 
-        if (AssetProvider.IntroData != null)
+        if (AssetProvider.IntroData != null && !AssetProvider.ThalionLogo!.SkipsIntro)
             ScreenHandler.PushScreen(ScreenType.Intro);
         else
             StartGame();

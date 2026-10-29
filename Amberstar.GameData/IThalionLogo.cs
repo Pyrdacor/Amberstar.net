@@ -6,6 +6,8 @@ namespace Amberstar.GameData;
 /// The logo of Thalion (THALION.68K, a separate program of the original which starts before the intro). Rain falls on
 /// a window, the logo is assembled and the name bounces in until a key is pressed. The program draws every frame
 /// into the screen memory, so it is simulated like the original and gives the shown frames.
+///
+/// On the Amiga it is a picture (TH_LOGO.UDO) which is shown until a key or the mouse button is pressed.
 /// </summary>
 public interface IThalionLogo
 {
@@ -35,6 +37,11 @@ public interface IThalionLogo
 	void Skip();
 
 	bool Finished { get; }
+
+	/// <summary>
+	/// The logo was ended by a key which skips the intro (the escape key on the Amiga).
+	/// </summary>
+	bool SkipsIntro { get; }
 
 	/// <summary>
 	/// The shown frame (RGBA).

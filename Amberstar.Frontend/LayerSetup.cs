@@ -377,7 +377,7 @@ namespace Amberstar.Frontend
 			var introGraphicOffsets = new Dictionary<IntroGraphic, int>();
 			if (introData != null)
 			{
-				for (int step = -IIntroData.FadeSteps; step < IIntroData.FadeSteps; step++)
+				for (int step = -introData.FadeSteps; step < introData.FadeSteps; step++)
 				{
 					introPaletteIndices.Add(step, (byte)cutscenePalettes.Count);
 					cutscenePalettes.Add(introData.GetBackgroundPalette(step));
