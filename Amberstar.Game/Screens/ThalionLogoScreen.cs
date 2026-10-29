@@ -103,21 +103,25 @@ internal sealed class ThalionLogoScreen : Screen
 		int newVerticalBlanks = (int)(verticalBlankTicks / Game.TicksPerSecond);
 		verticalBlankTicks %= Game.TicksPerSecond;
 
-		if (newVerticalBlanks == 0 || logo.Finished)
+		if (newVerticalBlanks == 0)
 			return;
 
-		for (int i = 0; i < newVerticalBlanks && !logo.Finished; i++)
+		// The Amiga logo is finished as soon as a key or the mouse button is pressed.
+		if (!logo.Finished)
 		{
-			logo.VerticalBlank();
-
-			if (logo.Song != song)
+			for (int i = 0; i < newVerticalBlanks && !logo.Finished; i++)
 			{
-				song = logo.Song;
-				Game.PlaySong(song == 0 ? 0 : Game.ThalionLogoSong + song);
-			}
-		}
+				logo.VerticalBlank();
 
-		ShowFrame();
+				if (logo.Song != song)
+				{
+					song = logo.Song;
+					Game.PlaySong(song == 0 ? 0 : Game.ThalionLogoSong + song);
+				}
+			}
+
+			ShowFrame();
+		}
 
 		if (logo.Finished)
 			Game.ThalionLogoFinished();

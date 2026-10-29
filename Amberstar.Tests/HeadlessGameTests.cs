@@ -62,6 +62,41 @@ public sealed class HeadlessGameTests
 	}
 
 	[Fact]
+	public void AmigaIntroShowsTheCreditsAndStartsTheGame()
+	{
+		using var game = new HeadlessGame(TestData.GetDataPath(Path.Combine("English", "AmberfilesAmiga")), showIntro: true);
+
+		// the logo of Thalion is a picture which ends with a click
+		Assert.True(game.StepUntil(() => game.Game.ScriptActiveScreen == "ThalionLogo"), game.Game.ScriptState());
+		game.Step(60);
+		Assert.Equal("ThalionLogo", game.Game.ScriptActiveScreen);
+		game.Game.MouseDown(new(160, 100), Amberstar.Game.MouseButtons.Left, Amberstar.Game.KeyModifiers.None);
+		game.Game.MouseUp(new(160, 100), Amberstar.Game.MouseButtons.Left, Amberstar.Game.KeyModifiers.None);
+		// the title picture stays until a key is pressed
+		Assert.True(game.StepUntil(() => game.Game.ScriptActiveScreen == "Intro", 300), game.Game.ScriptState());
+		game.Step(120);
+		Assert.Empty(game.Game.ScriptShownTexts);
+		game.Game.KeyDown(Amberstar.Game.Key.Enter, Amberstar.Game.KeyModifiers.None);
+		// the credits after the fading and the scrolling logo
+		Assert.True(game.StepUntil(() => game.Game.ScriptShownTexts.Count == 1, 400), game.Game.ScriptState());
+		Assert.Contains("Karsten", game.Game.ScriptShownTexts[0]);
+		// any key ends the intro and the game starts with the graveyard text
+		game.Game.KeyDown(Amberstar.Game.Key.Enter, Amberstar.Game.KeyModifiers.None);
+		Assert.True(game.StepUntil(() => game.Game.ScriptActiveScreen == "PictureText", 600), game.Game.ScriptState());
+	}
+
+	[Fact]
+	public void AmigaEscapeSkipsTheIntro()
+	{
+		using var game = new HeadlessGame(TestData.GetDataPath(Path.Combine("English", "AmberfilesAmiga")), showIntro: true);
+
+		Assert.True(game.StepUntil(() => game.Game.ScriptActiveScreen == "ThalionLogo"), game.Game.ScriptState());
+		game.Game.KeyDown(Amberstar.Game.Key.Escape, Amberstar.Game.KeyModifiers.None);
+		Assert.True(game.StepUntil(() => game.Game.ScriptActiveScreen == "PictureText", 600), game.Game.ScriptState());
+		Assert.DoesNotContain(game.Game.ScriptShownTexts, text => text.Contains("Karsten"));
+	}
+
+	[Fact]
 	public void TeleportToAnotherMapFadesInGameTime()
 	{
 		using var game = StartGame();
