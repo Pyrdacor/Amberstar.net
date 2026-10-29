@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Amber.Assets.Common\Amber.Assets.Common.csproj" />
-    <ProjectReference Include="..\Amber.IO.FileFormats\Amber.IO.FileFormats.csproj" />
+    <PackageReference Include="Amber.Assets.Common" Version="$(AmberVersion)" />
+    <PackageReference Include="Amber.IO.FileFormats" Version="$(AmberVersion)" />
     <ProjectReference Include="..\Amberstar.GameData\Amberstar.GameData.csproj" />
   </ItemGroup>
 

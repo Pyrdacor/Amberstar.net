@@ -1,0 +1,8 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Version of the Amber engine packages (https://github.com/Pyrdacor/Amber) -->
+    <AmberVersion>0.1.0</AmberVersion>
+  </PropertyGroup>
+
+</Project>

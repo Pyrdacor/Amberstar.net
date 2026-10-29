@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Amber.IO.FileSystem\Amber.IO.FileSystem.csproj" />
+    <PackageReference Include="Amber.IO.FileSystem" Version="$(AmberVersion)" />
     <ProjectReference Include="..\Amberstar.Frontend\Amberstar.Frontend.csproj" />
     <ProjectReference Include="..\Amberstar.Game\Amberstar.Game.csproj" />
     <ProjectReference Include="..\Amberstar.GameData.Legacy\Amberstar.GameData.Legacy.csproj" />

@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Amber.Assets.Common\Amber.Assets.Common.csproj" />
+    <PackageReference Include="Amber.Assets.Common" Version="$(AmberVersion)" />
   </ItemGroup>
 
 </Project>

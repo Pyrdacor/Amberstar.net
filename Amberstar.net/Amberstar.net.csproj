@@ -23,10 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Amber.Audio.OpenAL\Amber.Audio.OpenAL.csproj" />
-    <ProjectReference Include="..\Amber.Common\Amber.Common.csproj" />
-    <ProjectReference Include="..\Amber.IO.FileSystem\Amber.IO.FileSystem.csproj" />
-    <ProjectReference Include="..\Amber.Renderer.OpenGL\Amber.Renderer.OpenGL.csproj" />
+    <PackageReference Include="Amber.Audio.OpenAL" Version="$(AmberVersion)" />
+    <PackageReference Include="Amber.Common" Version="$(AmberVersion)" />
+    <PackageReference Include="Amber.IO.FileSystem" Version="$(AmberVersion)" />
+    <PackageReference Include="Amber.Renderer.OpenGL" Version="$(AmberVersion)" />
     <ProjectReference Include="..\Amberstar.GameData.Legacy\Amberstar.GameData.Legacy.csproj" />
     <ProjectReference Include="..\Amberstar.Game\Amberstar.Game.csproj" />
     <ProjectReference Include="..\Amberstar.Frontend\Amberstar.Frontend.csproj" />
