@@ -114,6 +114,11 @@ jobs:
           else
             VERSION="${GITHUB_REF_NAME#v}"
           fi
+          # a release which exists already (e.g. from a run before) gets the new files
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            gh release upload "v$VERSION" dist/* --clobber
+            exit 0
+          fi
           PRERELEASE=""
           if [[ "$VERSION" == *-* ]]; then
             PRERELEASE="--prerelease"
