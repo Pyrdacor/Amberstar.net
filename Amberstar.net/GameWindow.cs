@@ -29,6 +29,10 @@ namespace Amberstar
         bool closed = false;
         ScenarioScript? scenarioScript = null;
         readonly HashSet<Game.Key> scriptHeldKeys = [];
+        List<GameVersion> versions = [];
+        int? selectedVersionIndex = null;
+        AudioOutput? audioOutput = null;
+        Configuration? configuration = null;
 
         public string Identifier { get; } = id;
         public int ExitCode { get; private set; } = 0;
@@ -275,27 +279,71 @@ namespace Amberstar
             if (options.ScriptPath != null)
                 scenarioScript = ScenarioScript.FromFile(options.ScriptPath);
 
-            var dataPath = GameSetup.FindDataPath(options.DataPath ?? scenarioScript?.DataPath)
-                ?? throw new DirectoryNotFoundException("Game data not found. Use '--data <path>' or the environment variable " + GameSetup.DataPathEnvironmentVariable + ".");
+            var dataPath = options.DataPath ?? scenarioScript?.DataPath;
+            // A given data folder and scenario scripts don't use the packed game versions.
+            versions = dataPath == null && scenarioScript == null ? GameVersionArchive.FindVersions() : [];
 
             var randomSeed = options.RandomSeed ?? scenarioScript?.RandomSeed;
 
             if (randomSeed != null)
                 Game.Game.SetRandomSeed(randomSeed.Value);
 
-            var audioOuput = new AudioOutput();
-            var configuration = new Configuration // TODO: load it later!
+            audioOutput = new AudioOutput();
+            configuration = new Configuration // TODO: load it later!
             {
                 // scenario scripts start in the game
                 ShowIntro = scenarioScript == null
             };
 
-            game = GameSetup.CreateGame(renderer, dataPath, audioOuput, configuration, QueryPressedKeys, SetMousePosition);
+            if (versions.Count == 0)
+            {
+                dataPath = GameSetup.FindDataPath(dataPath)
+                    ?? throw new DirectoryNotFoundException("Game data not found. Use '--data <path>' or the environment variable " + GameSetup.DataPathEnvironmentVariable + ".");
 
-            game.QuitRequested += window.Close;
-            game.SavegamePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Amberstar.net", "Saves", "Savegame.sav");
+                game = GameSetup.CreateGame(renderer, dataPath, audioOutput, configuration, QueryPressedKeys, SetMousePosition);
+                SetupGame(Path.Combine(SavegameFolder, "Savegame.sav"));
+            }
+            else
+            {
+                CreateGame(0, versions.Count > 1);
+            }
 
             StartCheatInputTask();
+        }
+
+        static string SavegameFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Amberstar.net", "Saves");
+
+        void SetupGame(string savegamePath)
+        {
+            game!.QuitRequested += window!.Close;
+            game.SavegamePath = savegamePath;
+        }
+
+        /// <summary>
+        /// Creates the game for one of the packed game versions. The version selector is shown first if wanted.
+        /// </summary>
+        void CreateGame(int versionIndex, bool selectVersion)
+        {
+            var version = versions[versionIndex];
+            var versionSelection = selectVersion
+                ? new Game.Screens.VersionSelection([.. versions.Select(version => version.Name)], versionIndex, index => selectedVersionIndex = index)
+                : null;
+
+            game = GameSetup.CreateGame(renderer!, version.LoadFiles(), audioOutput!, configuration!, QueryPressedKeys, SetMousePosition, versionSelection);
+            SetupGame(Path.Combine(SavegameFolder, version.Id, "Savegame.sav"));
+        }
+
+        /// <summary>
+        /// Another version was chosen in the version selector. The game and the renderer are
+        /// created again for its data.
+        /// </summary>
+        void SwitchVersion(int versionIndex)
+        {
+            game!.Dispose();
+            game = null;
+            renderer!.Dispose();
+            renderer = new(this, new Size(Width, Height), new Size(320, 200));
+            CreateGame(versionIndex, false);
         }
 
         void StartCheatInputTask()
@@ -333,6 +381,12 @@ namespace Amberstar
 
         void Window_Update(double delta)
         {
+            if (selectedVersionIndex != null)
+            {
+                SwitchVersion(selectedVersionIndex.Value);
+                selectedVersionIndex = null;
+            }
+
             if (game != null)
             {
                 Cheats.HandleQueuedCommands(game);

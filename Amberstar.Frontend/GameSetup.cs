@@ -1,8 +1,10 @@
 using Amber.Audio;
 using Amber.Common;
+using Amber.IO.Common.FileSystem;
 using Amber.IO.FileSystem;
 using Amber.Renderer.Common;
 using Amberstar.Game;
+using Amberstar.Game.Screens;
 using Amberstar.GameData.Legacy;
 
 namespace Amberstar.Frontend;
@@ -80,14 +82,21 @@ public static class GameSetup
 	public static Game.Game CreateGame(IRenderer renderer, string dataPath, IAudioOutput audioOutput,
 		IConfiguration configuration, Func<List<Key>> pressedKeyProvider, Action<Position> setMousePosition)
 	{
-		var fileSystem = FileSystem.FromOperatingSystemPath(dataPath);
-		var assetProvider = new AssetProvider(fileSystem.AsReadOnly());
+		return CreateGame(renderer, FileSystem.FromOperatingSystemPath(dataPath).AsReadOnly(), audioOutput,
+			configuration, pressedKeyProvider, setMousePosition);
+	}
+
+	public static Game.Game CreateGame(IRenderer renderer, IReadOnlyFileSystem fileSystem, IAudioOutput audioOutput,
+		IConfiguration configuration, Func<List<Key>> pressedKeyProvider, Action<Position> setMousePosition,
+		VersionSelection? versionSelection = null)
+	{
+		var assetProvider = new AssetProvider(fileSystem);
 
 		LayerSetup.Run(assetProvider, renderer, out var uiGraphicIndexProvider,
 			out var paletteIndexProvider, out var paletteColorProvider, out var fontInfoProvider);
 
 		return new Game.Game(renderer, assetProvider, audioOutput, uiGraphicIndexProvider,
 			paletteIndexProvider, paletteColorProvider, fontInfoProvider, configuration,
-			pressedKeyProvider, setMousePosition);
+			pressedKeyProvider, setMousePosition, versionSelection);
 	}
 }

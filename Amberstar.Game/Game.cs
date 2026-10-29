@@ -27,7 +27,8 @@ public partial class Game : IDisposable
     public Game(IRenderer renderer, IAssetProvider assetProvider, IAudioOutput audioOutput,
 		IGraphicIndexProvider uiGraphicIndexProvider, IPaletteIndexProvider paletteIndexProvider,
 		IPaletteColorProvider paletteColorProvider, IFontInfoProvider fontInfoProvider,
-		IConfiguration configuration, Func<List<Key>> pressedKeyProvider, Action<Position> setMousePosition)
+		IConfiguration configuration, Func<List<Key>> pressedKeyProvider, Action<Position> setMousePosition,
+		VersionSelection? versionSelection = null)
 	{
 		Renderer = renderer;
 		Configuration = configuration;
@@ -81,13 +82,12 @@ public partial class Game : IDisposable
 		// The name of the active member is shown in a brighter color.
 		State.ActivePartyMemberChanged += UpdatePartyMembers;
 
-        // The original starts with the logo of Thalion and the intro (separate programs).
-        if (configuration.ShowIntro && AssetProvider.ThalionLogo != null)
-            ScreenHandler.PushScreen(ScreenType.ThalionLogo);
-        else if (configuration.ShowIntro && AssetProvider.IntroData != null)
-            ScreenHandler.PushScreen(ScreenType.Intro);
+        VersionSelection = versionSelection;
+
+        if (versionSelection != null)
+            ScreenHandler.PushScreen(ScreenType.VersionSelector);
         else
-            StartGame();
+            StartIntroOrGame();
 
         // TODO: For debugging, remove later
         // In Twinlake
@@ -101,6 +101,28 @@ public partial class Game : IDisposable
 		//State.SetPartyPosition(33, 23);
 		//ScreenHandler.PushScreen(ScreenType.Map2D);
 	}
+
+    internal VersionSelection? VersionSelection { get; }
+
+    /// <summary>
+    /// The version of this game was chosen in the version selector.
+    /// </summary>
+    internal void VersionSelected()
+    {
+        ScreenHandler.ClearAllScreens();
+        StartIntroOrGame();
+    }
+
+    void StartIntroOrGame()
+    {
+        // The original starts with the logo of Thalion and the intro (separate programs).
+        if (Configuration.ShowIntro && AssetProvider.ThalionLogo != null)
+            ScreenHandler.PushScreen(ScreenType.ThalionLogo);
+        else if (Configuration.ShowIntro && AssetProvider.IntroData != null)
+            ScreenHandler.PushScreen(ScreenType.Intro);
+        else
+            StartGame();
+    }
 
     void StartGame()
     {

@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Amber.Audio.Common" Version="$(AmberVersion)" />
     <PackageReference Include="Amber.Common" Version="$(AmberVersion)" />
+    <PackageReference Include="Amber.IO.FileFormats" Version="$(AmberVersion)" />
     <PackageReference Include="Amber.IO.FileSystem" Version="$(AmberVersion)" />
     <PackageReference Include="Amber.Renderer.Common" Version="$(AmberVersion)" />
     <PackageReference Include="Amber.Renderer.Headless" Version="$(AmberVersion)" />

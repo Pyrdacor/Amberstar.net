@@ -72,6 +72,7 @@ public enum ScreenType
     DismissPartyMembers,
     Intro,
     ThalionLogo,
+    VersionSelector,
     // TODO ...
 }
 
@@ -756,6 +757,7 @@ internal class ScreenHandler(Game Game) : IDisposable
             ScreenType.DismissPartyMembers => new DismissPartyMembersScreen(),
             ScreenType.Intro => new IntroScreen(),
             ScreenType.ThalionLogo => new ThalionLogoScreen(),
+            ScreenType.VersionSelector => new VersionSelectorScreen(),
             _ => throw new NotImplementedException()
 		};
 

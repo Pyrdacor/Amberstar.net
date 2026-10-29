@@ -1,0 +1,73 @@
+name: Release
+
+# Builds Amberstar.net for Windows (native AOT) with the packed game versions appended
+# to the executable and publishes it as a GitHub release.
+# Push a tag like v0.1.0-alpha or start it by hand with a version (the tag is created then).
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 0.1.0-alpha)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Determine version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$INPUT_VERSION"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version: $VERSION"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Pack the game versions
+        run: dotnet run --project Amberstar.VersionPacker -c Release -- pack versions.dat
+
+      - name: Publish
+        run: dotnet publish Amberstar.net -c Release -r win-x64 -p:Version="$VERSION" -o publish
+
+      - name: Embed the game versions
+        run: |
+          dotnet run --project Amberstar.VersionPacker -c Release -- embed publish/Amberstar.net.exe versions.dat
+          rm -f publish/*.pdb
+          cp LICENSE publish/
+          cd publish
+          7z a "../Amberstar.net-$VERSION-win-x64.zip" .
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PRERELEASE=""
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE="--prerelease"
+          fi
+          gh release create "v$VERSION" "Amberstar.net-$VERSION-win-x64.zip" --title "Amberstar.net $VERSION" --generate-notes --target "$GITHUB_SHA" $PRERELEASE
