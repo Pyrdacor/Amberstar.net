@@ -1,7 +1,7 @@
 name: Release
 
-# Builds Amberstar.net for Windows (native AOT) with the packed game versions appended
-# to the executable and publishes it as a GitHub release.
+# Builds Amberstar.net for Windows and Linux (native AOT) with the packed game versions appended
+# to the executable and publishes them as a GitHub release.
 # Push a tag like v0.1.0-alpha or start it by hand with a version (the tag is created then).
 
 on:
@@ -18,8 +18,19 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: windows-latest
+  build:
+    strategy:
+      matrix:
+        include:
+          - runtime: win-x64
+            os: windows-latest
+            executable: Amberstar.net.exe
+          # the oldest supported runner, so the executable also runs with older versions of glibc
+          - runtime: linux-x64
+            os: ubuntu-22.04
+            executable: Amberstar.net
+
+    runs-on: ${{ matrix.os }}
 
     defaults:
       run:
@@ -31,6 +42,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+
+      - name: Install the native AOT prerequisites
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
 
       - name: Determine version
         env:
@@ -52,22 +67,55 @@ jobs:
         run: dotnet run --project Amberstar.VersionPacker -c Release -- pack versions.dat
 
       - name: Publish
-        run: dotnet publish Amberstar.net -c Release -r win-x64 -p:Version="$VERSION" -o publish
+        run: dotnet publish Amberstar.net -c Release -r ${{ matrix.runtime }} -p:Version="$VERSION" -o publish
 
       - name: Embed the game versions
         run: |
-          dotnet run --project Amberstar.VersionPacker -c Release -- embed publish/Amberstar.net.exe versions.dat
-          rm -f publish/*.pdb
+          dotnet run --project Amberstar.VersionPacker -c Release -- embed publish/${{ matrix.executable }} versions.dat
+          rm -f publish/*.pdb publish/*.dbg
           cp LICENSE publish/
+
+      - name: Create the archive
+        run: |
+          NAME="Amberstar.net-$VERSION-${{ matrix.runtime }}"
+          mkdir dist
           cd publish
-          7z a "../Amberstar.net-$VERSION-win-x64.zip" .
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            7z a "../dist/$NAME.zip" .
+          else
+            chmod +x ${{ matrix.executable }}
+            tar -czf "../dist/$NAME.tar.gz" .
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runtime }}
+          path: dist/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
 
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$INPUT_VERSION"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
           PRERELEASE=""
           if [[ "$VERSION" == *-* ]]; then
             PRERELEASE="--prerelease"
           fi
-          gh release create "v$VERSION" "Amberstar.net-$VERSION-win-x64.zip" --title "Amberstar.net $VERSION" --generate-notes --target "$GITHUB_SHA" $PRERELEASE
+          gh release create "v$VERSION" dist/* --title "Amberstar.net $VERSION" --generate-notes --target "$GITHUB_SHA" $PRERELEASE
