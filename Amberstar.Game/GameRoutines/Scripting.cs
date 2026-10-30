@@ -54,6 +54,8 @@ partial class Game
 
 	public string ScriptLayout => CurrentLayout.ToString();
 
+	public bool? ScriptOverlayShown(int mapIndex, int x, int y) => (ScreenHandler.FindMapScreen() as Map2DScreen)?.ScriptOverlayShown(mapIndex, x, y);
+
 	public bool ScriptHasEnglishTexts => HasEnglishTexts;
 
 	/// <summary>

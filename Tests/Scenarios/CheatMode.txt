@@ -1,0 +1,31 @@
+# The cheat mode of the original: typing "tempus fugit" activates it, then D selects the music.
+waittext
+dismissall
+# --- without the password D does nothing
+# the letter D
+key 113
+wait 200
+screen Map2D
+# --- a wrong password
+typetext tempus fugix
+wait 200
+screen Map2D
+# the letter D
+key 113
+wait 200
+screen Map2D
+# --- the password shows a message
+typetext tempus fugit
+wait 200
+screen TextBox
+textshown CHEATMODUS
+dismissall
+# --- all songs can be played
+# the letter D
+key 113
+waitscreen Jukebox
+click 40 94
+song 2
+click 100 100 right
+wait 300
+screen Map2D

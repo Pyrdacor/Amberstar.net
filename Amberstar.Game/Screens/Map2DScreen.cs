@@ -686,8 +686,15 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	{
 		// Some events like teleports seem to allow movement. (TODO: any other events?)
 		var @event = GetEvent(x, y);
+		// With these transports only the tiles decide (Movement_check_2D in the original).
+		bool onTransport = Game.State.TravelType is TravelType.Horse or TravelType.Raft or TravelType.Ship;
 
-		if (@event != null)
+		// The tiles already block the entrance of Twinlake like in the original. This also covers exits
+		// with passable tiles, as the transport would be lost at the exits to cities, caves and so on.
+		if (onTransport && @event?.Type is EventType.MapExit or EventType.TravelExit)
+			return true;
+
+		if (@event != null && !onTransport)
 		{
 			// TODO: we should check if the event is still active
 			if (@event.Type == EventType.MapExit ||
@@ -754,6 +761,16 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		}
 
 		specialItemDisplay?.Update(palette, Game.State.PartyDirection, coordinates);
+	}
+
+	internal bool? ScriptOverlayShown(int mapIndex, int x, int y)
+	{
+		if (worldMap?.GetPosition(mapIndex, x, y) is not Position position)
+			return null;
+
+		var relativePosition = position - new Position(lastScrollX, lastScrollY);
+
+		return overlay.TryGetValue(relativePosition.X + relativePosition.Y * TilesPerRow, out var sprite) && sprite.Visible;
 	}
 
 	internal IEnumerable<string> ScriptSpecialItemDisplay => specialItemDisplay?.ShownItems ?? [];
@@ -1388,6 +1405,11 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 				var sprite = transportSprites[transportCount++];
 				var relativePosition = position.Value - displayedMapPortion.Position;
 				var tileInfo = tileset!.Tiles[TransportTileIndex + (int)transport.Type - 1];
+
+				// The transport replaces the overlay of its tile (Enter_transport_icons in the original).
+				if (overlay.TryGetValue(relativePosition.X + relativePosition.Y * TilesPerRow, out var coveredOverlay))
+					coveredOverlay.Visible = false;
+
 				sprite.TextureOffset = renderLayer.Config.Texture!.GetOffset(tileGraphicOffset + tileInfo.ImageIndex);
 				sprite.Size = new(TileWidth, TileHeight);
 				sprite.PaletteIndex = Game.PaletteIndexProvider.GetTilesetPaletteIndex(map.TilesetIndex);

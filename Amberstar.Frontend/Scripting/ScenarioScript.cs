@@ -86,6 +86,8 @@ using G = Game.Game;
 ///   specialitem &lt;item&gt; [0|1]  print if a special item is used, optionally check it
 ///   specialdisplay [text|none] print the special items shown next to the map (e.g. Compass Up, Day, X:012, 16:00),
 ///                             optionally check that one of them starts with the text or that none is shown
+///   overlayshown &lt;map&gt; &lt;x&gt; &lt;y&gt; &lt;0|1&gt;
+///                             check if the overlay of a tile of a world map is shown
 ///   optionsslot &lt;slot&gt;        choose a savegame slot in the options (1-30)
 ///   optionsslottext &lt;slot&gt; &lt;text&gt;
 ///                             check the text of a savegame slot in the options
@@ -689,6 +691,9 @@ public sealed class ScenarioScript
 					Report(actual.Equals(args[0], StringComparison.OrdinalIgnoreCase), $"battleresult = {actual} (expected {args[0]})");
 				break;
 			}
+			case "overlayshown":
+				Report(game.ScriptOverlayShown(Arg(0), Arg(1), Arg(2)) == (Arg(3) != 0), $"overlayshown {Arg(0)} {Arg(1)},{Arg(2)} = {game.ScriptOverlayShown(Arg(0), Arg(1), Arg(2))} (expected {Arg(3)})");
+				break;
 			case "optionsslot":
 				game.ScriptSelectSavegameSlot(Arg(0));
 				break;

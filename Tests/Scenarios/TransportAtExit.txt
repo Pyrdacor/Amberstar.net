@@ -1,0 +1,36 @@
+# Horses, rafts and ships can't enter map exits like the entrance of Twinlake (map 37, 10,16). They would be lost there.
+waittext
+dismissall
+cheat gold 2000
+teleport 67 14 30
+waitscreen TransportDealer
+button 6
+button 3
+waitscreen Confirmation
+yes
+dismiss
+button 7
+button 2
+waitidle
+teleport 37 12 14
+waitidle
+click 230 170 right
+wait 200
+button 3
+wait 200
+travel Horse
+teleport 37 10 15
+dismissall
+waitidle
+move down 1 optional
+wait 300
+map 37
+pos 10 15
+travel Horse
+# --- on foot the party can enter
+button 3
+wait 200
+travel Walk
+move down 1 optional
+wait 1500
+map 67

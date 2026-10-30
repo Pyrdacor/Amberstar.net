@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- The cheat mode of the original: typing TEMPUS FUGIT activates it and the key D then opens the music list to play all songs.
+
+### Changed
+- Horses, rafts and ships can no longer enter map exits like the entrances of cities, so they are no longer lost there. The original also blocks the entrance of Twinlake with a horse.
+
+### Fixed
+- The digits of the keypad no longer select party members. Only the number keys 1 to 6 do this.
+- Horses, rafts and ships can no longer pass tiles with events which do not allow them, like in the original.
+- Transports are no longer hidden by the overlay of their tile, for example a horse on a path. Like in the original the transport replaces it.
+
 ## 0.3.0
 
 ### Added

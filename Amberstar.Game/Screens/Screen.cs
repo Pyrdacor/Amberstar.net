@@ -246,7 +246,8 @@ internal abstract class Screen
 
 	public virtual bool KeyChar(char ch, KeyModifiers keyModifiers)
 	{
-		if (AllowCharacterSelection && keyModifiers == KeyModifiers.None && ch >= '1' && ch <= '6')
+		// The digits of the keypad produce the same characters but are no selection keys.
+		if (AllowCharacterSelection && keyModifiers == KeyModifiers.None && ch >= '1' && ch <= '6' && Game.LastKeyDown == Key.Number0 + (ch - '0'))
 		{
 			Game.State.SetActivePartyMember(ch - '0');
 			return true;

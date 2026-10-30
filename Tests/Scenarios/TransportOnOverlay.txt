@@ -1,0 +1,44 @@
+# A transport replaces the overlay of its tile, otherwise a horse on a path is hidden by it.
+waittext
+dismissall
+cheat gold 2000
+teleport 67 14 30
+waitscreen TransportDealer
+button 6
+button 3
+waitscreen Confirmation
+yes
+dismiss
+button 7
+button 2
+waitidle
+teleport 37 12 14
+waitidle
+click 230 170 right
+wait 200
+button 3
+wait 200
+travel Horse
+teleport 37 15 9
+waitidle
+overlayshown 37 15 9 1
+# --- get off on the path and walk away
+button 3
+wait 200
+travel Walk
+click 230 170 right
+wait 200
+move down 1 optional
+move left 1 optional
+wait 300
+transport 37 15 9 horse
+overlayshown 37 15 9 0
+# --- without the horse the overlay is shown again
+move right 1 optional
+move up 1 optional
+click 230 170 right
+wait 200
+button 3
+wait 200
+travel Horse
+overlayshown 37 15 9 1

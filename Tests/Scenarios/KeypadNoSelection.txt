@@ -1,0 +1,15 @@
+# Only the number keys select party members. The digits of the keypad produce the same characters.
+waittext
+dismissall
+join 61
+partysize 2
+activemember 1
+# --- keypad 2 with its character
+hold Keypad2 1
+typetext 2
+activemember 1
+wait 100
+# --- number key 2 with its character
+key 102
+typetext 2
+activemember 2

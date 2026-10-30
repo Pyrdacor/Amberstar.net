@@ -1,5 +1,6 @@
 ﻿using Amber.Common;
 using Amberstar.Game.Screens;
+using Amberstar.Game.UI;
 
 namespace Amberstar.Game;
 
@@ -14,8 +15,42 @@ partial class Game
     internal bool InputEnabled { get; private set; } = true;		
 	internal bool Paused { get; private set; } = false;
 
+	// The password of the cheat mode of the original (stored encrypted in the program, checked at $1086).
+	const string CheatPassword = "TEMPUS FUGIT";
+	int cheatPasswordPosition = 0;
+
+	internal bool CheatMode { get; private set; } = false;
+
+	/// <summary>
+	/// The cheat mode is activated by typing its password anywhere. A wrong key starts it again.
+	/// </summary>
+	void CheckCheatPassword(char ch)
+	{
+		if (CheatMode)
+			return;
+
+		ch = char.ToUpperInvariant(ch);
+
+		if (ch != CheatPassword[cheatPasswordPosition])
+			cheatPasswordPosition = ch == CheatPassword[0] ? 1 : 0;
+		else if (++cheatPasswordPosition == CheatPassword.Length)
+		{
+			CheatMode = true;
+
+			if (ScreenHandler.ActiveScreen is IMapScreen)
+				ShowTextMessage(TextManager.ToGameCharacters(HasEnglishTexts ? "CHEAT MODE ON. D SELECTS THE MUSIC." : "CHEATMODUS AN. D WÄHLT DIE MUSIK."));
+		}
+	}
+
+	/// <summary>
+	/// The key which produced the character of the following key char event.
+	/// </summary>
+	internal Key LastKeyDown { get; private set; } = Key.Invalid;
+
 	public void KeyDown(Key key, KeyModifiers keyModifiers)
 	{
+		LastKeyDown = key;
+
 		if (key == Key.F10)
 			PlaySong(1);
 		else if (key == Key.F5 && SavegamePath != null && ScreenHandler.ActiveScreen is IMapScreen)
@@ -35,6 +70,13 @@ partial class Game
         if (!InputEnabled)
 			return;
 
+		// [ D ] selects the music in the cheat mode of the original.
+		if (CheatMode && key == Key.LetterA + 3 && ScreenHandler.ActiveScreen is IMapScreen)
+		{
+			ScreenHandler.PushScreen(ScreenType.Jukebox);
+			return;
+		}
+
 		if (ScreenHandler.ActiveScreen?.KeyDown(key, keyModifiers) == true)
 			return;
 	}
@@ -52,6 +94,8 @@ partial class Game
 	{
 		if (!InputEnabled)
 			return;
+
+		CheckCheatPassword(ch);
 
 		if (ScreenHandler.ActiveScreen?.KeyChar(ch, keyModifiers) == true)
 			return;
