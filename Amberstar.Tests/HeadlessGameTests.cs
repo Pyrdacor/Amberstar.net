@@ -199,6 +199,35 @@ public sealed class HeadlessGameTests
 	}
 
 	[Fact]
+	public void LocksGetHarderUntilAnotherMapIsLoaded()
+	{
+		using var game = StartGame();
+
+		void Run(params string[] commands)
+		{
+			var result = game.RunScript(new ScenarioScript(commands, _ => { }), output: _ => { });
+			Assert.True(result.Success, game.Game.ScriptState());
+		}
+
+		int Reduction() => Assert.IsType<Amberstar.Game.Screens.DoorScreen>(game.Game.ScreenHandler.ActiveScreen).ScriptLockpickReduction;
+
+		// the door of the merchant (map 98) has a reduction of 1 and no trap
+		Run("setvalue 1 PickLocks 0", "teleport 98 15 11 down", "dismissall", "wait 1000", "move down 1", "waitscreen Door");
+		Assert.Equal(1, Reduction());
+		Run("button 0", "wait 200", "dismisstext");
+		Assert.Equal(11, Reduction());
+
+		// it stays harder when the door is opened again
+		Run("button 2", "waitscreen Map2D", "wait 1000", "waitidle", "move down 1", "waitscreen Door");
+		Assert.Equal(11, Reduction());
+
+		// until another map was loaded
+		Run("button 2", "waitscreen Map2D", "wait 1000", "waitidle", "teleport 69 22 11 up", "wait 1000", "waitidle",
+			"teleport 98 15 11 down", "wait 1000", "waitidle", "move down 1", "waitscreen Door");
+		Assert.Equal(1, Reduction());
+	}
+
+	[Fact]
 	public void TalkingToYourself()
 	{
 		using var game = StartGame();

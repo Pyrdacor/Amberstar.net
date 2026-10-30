@@ -249,6 +249,18 @@ partial class Game
 		ScreenHandler.PushScreen(ScreenType.Camp);
 	}
 
+	// Failed attempts make a lock harder. The original changes the event in the loaded map data,
+	// so this lasts until another map or a savegame is loaded (Pick_lock_DOOR in EVENTS.ASM).
+	readonly Dictionary<(int MapIndex, int EventIndex), int> lockpickReductions = [];
+
+	internal void ResetLockpickReductions() => lockpickReductions.Clear();
+
+	internal int GetLockpickReduction(int eventIndex, int eventValue) =>
+		lockpickReductions.GetValueOrDefault((EventHandler.CurrentEventMapIndex, eventIndex), eventValue);
+
+	internal void SetLockpickReduction(int eventIndex, int value) =>
+		lockpickReductions[(EventHandler.CurrentEventMapIndex, eventIndex)] = value;
+
 	internal void ShowDoor()
 	{
 		ScreenHandler.PushScreen(ScreenType.Door);

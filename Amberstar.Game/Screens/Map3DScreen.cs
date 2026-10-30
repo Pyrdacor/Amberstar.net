@@ -1278,6 +1278,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 	private void LoadMap(int index)
 	{
+		Game.ResetLockpickReductions();
 		map = Game.CreateMapInstance((Game.AssetProvider.MapLoader.LoadMap(index) as IMap3D)!); // TODO: catch exceptions
 		labData = Game.AssetProvider.LabDataLoader.LoadLabData(map!.LabDataIndex);
 		palette = Game.PaletteIndexProvider.GetLabyrinthPaletteIndex(labData.PaletteIndex - 1);

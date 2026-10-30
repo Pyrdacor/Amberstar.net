@@ -17,6 +17,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
     public bool WaitingForClick => waitForClick;
 
     internal bool ScriptMessageShown => message?.Visible == true;
+
+    internal int ScriptLockpickReduction => lockpickReduction;
     bool closeAfterClick = false;
     bool lockOpened = false;
     int lockpickReduction = 0;
@@ -158,7 +160,7 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         base.Open(closeAction);
 
         lockedEvent = (Game.EventHandler.CurrentEvent as TEvent)!;
-        lockpickReduction = lockedEvent.LockpickReduction;
+        lockpickReduction = Game.GetLockpickReduction(lockedEvent.Index, lockedEvent.LockpickReduction);
 
         var palette = Game.PaletteIndexProvider.Get80x80ImagePaletteIndex(Image);
         Game.SetLayout(Layout, palette);
@@ -169,7 +171,6 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         waitForClick = false;
         closeAfterClick = false;
         lockOpened = false;
-        lockpickReduction = 0;
         // the last message of this or another door or chest must not be shown again
         HideMessage();
     }
@@ -407,6 +408,7 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         {
             // Reduce chance of lockpicking by 10% for each failed attempt, up to a maximum of 99%.
             lockpickReduction = Math.Min(lockpickReduction + 10, 99);
+            Game.SetLockpickReduction(lockedEvent!.Index, lockpickReduction);
 
             if (trapDisarmed || lockedEvent!.TrapType == TrapType.None)
             {

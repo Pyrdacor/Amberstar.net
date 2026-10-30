@@ -1,0 +1,13 @@
+# The door in the house of the family is fully locked, so even the best thief can't pick it.
+waittext
+dismissall
+setvalue 1 PickLocks 100
+teleport 69 22 10 up
+dismissall
+cleartexts
+move up 1
+waitscreen Door
+button 0
+wait 200
+textshown SICH NICHT
+screen Door

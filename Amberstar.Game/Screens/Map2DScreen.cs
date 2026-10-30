@@ -1919,6 +1919,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	{
 		lastScrollX = -1;
 		lastScrollY = -1;
+		Game.ResetLockpickReductions();
 		map = Game.CreateMapInstance((Game.AssetProvider.MapLoader.LoadMap(index) as IMap2D)!); // TODO: catch exceptions
 		bool isWorldMap = map!.Flags.HasFlag(MapFlags.Wilderness);
 
