@@ -56,6 +56,14 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public bool ScriptHasStatusIcon(int slot, string icon) => playerStatusIconTypes[slot - 1].Contains(Enum.Parse<Amberstar.GameData.Serialization.StatusIcon>(icon, true));
+
+	public int ScriptConditionIcons => (ScreenHandler.ActiveScreen as CharacterStatsScreen)?.ScriptConditionIcons ?? -1;
+
+	public void ScriptPoisonGround() => AfterPartyMoved(true, false);
+
+	public void ScriptTriggerTrap(string trap) => TriggerTrap(Enum.Parse<Amberstar.GameData.Events.TrapType>(trap, true), null);
+
 	public bool ScriptIsLanguageKnown(int slot, string languageName) =>
 		State.GetPartyMember(slot)?.ConversationData.LearnedLanguages.HasFlag((LanguageFlags)(1 << (int)Enum.Parse<Language>(languageName, true))) == true;
 

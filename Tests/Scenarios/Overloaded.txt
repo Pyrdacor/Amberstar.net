@@ -1,0 +1,31 @@
+# A party member who carries too much is overloaded and the whole party can't move (Overweight_check in TEST.ASM, Move_mouse and the control icons in MAP.ASM). Only the button to wait stays enabled.
+waittext
+dismissall
+join 61
+partysize 2
+wait 100
+statusicon 1 Overloaded 0
+statusicon 2 Overloaded 0
+buttonenabled 5 1
+# --- the second member is too weak for his load, not the leader
+setvalue 2 strength 0
+wait 100
+statusicon 2 Overloaded 1
+statusicon 1 Overloaded 0
+condition 2 Overloaded 1
+buttonenabled 5 0
+buttonenabled 1 0
+buttonenabled 4 1
+pos 8 11
+hold Keypad6 50
+wait 1000
+pos 8 11
+# --- with less load or more strength the party can move again
+setvalue 2 strength 100
+wait 100
+statusicon 2 Overloaded 0
+condition 2 Overloaded 0
+buttonenabled 5 1
+hold Keypad6 50
+wait 1000
+pos 9 11

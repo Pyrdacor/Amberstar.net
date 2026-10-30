@@ -2,10 +2,15 @@
 
 ## Unreleased
 
+### Added
+- Party members who carry too much are overloaded, like in the original. They show an icon at the portrait and the whole party can't move until the weight is reduced.
+
 ### Changed
 - The music list of the cheat mode is now opened with Ctrl+D, as the key D also moves the party.
 
 ### Fixed
+- The character screen shows the conditions of a party member again.
+- The status icons at the portraits are updated at once when a condition changes, for example when a trap or poisonous ground poisons a party member.
 - Languages which were learned in the game, like the language of animals from Sunny, are now kept in savegames.
 - In battles the text, the damage and the hit points are now shown while the attack or spell animation is running, like in the original. Before they were shown after it.
 - Hunting and staying monsters were swapped. For example the rat king in the sewers of Twinlake now waits in his room behind the scene at the altar, like in the original.

@@ -15,6 +15,7 @@ internal abstract class ButtonGridScreen : Screen
 	/// </summary>
 	protected virtual bool KeypadMovesParty(Key key) => false;
     internal abstract byte ButtonGridPaletteIndex { get; }
+    internal void UpdateButtons() => RequestButtonSetup();
     protected void RequestButtonSetup()
     {
         // The grid does not exist while another screen covers this one.

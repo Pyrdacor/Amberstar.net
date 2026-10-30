@@ -127,6 +127,8 @@ internal class CharacterStatsScreen : ButtonGridScreen
         }
     }
 
+    internal int ScriptConditionIcons => physicalConditions.Concat(mentalConditions).Count(sprite => sprite?.Visible == true);
+
     public void SwitchToPartyMember(int index, bool force)
     {
         if (!force && Game.State.CurrentInventoryIndex == index)
@@ -221,83 +223,39 @@ internal class CharacterStatsScreen : ButtonGridScreen
             y += 7;
         }
 
-        // Physical conditions
+        // Conditions
+        void ShowConditions(ISprite?[] sprites, Position offset, Condition firstCondition)
+        {
+            DeleteSprites(sprites);
+            sprites.SetAllNull();
+
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                var condition = (Condition)((int)firstCondition << i);
+
+                if (partyMember.HasAnyConditionOf(condition))
+                {
+                    int graphicIndex = Game.GraphicIndexProvider.GetStatusIconIndex(condition.ToStatusIcons()[0]);
+                    sprites[i] = Game.CreateSprite(Layer.UI, offset + ConditionAdvances[i], new Size(16, 16), graphicIndex, uiPaletteIndex);
+                }
+            }
+        }
+
+        // The dead only show that they are dead.
         if (partyMember.IsDead())
         {
+            DeleteSprites(physicalConditions);
+            physicalConditions.SetAllNull();
+            DeleteSprites(mentalConditions);
+            mentalConditions.SetAllNull();
+
             int graphicIndex = Game.GraphicIndexProvider.GetStatusIconIndex(StatusIcon.Dead);
             physicalConditions[0] = Game.CreateSprite(Layer.UI, PhysicalConditionOffset, new Size(16, 16), graphicIndex, uiPaletteIndex);
-
-            for (int i = 1; i < 5; i++)
-            {
-                var physicalCondition = physicalConditions[i];
-
-                if (physicalCondition != null)
-                {
-                    physicalCondition.Visible = false;
-                    physicalConditions[i] = null;
-                }                
-            }
         }
         else
         {
-            /*var conditions = (int)partyMember.PhysicalConditions;
-
-            for (int i = 0; i < 5; i++)
-            {
-                if ((conditions & (1 << i)) != 0)
-                {
-                    int graphicIndex = game.GraphicIndexProvider.GetStatusIconIndex(((PhysicalCondition)(1 << i)).ToStatusIcon());
-                    physicalConditions[i] = game.CreateSprite(Layer.UI, PhysicalConditionOffset + ConditionAdvances[i], new Size(16, 16), graphicIndex, uiPaletteIndex);
-                }
-                else
-                {
-                    var physicalCondition = physicalConditions[i];
-
-                    if (physicalCondition != null)
-                    {
-                        physicalCondition.Visible = false;
-                        physicalConditions[0] = null;
-                    }
-                }
-            }*/
-        }
-
-        // Mental conditions
-        if (partyMember.IsDead())
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                var mentalCondition = mentalConditions[i];
-
-                if (mentalCondition != null)
-                {
-                    mentalCondition.Visible = false;
-                    mentalConditions[0] = null;
-                }
-            }
-        }
-        else
-        {
-            /*var conditions = (int)partyMember.MentalConditions;
-
-            for (int i = 0; i < 5; i++)
-            {
-                if ((conditions & (1 << i)) != 0)
-                {
-                    int graphicIndex = game.GraphicIndexProvider.GetStatusIconIndex(((MentalCondition)(1 << i)).ToStatusIcon());
-                    mentalConditions[i] = game.CreateSprite(Layer.UI, MentalConditionOffset + ConditionAdvances[i], new Size(16, 16), graphicIndex, uiPaletteIndex);
-                }
-                else
-                {
-                    var mentalCondition = mentalConditions[i];
-
-                    if (mentalCondition != null)
-                    {
-                        mentalCondition.Visible = false;
-                        mentalConditions[0] = null;
-                    }
-                }
-            }*/
+            ShowConditions(physicalConditions, PhysicalConditionOffset, Condition.Stunned);
+            ShowConditions(mentalConditions, MentalConditionOffset, Condition.Irritated);
         }
 
         RequestButtonSetup();

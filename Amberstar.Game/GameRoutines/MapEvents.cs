@@ -324,7 +324,12 @@ partial class Game
 		{
             void ShowMessageAndFinish()
             {
-                ShowTextMessage(trapInfo.Message, finishHandler);
+                ShowTextMessage(trapInfo.Message, () =>
+                {
+                    // The trap might have petrified the leader.
+                    PartyMembersChanged();
+                    finishHandler?.Invoke();
+                });
             }
 
             if (trapInfo.ActivePlayerOnly)
@@ -335,6 +340,7 @@ partial class Game
 					return;
 
                 activePartyMember.AddCondition(trapInfo.Condition);
+                ResetStatusIcons();
 
                 if (trapType == TrapType.DamageTrap)
 				{
@@ -363,6 +369,7 @@ partial class Game
 					finishAndOptionallyShowMessage = ShowMessageAndFinish;
 
                     partyMember.AddCondition(trapInfo.Condition);
+                    ResetStatusIcons();
 
 					if (trapType == TrapType.DamageTrap)
 						DamagePartyMember(partyMember, damage!.Value, next);

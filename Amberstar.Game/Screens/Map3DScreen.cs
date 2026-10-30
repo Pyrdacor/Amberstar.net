@@ -388,7 +388,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			buttonGrid.SetButton(7, ButtonType.MoveBackward);
 			buttonGrid.SetButton(8, ButtonType.RotateRight);
 
-            bool enableMoveButtons = Game.State.ActivePartyMember?.CanMove(inBattle: false) ?? false;
+            bool enableMoveButtons = !Game.PartyOverloaded && (Game.State.ActivePartyMember?.CanMove(inBattle: false) ?? false);
 
             for (int i = 0; i < 9; i++)
             {
@@ -651,6 +651,9 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 	private void CheckMove(bool forward, bool backward, bool left, bool right, bool turnLeft, bool turnRight)
 	{
+		if (Game.PartyOverloaded)
+			return;
+
 		switch (Game.State.PartyDirection)
 		{
 			case Direction.North:

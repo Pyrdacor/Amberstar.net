@@ -222,6 +222,7 @@ public partial class Game : IDisposable
 
 		Time.Update(elapsed);
 		ScreenHandler.ActiveScreen?.Update(screenElapsed);
+        UpdateOverloaded();
         UpdateStatusIcons();
 		Label.UpdateBlinkAnimations(gameTicks);
 

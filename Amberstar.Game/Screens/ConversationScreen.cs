@@ -474,6 +474,8 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
                 default:
                     throw new NotSupportedException("Invalid change stat reaction type.");
             }
+
+            Game.ResetStatusIcons();
         }
         else
         {

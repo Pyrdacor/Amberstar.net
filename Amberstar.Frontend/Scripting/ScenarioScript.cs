@@ -161,6 +161,10 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   statusicon &lt;slot&gt; &lt;icon&gt; [0|1] print or check a status icon of the portrait
+///   conditionicons [n]        print or check the number of condition icons on the character screen
+///   poisonground              the effect of a step on poisonous ground
+///   trap &lt;type&gt;               the effect of a trap
 ///   languageknown &lt;slot&gt; &lt;name&gt; [0|1] print or check if a party member knows a language
 ///   battletextsduringanimation check that battle texts are shown while animations are running
 ///   itemnameshown [0|1]       print or check if the name is shown in the item window
@@ -973,6 +977,19 @@ public sealed class ScenarioScript
 				break;
 			case "languageknown":
 				CheckBool($"languageknown {Arg(0)} {args[1]}", game.ScriptIsLanguageKnown(Arg(0), args[1]), OptionalBool(2));
+				break;
+			case "statusicon":
+				CheckBool($"statusicon {Arg(0)} {args[1]}", game.ScriptHasStatusIcon(Arg(0), args[1]), OptionalBool(2));
+				break;
+			case "conditionicons":
+				CheckValue("conditionicons", game.ScriptConditionIcons, args.FirstOrDefault());
+				break;
+			case "poisonground":
+				game.ScriptPoisonGround();
+				break;
+			case "trap":
+				game.ScriptTriggerTrap(args[0]);
+				continueTime = time + 1;
 				break;
 			case "cursor":
 			{

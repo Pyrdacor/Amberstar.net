@@ -1,0 +1,26 @@
+# Poison is shown at once at the portrait and on the character screen. Before the icons were only updated by other screens.
+waittext
+dismissall
+setvalue 1 luck 0
+statusicon 1 Poisoned 0
+# --- poisonous ground
+poisonground
+condition 1 Poisoned 1
+statusicon 1 Poisoned 1
+setcondition 1 Poisoned 0
+statusicon 1 Poisoned 0
+# --- a trap
+trap PoisonNeedle
+wait 200
+condition 1 Poisoned 1
+statusicon 1 Poisoned 1
+dismissall
+statusicon 1 Poisoned 1
+# --- the character screen shows it
+click 32 17 right
+waitscreen Inventory
+wait 1000
+button 0
+waitscreen CharacterStats
+wait 500
+conditionicons 1

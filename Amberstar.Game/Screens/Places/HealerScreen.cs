@@ -188,6 +188,7 @@ internal sealed class HealerScreen : PlaceScreen
 		{
 			var patient = Patient;
 			patient.RemoveCondition(condition);
+			Game.ResetStatusIcons();
 
 			// resurrection
 			if (condition is Condition.Dead or Condition.Ashes or Condition.Dust && !patient.IsDead())

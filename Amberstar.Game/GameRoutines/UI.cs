@@ -249,16 +249,16 @@ partial class Game
                 HideStatusIcon(index);
             else
             {
-                var conditions = partyMember.GetConditions();
+                var statusIcons = partyMember.GetConditions().ToStatusIcons();
 
-                if (conditions == Condition.None)
+                if (statusIcons.Length == 0)
                     HideStatusIcon(index);
                 else
                 {
                     var statusIconTypes = playerStatusIconTypes[index];
 
                     statusIconTypes.Clear();
-                    statusIconTypes.AddRange(conditions.ToStatusIcons());
+                    statusIconTypes.AddRange(statusIcons);
 
                     SetStatusIcon(index, statusIconTypes[0], true);
                 }
@@ -287,6 +287,7 @@ partial class Game
 
     internal void HideStatusIcon(int partyMemberSlot)
     {
+        playerStatusIconTypes[partyMemberSlot].Clear();
         playerStatusIconIndices[partyMemberSlot] = 0;
         playerStatusIcons[partyMemberSlot].Visible = false;
     }

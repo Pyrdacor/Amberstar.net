@@ -1,0 +1,47 @@
+# Every trap with a condition shows its icon at once at the portraits (Trap_table in EVENTS.ASM). A petrified leader is replaced after the text.
+waittext
+dismissall
+join 61
+partysize 2
+setvalue 1 luck 0
+setvalue 2 luck 0
+# --- the whole party
+trap PoisonGasCloud
+wait 200
+statusicon 1 Poisoned 1
+statusicon 2 Poisoned 1
+dismissall
+setcondition 1 Poisoned 0
+setcondition 2 Poisoned 0
+statusicon 1 Poisoned 0
+trap BlindingFlash
+wait 200
+statusicon 1 Blind 1
+statusicon 2 Blind 1
+dismissall
+setcondition 1 Blind 0
+setcondition 2 Blind 0
+trap ParalyzingGasCloud
+wait 200
+statusicon 1 Stunned 1
+statusicon 2 Stunned 1
+dismissall
+setcondition 1 Stunned 0
+setcondition 2 Stunned 0
+# --- only the active party member
+trap Disease
+wait 200
+statusicon 1 Diseased 1
+statusicon 2 Diseased 0
+dismissall
+setcondition 1 Diseased 0
+trap StoneGaze
+wait 200
+condition 1 Petrified 1
+statusicon 1 Petrified 1
+statusicon 2 Petrified 0
+dismisstext
+waitscreen SelectPartyMember
+portrait 2
+wait 500
+activemember 2

@@ -93,6 +93,40 @@ partial class Game
 	}
 
 	/// <summary>
+	/// If anyone carries too much, the whole party can't move (Overweight_check in the original).
+	/// </summary>
+	internal bool PartyOverloaded => State.PartyMembers.Any(partyMember => partyMember.HasAnyConditionOf(Condition.Overloaded));
+
+	/// <summary>
+	/// The weights can change at any time, also when a spell which raises the strength ends.
+	/// </summary>
+	void UpdateOverloaded()
+	{
+		bool changed = false;
+
+		foreach (var partyMember in State.PartyMembers)
+		{
+			bool overloaded = partyMember.TotalWeight > partyMember.MaxWeight();
+
+			if (overloaded == partyMember.HasAnyConditionOf(Condition.Overloaded))
+				continue;
+
+			if (overloaded)
+				partyMember.AddCondition(Condition.Overloaded);
+			else
+				partyMember.RemoveCondition(Condition.Overloaded);
+
+			changed = true;
+		}
+
+		if (changed && CurrentBattle == null)
+		{
+			ResetStatusIcons();
+			(ScreenHandler.ActiveScreen as ButtonGridScreen)?.UpdateButtons();
+		}
+	}
+
+	/// <summary>
 	/// Effects of the ground after each step (After_move in the original).
 	/// On poisonous ground each party member gets poisoned unless a luck probe succeeds.
 	/// Swimming party members lose 1 to 5 hit points unless a swim probe succeeds.
@@ -111,6 +145,8 @@ partial class Game
 					ShowDamageSplash(partyMember, 0);
 				}
 			}, UnaffectedConditions);
+
+			ResetStatusIcons();
 		}
 
 		if (water && travelType == TravelType.Walk)
@@ -172,6 +208,10 @@ partial class Game
 	internal void PartyMembersChanged()
 	{
 		UpdatePartyMembers();
+
+		// In battles the icons show the actions.
+		if (CurrentBattle == null)
+			ResetStatusIcons();
 
 		var activePartyMember = State.ActivePartyMember;
 

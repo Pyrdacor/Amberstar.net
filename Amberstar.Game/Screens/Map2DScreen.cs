@@ -534,7 +534,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			buttonGrid.SetButton(7, ButtonType.ArrowDown);
 			buttonGrid.SetButton(8, ButtonType.ArrowDownRight);
 
-			bool enableMoveButtons = Game.State.ActivePartyMember?.CanMove(inBattle: false) ?? false;
+			bool enableMoveButtons = !Game.PartyOverloaded && (Game.State.ActivePartyMember?.CanMove(inBattle: false) ?? false);
 
             for (int i = 0; i< 9; i++)
 			{
@@ -650,6 +650,10 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	private bool MovePlayer(int x, int y)
 	{
 		additionalMoveRequested = false;
+
+		if (Game.PartyOverloaded)
+			return false;
+
 		var oldPosition = Game.State.PartyPosition;
 		int newX = MathUtil.Limit(0, oldPosition.X + x, map!.Width - 1);
 		int newY = MathUtil.Limit(0, oldPosition.Y + y, map.Height - 1);

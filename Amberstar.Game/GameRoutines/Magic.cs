@@ -462,6 +462,7 @@ partial class Game
 						partyMember.RemoveCondition(Condition.Sleeping);
 						ShowMagicSparkle(partyMember);
 					}, NotAliveConditions);
+					ResetStatusIcons();
 					finished();
 				}
 				break;
@@ -546,6 +547,7 @@ partial class Game
 			else if (TrySpell(finished))
 			{
 				target.RemoveCondition(condition);
+				ResetStatusIcons();
 				ShowMagicSparkle(target);
 				finished();
 			}
@@ -581,6 +583,7 @@ partial class Game
 				target.AddCondition(failCondition.Value);
 			}
 
+			ResetStatusIcons();
 			ShowMagicSparkle(target);
 
 			if (success)
