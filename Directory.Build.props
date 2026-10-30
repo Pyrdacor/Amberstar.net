@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <!-- Version of the game (shown in the window title, the release workflow sets it from the tag) -->
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <!-- Version of the Amber engine packages (https://github.com/Pyrdacor/Amber) -->
-    <AmberVersion>0.1.0</AmberVersion>
+    <AmberVersion>0.1.1</AmberVersion>
   </PropertyGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Text;
 using Amber.IO.Common.FileSystem;
+using Amber.IO.FileSystem;
 
 namespace Amberstar.Frontend;
 
@@ -93,7 +94,7 @@ public static class GameVersionArchive
 	static IReadOnlyFileSystem LoadFiles(byte[] archiveData, string id)
 	{
 		using var archive = new ZipArchive(new MemoryStream(archiveData), ZipArchiveMode.Read);
-		var fileSystem = new PackedFileSystem();
+		var fileSystem = FileSystem.CreateVirtual();
 		string prefix = id + "/";
 
 		foreach (var entry in archive.Entries)
@@ -104,10 +105,10 @@ public static class GameVersionArchive
 			var data = new byte[entry.Length];
 			using var stream = entry.Open();
 			stream.ReadExactly(data);
-			fileSystem.AddFile(entry.FullName[prefix.Length..], data);
+			fileSystem.CreateFile(entry.FullName[prefix.Length..], data);
 		}
 
-		return fileSystem;
+		return fileSystem.AsReadOnly();
 	}
 
 	/// <summary>
