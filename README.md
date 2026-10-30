@@ -6,6 +6,8 @@ Remake of the Amiga classic Amberstar.
 
 Ideas and feature suggestions are welcome in the issue tracker.
 
+See the [changelog](CHANGELOG.md) for the changes of each version.
+
 ## Game versions
 
 The releases for Windows and Linux (x64) contain the English and German game data of the Amiga and Atari ST versions.

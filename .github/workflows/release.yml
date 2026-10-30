@@ -97,6 +97,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           path: dist
@@ -123,4 +125,10 @@ jobs:
           if [[ "$VERSION" == *-* ]]; then
             PRERELEASE="--prerelease"
           fi
-          gh release create "v$VERSION" dist/* --title "Amberstar.net $VERSION" --generate-notes --target "$GITHUB_SHA" $PRERELEASE
+          # the notes are the section of this version in the changelog (without a suffix like -alpha)
+          awk -v section="## ${VERSION%%-*}" '$0 == section { found = 1; next } /^## / { found = 0 } found' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "CHANGELOG.md has no section for ${VERSION%%-*}"
+            exit 1
+          fi
+          gh release create "v$VERSION" dist/* --title "Amberstar.net $VERSION" --notes-file notes.md --target "$GITHUB_SHA" $PRERELEASE
