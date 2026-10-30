@@ -8,6 +8,7 @@ waitscreen Inventory
 # --- nothing happens without an amount
 button 7
 waitscreen PlaceGiveGold
+textshown WIEVIEL GOLD
 click 136 168
 wait 200
 screen PlaceGiveGold

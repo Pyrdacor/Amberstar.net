@@ -413,7 +413,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 		public override ScreenType Type { get; } = ScreenType.PlaceGiveGold;
 		protected override ItemGraphic Graphic { get; } = ItemGraphic.WishingCoins;
 		protected override IText InputLabelText => Game.LoadUIText(UIText.Gold);
-		protected override Message Message { get; } = Message.TransferHowManyGold;
+		protected override Message Message { get; } = Message.GiveHowMuch;
 	}
 
 	internal class GiveFoodScreen : InputAmountScreen
@@ -421,6 +421,6 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 		public override ScreenType Type { get; } = ScreenType.PlaceGiveFood;
 		protected override ItemGraphic Graphic { get; } = ItemGraphic.Ration;
 		protected override IText InputLabelText => Game.LoadUIText(UIText.Food);
-		protected override Message Message { get; } = Message.TransferHowManyFood;
+		protected override Message Message { get; } = Message.GiveHowMuch;
 	}
 }

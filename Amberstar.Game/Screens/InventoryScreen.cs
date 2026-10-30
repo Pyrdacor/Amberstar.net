@@ -278,6 +278,8 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
 
         if (screen is InputAmountScreen)
         {
+            HideMessage();
+
             var action = amountEntered;
             amountEntered = null;
 
@@ -477,6 +479,8 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             case 7: // Give gold
             {
                 var giver = partyMember!;
+                // the long question is shown above the window (Transfer_gold in the original)
+                ShowMessage(Message.TransferHowManyGold, false);
                 Game.CurrentAmountDrop = (Message.ReallyDropGold, amount =>
                 {
                     Game.DropGold(giver, amount);
@@ -490,6 +494,7 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             case 8: // Give food
             {
                 var giver = partyMember!;
+                ShowMessage(Message.TransferHowManyFood, false);
                 Game.CurrentAmountDrop = (Message.ReallyDropFood, amount =>
                 {
                     Game.DropFood(giver, amount);

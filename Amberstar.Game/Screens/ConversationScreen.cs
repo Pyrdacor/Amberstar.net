@@ -849,7 +849,7 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
         public override ScreenType Type { get; } = ScreenType.ConversationGiveFood;
         protected override ItemGraphic Graphic { get; } = ItemGraphic.Ration;
         protected override IText InputLabelText => inputLabelText!;
-        protected override Message Message { get; } = Message.TransferHowManyFood;
+        protected override Message Message { get; } = Message.GiveHowMuch;
 
         public override void Init()
         {
