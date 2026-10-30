@@ -63,3 +63,5 @@ portrait 1
 count 111 +1
 button 2
 waitidle
+# the item counts of the merchant do not stay on the map
+blinkinglabels 0

@@ -6,6 +6,11 @@
 - The compass also shows the direction of the party on 2D maps. In the original it always points north there.
 
 ### Fixed
+- The battle screen of the Amiga versions is no longer black. Its colors and other data were not loaded from the Amiga program: the positions of the monsters, the damage of spells, the damage digits, the shadows on maps, the song names and the altar puzzle.
+- The game no longer crashes when it is closed.
+- The count of items no longer stays visible on the map after leaving a merchant.
+- The "ouch" bubble no longer stays visible on the map when the party bumps into something several times in a row.
+- Movement keys no longer close text popups, so a text which appears while walking stays until it is confirmed with the mouse, Space, Enter or Escape.
 - Items can be used while the party stands on a map event. For example the magic picture of the family house only closed the inventory without any effect when it was used on the tile of its chest.
 
 ## 0.2.0

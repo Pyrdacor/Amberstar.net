@@ -288,6 +288,8 @@ internal class ItemContainer : Control
 
 			if (count > 1)
 			{
+				// The previous label must be removed, otherwise it would stay visible forever.
+				itemCountLabel?.Destroy();
 				itemCountLabel = new Label(game);
 				itemCountLabel.SetText($"{count,2}", 15, TextManager.TransparentPaper, sprite.PaletteIndex);
                 itemCountLabel.Area = new(sprite.Position + new Position(2, 10), new(12, 7));
@@ -469,7 +471,7 @@ internal class ItemContainer : Control
 
 		if (itemCountLabel != null)
 		{
-			itemCountLabel.Visible = false;
+			itemCountLabel.Destroy();
 			itemCountLabel = null;
 		}
 

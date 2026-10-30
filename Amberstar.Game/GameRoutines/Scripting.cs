@@ -352,6 +352,11 @@ partial class Game
 	/// Adds or removes a used special item (Compass, Amberstar, MagicalPicture, WindChain, MapLocator or Clock).
 	/// </summary>
 	/// <summary>
+	/// The number of blinking labels (item counts). Labels which were not removed stay visible on other screens.
+	/// </summary>
+	public int ScriptBlinkingLabelCount => UI.Label.BlinkingLabelCount;
+
+	/// <summary>
 	/// The special items which are shown next to the map view (e.g. "Compass Up", "Day", "X:012").
 	/// </summary>
 	public IEnumerable<string> ScriptSpecialItemDisplay => ScreenHandler.FindMapScreen() switch

@@ -86,6 +86,7 @@ using G = Game.Game;
 ///   specialitem &lt;item&gt; [0|1]  print if a special item is used, optionally check it
 ///   specialdisplay [text|none] print the special items shown next to the map (e.g. Compass Up, Day, X:012, 16:00),
 ///                             optionally check that one of them starts with the text or that none is shown
+///   blinkinglabels [count]    print the number of existing blinking labels (item counts), optionally check it
 ///   travel [type]             print the travel type (Walk, Horse, Raft, Ship, MagicDisc, ...), optionally check it
 ///   passtime &lt;minutes&gt;        let time pass in steps of 5 minutes (poison, diseases, aging, spell durations, ...)
 ///   setactivespell &lt;name&gt; &lt;duration&gt; [value]
@@ -526,6 +527,16 @@ public sealed class ScenarioScript
 					Report(shown.Count == 0, $"specialdisplay = {actual} (expected none)");
 				else
 					Report(shown.Any(item => item.StartsWith(argument, StringComparison.OrdinalIgnoreCase)), $"specialdisplay = {actual} (expected {argument})");
+				break;
+			}
+			case "blinkinglabels":
+			{
+				int count = game.ScriptBlinkingLabelCount;
+
+				if (args.Length == 0)
+					output($"  blinkinglabels = {count}");
+				else
+					Report(count == Arg(0), $"blinkinglabels = {count} (expected {Arg(0)})");
 				break;
 			}
 			case "setspecialitem":

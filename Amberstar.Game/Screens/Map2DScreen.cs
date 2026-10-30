@@ -271,6 +271,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
     internal void MapChanged()
 	{
+		// The teleport might have cleared the delayed action which hides it.
+		HideOuchBubble();
 		LoadMap(Game.State.MapIndex);
         ShowMapName();
         AfterMove(moved: false);
@@ -298,6 +300,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 		// Don't move any further
 		ResetMovement();
+		HideOuchBubble();
 
 		if (!screen.Transparent)
 		{
@@ -572,11 +575,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		mapCharacters.ForEach(c => c.Visible = false);
 		mapCharacters.Clear();
 
-        if (ouchBubble != null)
-		{
-			ouchBubble.Visible = false;
-			ouchBubble = null;
-        }
+		HideOuchBubble();
 
 		specialItemDisplay?.Hide();
         mapNameText!.Delete();
@@ -1427,9 +1426,21 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		moveY = 0;
 	}
 
+	private void HideOuchBubble()
+	{
+		Game.DeleteDelayedActions(ouchBubbleDeleteActionIndex);
+
+		if (ouchBubble != null)
+		{
+			ouchBubble.Visible = false;
+			ouchBubble = null;
+		}
+	}
+
 	private void ShowOuchBubble()
 	{
-        Game.DeleteDelayedActions(ouchBubbleDeleteActionIndex);
+		// A bubble which is still shown would never be hidden otherwise.
+		HideOuchBubble();
 
         var renderLayer = Game.GetRenderLayer(Layer.UI);
         var playerPosition = Game.State.PartyPosition;
@@ -1441,14 +1452,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
         ouchBubble.Size = UIGraphic.SmallOuch.GetSize();
         ouchBubble.Visible = true;
 
-        ouchBubbleDeleteActionIndex = Game.AddDelayedAction(OuchDisplayTime, () =>
-		{
-			if (ouchBubble != null)
-			{
-				ouchBubble.Visible = false;
-				ouchBubble = null;
-			}
-		});
+        ouchBubbleDeleteActionIndex = Game.AddDelayedAction(OuchDisplayTime, HideOuchBubble);
     }
 
 	private void ClearMap()

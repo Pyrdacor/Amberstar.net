@@ -711,6 +711,8 @@ internal class Label(Game game) : Control, ILayeredDrawable
     // the labels which blink (they blink in all screens, e.g. also while an item is chosen for use)
     static readonly HashSet<Label> blinkingLabels = [];
 
+    internal static int BlinkingLabelCount => blinkingLabels.Count;
+
     /// <summary>
     /// The label fades out and in (like the counts of items).
     /// </summary>
