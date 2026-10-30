@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.2
 
 ### Added
 - Party members who carry too much are overloaded, like in the original. They show an icon at the portrait and the whole party can't move until the weight is reduced.
