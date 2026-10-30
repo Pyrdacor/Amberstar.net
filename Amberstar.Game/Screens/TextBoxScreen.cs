@@ -98,6 +98,10 @@ internal sealed class TextBoxScreen() : WindowScreen(WindowX, WindowY, WindowWid
 
 	public override bool KeyDown(Key key, KeyModifiers keyModifiers)
 	{
+        // Other keys must not close the text (e.g. movement keys while the party walks).
+        if (!IsTextConfirmKey(key))
+            return true;
+
         return ScrollOrClose() || base.KeyDown(key, keyModifiers);
     }
 

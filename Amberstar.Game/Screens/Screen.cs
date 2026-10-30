@@ -201,6 +201,11 @@ internal abstract class Screen
 		// default: empty
 	}
 
+	/// <summary>
+	/// The keys which continue or close a text which waits for the user.
+	/// </summary>
+	protected static bool IsTextConfirmKey(Key key) => key == Key.Space || key == Key.Escape || key == Key.Enter;
+
 	public virtual bool KeyDown(Key key, KeyModifiers keyModifiers)
 	{
 		if (AllowInventoryAccess && key >= Key.F1 && key <= Key.F6)

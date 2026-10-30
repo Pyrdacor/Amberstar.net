@@ -1,0 +1,13 @@
+# Text popups stay open if a movement key is pressed, only the confirm keys or the mouse close them.
+waittext
+dismissall
+teleport 69 15 13
+waitidle
+move left
+waitscreen TextBox
+key Keypad4
+wait 200
+waitscreen TextBox
+pos 14 13
+key Space
+waitidle

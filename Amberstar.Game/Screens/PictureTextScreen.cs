@@ -66,6 +66,10 @@ internal class PictureTextScreen : Screen
 
 	public override bool KeyDown(Key key, KeyModifiers keyModifiers)
 	{
+        // Other keys must not close the text (e.g. movement keys while the party walks).
+        if (!IsTextConfirmKey(key))
+            return true;
+
         if (closeOnNextInput)
         {
             closeOnNextInput = false;
