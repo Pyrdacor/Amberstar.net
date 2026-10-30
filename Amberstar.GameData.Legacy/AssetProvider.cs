@@ -879,8 +879,15 @@ public class AssetProvider : IAssetProvider
 			case EmbeddedDataOffset.LoadingScreenPalette:
 			case EmbeddedDataOffset.ItemSparkleCode:
 			case EmbeddedDataOffset.CurseAnimationCode:
-				// The code and the palette are the same as in the Atari version. The addresses in the
-				// text segment are offsets, so the graphic is found like there.
+			case EmbeddedDataOffset.ShadowTable:
+			case EmbeddedDataOffset.CombatData:
+			case EmbeddedDataOffset.CombatPalette:
+			case EmbeddedDataOffset.MonsterGraphicPositions:
+			case EmbeddedDataOffset.DamageDigits:
+			case EmbeddedDataOffset.SongNames:
+			case EmbeddedDataOffset.AltarPuzzle:
+				// The code and the data are the same as in the Atari version. The addresses in the
+				// text segment are offsets, so they are found like there.
 				return FindAtariOffset(embeddedDataFile, dataReader);
             default:
                 return false;

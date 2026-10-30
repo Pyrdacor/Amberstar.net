@@ -237,6 +237,27 @@ public sealed class GameDataTests
 		Assert.NotNull(logo.GetSong(2));
 	}
 
+	/// <summary>
+	/// These data are searched in the program file. Without them the battle screen is black (the palette),
+	/// the monsters are at the wrong positions and spells make no damage.
+	/// </summary>
+	[Theory]
+	[InlineData("German/AmberfilesAmiga")]
+	[InlineData("English/AmberfilesAmiga")]
+	public void AmigaProgramDataLoads(string folder)
+	{
+		var assetProvider = TestData.CreateAssetProvider(folder);
+		var combatData = assetProvider.CombatData;
+
+		for (int background = 1; background <= ICombatData.CombatBackgroundCount; background++)
+			Assert.Contains(combatData.GetPalette(background).GetData().Where((_, i) => i % 4 != 3), component => component != 0);
+
+		Assert.Equal((1, 2), (combatData.GetSpellDamage(1).Min, combatData.GetSpellDamage(1).Max));
+		Assert.Equal(new MonsterGraphicPosition(54, 70, 0), combatData.GetMonsterPosition(0, 0));
+		Assert.Equal([3, 3, 8], combatData.GetMonsterFrameCounts(1));
+		Assert.NotNull(assetProvider.AltarPuzzle);
+	}
+
 	[Theory]
 	[MemberData(nameof(TestData.DataFolders), MemberType = typeof(TestData))]
 	public void CombatDataLoads(string folder)
