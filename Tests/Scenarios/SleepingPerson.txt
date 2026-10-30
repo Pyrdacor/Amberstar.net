@@ -1,0 +1,12 @@
+# At midnight Oldamiel lies in his bed in the inn "Zum tanzenden Drachen". A sleeping person only snores.
+waittext
+dismissall
+settime 0 0
+teleport 71 32 12 right
+dismissall
+wait 2
+cleartexts
+trigger 33 12 Mouth
+wait 1
+screen TextBox
+textshown SCHNARCHEN

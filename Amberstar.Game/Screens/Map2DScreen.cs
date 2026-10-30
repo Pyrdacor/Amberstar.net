@@ -1046,8 +1046,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	}
 
 	/// <summary>
-	/// Talks to the person at a position (Talk in EYE.ASM of the original). In cities a person on the
-	/// sleeping tile only snores. Nobody at the party position means talking to yourself.
+	/// Talks to the person at a position (Talk in EYE.ASM of the original). A person in the bed which
+	/// then shows the sleeping tile only snores. Nobody at the party position means talking to yourself.
 	/// Returns false if nobody is there.
 	/// </summary>
 	bool Talk(int x, int y)
@@ -1056,7 +1056,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 		if (character != null && character.Type == MapCharacterType.Person)
 		{
-			bool sleeping = !IsWilderness && map!.Tiles[x + y * map.Width].Overlay == SleepingTile;
+			var tile = map!.Tiles[x + y * map.Width];
+			bool sleeping = IsChairOrBed(tile) && tile.Overlay + 1 == SleepingTile;
 			Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index), sleeping);
 			return true;
 		}
@@ -1220,6 +1221,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		}
 	}
 
+	private bool IsChairOrBed(Tile2D tile) =>
+		!IsWilderness && tile.Overlay != 0 && GetTileInfo(tile.Overlay).Flags.HasFlag(TileFlags.ChairOrBed);
+
 	private void FillMap(int scrollOffsetX, int scrollOffsetY, bool force = false)
 	{
 		if (scrollOffsetX < MinScrollX)
@@ -1246,10 +1250,17 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		var playerPosition = Game.State.PartyPosition;
 		int playerTileIndex = playerPosition.X + playerPosition.Y * map!.Width;
 		var playerTile = map.Tiles[playerTileIndex];
-		// In cities a chair or bed shows the next tile instead (the sitting or sleeping party)
-		// and the party is not drawn (C2_DisUpd in the original).
-		bool partyOnChairOrBed = !IsWilderness && playerTile.Overlay != 0 &&
-			GetTileInfo(playerTile.Overlay).Flags.HasFlag(TileFlags.ChairOrBed);
+		// In cities a chair or bed shows the next tile if someone is on it (the sitting or sleeping party or
+		// person) and they are not drawn themselves (C2_DisUpd and TwoD_char_handler in the original).
+		bool partyOnChairOrBed = IsChairOrBed(playerTile);
+		var occupiedChairsAndBeds = characters
+			.Where(character => character.IsPresent(Game.State) && Game.State.IsMapCharacterActive(map.Index, 1 + character.Index))
+			.Select(character => character.Position.X + character.Position.Y * map.Width)
+			.Where(index => IsChairOrBed(map.Tiles[index]))
+			.ToHashSet();
+
+		if (partyOnChairOrBed)
+			occupiedChairsAndBeds.Add(playerTileIndex);
 
         for (int y = 0; y < TileRows; y++)
 		{
@@ -1281,7 +1292,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 				if (tile.Overlay != 0)
 				{
-					int overlayTile = partyOnChairOrBed && index == playerTileIndex ? tile.Overlay + 1 : tile.Overlay;
+					int overlayTile = occupiedChairsAndBeds.Contains(index) ? tile.Overlay + 1 : tile.Overlay;
 					CreateTileSprite(overlay, gridIndex, OffsetX + x * TileWidth, OffsetY + y * TileHeight, overlayTile, 2 * RenderOrderOffset, index);
 				}
 				else if (overlay.TryGetValue(gridIndex, out var overlaySprite))
@@ -1340,7 +1351,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			int baseLineOffset = GetBaseLineOffset(tile, out bool visible);
 
 			// Note: This would not work for world maps but there are no characters on world maps.
-			if (visible && (!Game.State.IsMapCharacterActive(map.Index, 1 + i) || !character.IsPresent(Game.State) || shadowedTiles.Contains(character.Position)))
+			if (visible && (!Game.State.IsMapCharacterActive(map.Index, 1 + i) || !character.IsPresent(Game.State) || shadowedTiles.Contains(character.Position) || IsChairOrBed(tile)))
 				visible = false;
 
             mapCharacter.Visible = visible && displayedMapPortion.Contains(character.Position);
