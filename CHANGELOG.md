@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- The music list of the cheat mode is now opened with Ctrl+D, as the key D also moves the party.
+
+### Fixed
+- The dungeon map and the map overview no longer stay visible above the inventory or character screen which is opened while they are shown.
+- Keys for one usage and lockpicks are now removed from the inventory when they are used at a door or chest. Before they only disappeared from the shown slots.
+- The inventory and the character screen show the portrait of the character editor. The character screen also shows the current name and values of the party member instead of the original ones.
+- The music list always shows the sword cursor instead of the previous cursor, for example a movement arrow.
+
 ## 0.3.1
 
 ### Added

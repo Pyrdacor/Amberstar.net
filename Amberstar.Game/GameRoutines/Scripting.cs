@@ -54,6 +54,11 @@ partial class Game
 
 	public string ScriptLayout => CurrentLayout.ToString();
 
+	public string ScriptCursor => Cursor.CursorType.ToString();
+
+	public bool? ScriptMapOverviewShown => ScreenHandler.FindScreen(ScreenType.Automap) is AutomapScreen automapScreen ? automapScreen.ScriptSpritesShown
+		: ScreenHandler.FindScreen(ScreenType.Minimap) is MinimapScreen minimapScreen ? minimapScreen.ScriptSpritesShown : null;
+
 	public bool? ScriptOverlayShown(int mapIndex, int x, int y) => (ScreenHandler.FindMapScreen() as Map2DScreen)?.ScriptOverlayShown(mapIndex, x, y);
 
 	public bool ScriptHasEnglishTexts => HasEnglishTexts;

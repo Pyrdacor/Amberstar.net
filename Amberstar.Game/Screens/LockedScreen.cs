@@ -505,8 +505,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
                 ShowMessage(Message.UseWhichItem, false);
                 Game.EnableInput(false);
 
-                // TODO: Move this weight update logic (and similar logic) to party functions
-                Game.State.ActivePartyMember!.TotalWeight = (uint)Math.Max(0, (long)Game.State.ActivePartyMember.TotalWeight - item.Item.Weight);
+                var partyMember = Game.State.ActivePartyMember!;
+                Game.DestroyUsedItem(partyMember, partyMember.Inventory[index.Value], false);
                 item.ReduceItemCount(1, true, () =>
                 {
                     lockOpened = true;
@@ -528,8 +528,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
             ShowMessage(Message.UseWhichItem, false);
             Game.EnableInput(false);
 
-            // TODO: Move this weight update logic (and similar logic) to party functions
-            Game.State.ActivePartyMember!.TotalWeight = (uint)Math.Max(0, (long)Game.State.ActivePartyMember.TotalWeight - item.Item.Weight);
+            var partyMember = Game.State.ActivePartyMember!;
+            Game.DestroyUsedItem(partyMember, partyMember.Inventory[index.Value], false);
             item.ReduceItemCount(1, true, () =>
             {
                 Game.EnableInput(true);

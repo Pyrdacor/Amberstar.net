@@ -91,6 +91,31 @@ internal sealed class MinimapScreen : ButtonGridScreen
 		base.Close();
 	}
 
+	internal bool ScriptSpritesShown => background?.Visible == true;
+
+	// The inventory can be opened above this screen.
+	public override void ScreenPushed(Screen screen)
+	{
+		if (!screen.Transparent)
+		{
+			ClearMap();
+			background!.Visible = false;
+		}
+
+		base.ScreenPushed(screen);
+	}
+
+	public override void ScreenPopped(Screen screen)
+	{
+		base.ScreenPopped(screen);
+
+		if (!screen.Transparent)
+		{
+			background!.Visible = true;
+			ShowMap();
+		}
+	}
+
 	private void LoadMapColors()
 	{
 		switch (Game.ScreenHandler.FindMapScreen())

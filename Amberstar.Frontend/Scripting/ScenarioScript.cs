@@ -111,7 +111,7 @@ using G = Game.Game;
 ///   placefood [amount]        print the food of the shown food dealer, optionally check it
 ///   transport &lt;map&gt; &lt;x&gt; &lt;y&gt; [type]
 ///                             print the transport at a position (none, Horse, Raft or Ship), optionally check it
-///   key &lt;key&gt;                 press and release a key (Amberstar.Game.Key name, e.g. Enter, Escape, F5)
+///   key &lt;key&gt; [modifiers]     press and release a key (Amberstar.Game.Key name, e.g. Enter, Escape, F5)
 ///   hold &lt;key&gt; &lt;ms&gt;          hold a key for some milliseconds (e.g. movement keys)
 ///   click &lt;x&gt; &lt;y&gt; [right]     click at a game position (320x200)
 ///   hover &lt;x&gt; &lt;y&gt;             move the mouse to a game position (320x200)
@@ -160,6 +160,8 @@ using G = Game.Game;
 ///   activate &lt;slot&gt;           make the party member in slot 1-6 the active one
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
+///   cursor [type]             print or check the type of the mouse cursor
+///   mapoverviewshown &lt;0|1&gt;    check if the graphics of the open automap or minimap are shown
 ///   value &lt;slot&gt; &lt;name&gt; [v]   print a party member value (gold, food, hp, maxhp, sp, maxsp, level, exp, slp,
 ///                             weight, defense, damage, hands, fingers, spellschools or an attribute or skill name),
 ///                             optionally check it
@@ -809,7 +811,7 @@ public sealed class ScenarioScript
 				continueTime = time + 1;
 				break;
 			case "key":
-				PressKey(game, ParseEnum<Key>(args[0]));
+				PressKey(game, ParseEnum<Key>(args[0]), args.Length > 1 ? ParseEnum<KeyModifiers>(args[1]) : KeyModifiers.None);
 				continueTime = time + 1;
 				break;
 			case "hold":
@@ -952,6 +954,19 @@ public sealed class ScenarioScript
 			case "song":
 				CheckValue("song", game.ScriptSong, args.FirstOrDefault());
 				break;
+			case "mapoverviewshown":
+				Report(game.ScriptMapOverviewShown == (Arg(0) != 0), $"mapoverviewshown = {game.ScriptMapOverviewShown} (expected {Arg(0)})");
+				break;
+			case "cursor":
+			{
+				var cursor = game.ScriptCursor;
+
+				if (args.Length == 0)
+					output($"  cursor = {cursor}");
+				else
+					Report(cursor.Equals(args[0], StringComparison.OrdinalIgnoreCase), $"cursor = {cursor} (expected {args[0]})");
+				break;
+			}
 			case "partysize":
 				CheckValue("partysize", game.ScriptPartySize, args.FirstOrDefault());
 				break;
@@ -1123,10 +1138,10 @@ public sealed class ScenarioScript
 		game.MouseUp(position, button, KeyModifiers.None);
 	}
 
-	static void PressKey(G game, Key key)
+	static void PressKey(G game, Key key, KeyModifiers keyModifiers = KeyModifiers.None)
 	{
-		game.KeyDown(key, KeyModifiers.None);
-		game.KeyUp(key, KeyModifiers.None);
+		game.KeyDown(key, keyModifiers);
+		game.KeyUp(key, keyModifiers);
 	}
 
 	static string ShownTextsInfo(G game)

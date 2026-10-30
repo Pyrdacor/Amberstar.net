@@ -1,0 +1,53 @@
+# The inventory can be opened above the automap and the minimap. Their graphics stayed visible above it.
+waittext
+dismissall
+# --- the automap of Twinlake
+teleport 65 8 24
+move down
+waitidle
+map 67
+click 230 170 right
+button 6
+waitscreen Automap
+wait 1000
+mapoverviewshown 1
+click 32 17 right
+waitscreen Inventory
+wait 1000
+mapoverviewshown 0
+# --- the character screen of the inventory
+button 0
+wait 1500
+mapoverviewshown 0
+button 2
+wait 1500
+button 2
+wait 1500
+screen Automap
+mapoverviewshown 1
+key Escape
+wait 1500
+screen Map3D
+# --- the minimap of the map show spell
+join 61
+partysize 2
+setvalue 2 sp 100
+setvalue 2 usemagic 100
+activate 2
+learnspell 2 Special 12
+teleport 37 10 12
+dismissall
+button 4
+waitscreen SpellSelect
+spell Special 12
+waitscreen Minimap
+wait 1000
+mapoverviewshown 1
+click 32 17 right
+waitscreen Inventory
+wait 1000
+mapoverviewshown 0
+button 2
+wait 1500
+screen Minimap
+mapoverviewshown 1

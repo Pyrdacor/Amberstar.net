@@ -1,0 +1,18 @@
+# Keys for one usage are removed from the inventory when they are used at a door. Only the shown slot was cleared.
+waittext
+dismissall
+give 1 148
+itemslot 1 2 148
+value 1 weight 3800
+teleport 66 11 10 up
+dismissall
+move up 1
+waitscreen Door
+wait 1000
+button 1
+wait 200
+screen LockedUseItem
+slot 2
+wait 3000
+itemslot 1 2 empty
+value 1 weight 3700

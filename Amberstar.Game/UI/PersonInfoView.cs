@@ -37,7 +37,9 @@ internal class PersonInfoView
     public PersonInfoView(Game game, IPerson person, int personIndex, byte palette)
     {
         var paperColor = TextManager.TransparentPaper;
-        int portraitIndex = game.GraphicIndexProvider.GetPersonPortraitIndex(personIndex);
+        int portraitIndex = person is IPartyMember member
+            ? game.GetPartyMemberPortraitIndex(member, personIndex)
+            : game.GraphicIndexProvider.GetPersonPortraitIndex(personIndex);
 
         var portraitPosition = new Position(208, 49);
         var portraitSize = new Size(32, 34);

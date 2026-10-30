@@ -1,5 +1,6 @@
 using Amber.Common;
 using Amberstar.Game.UI;
+using Amberstar.GameData;
 using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game.Screens;
@@ -35,6 +36,8 @@ internal sealed class JukeboxScreen() : WindowScreen(WindowX, WindowY, WindowWid
 	{
 		base.Open(closeAction);
 
+		Game.Cursor.CursorType = CursorType.Sword;
+
 		songs.Clear();
 		var names = Game.AssetProvider.SongLoader.SongNames;
 		var client = ClientArea.Position;
@@ -49,6 +52,14 @@ internal sealed class JukeboxScreen() : WindowScreen(WindowX, WindowY, WindowWid
 		}
 
 		UpdateSongs();
+	}
+
+	public override void Close()
+	{
+		base.Close();
+
+		// the screen below shows its cursor again
+		Game.SimulateMouseMoveWithoutButton();
 	}
 
 	void UpdateSongs()

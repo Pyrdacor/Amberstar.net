@@ -38,7 +38,7 @@ partial class Game
 			CheatMode = true;
 
 			if (ScreenHandler.ActiveScreen is IMapScreen)
-				ShowTextMessage(TextManager.ToGameCharacters(HasEnglishTexts ? "CHEAT MODE ON. D SELECTS THE MUSIC." : "CHEATMODUS AN. D WÄHLT DIE MUSIK."));
+				ShowTextMessage(TextManager.ToGameCharacters(HasEnglishTexts ? "CHEAT MODE ON. CTRL+D SELECTS THE MUSIC." : "CHEATMODUS AN. STRG+D WÄHLT DIE MUSIK."));
 		}
 	}
 
@@ -73,8 +73,8 @@ partial class Game
         if (!InputEnabled)
 			return;
 
-		// [ D ] selects the music in the cheat mode of the original.
-		if (CheatMode && key == Key.LetterA + 3 && ScreenHandler.ActiveScreen is IMapScreen)
+		// [ D ] selects the music in the cheat mode of the original. Here D also moves the party, so it is Ctrl+D.
+		if (CheatMode && key == Key.LetterA + 3 && keyModifiers == KeyModifiers.Control && ScreenHandler.ActiveScreen is IMapScreen)
 		{
 			ScreenHandler.PushScreen(ScreenType.Jukebox);
 			return;

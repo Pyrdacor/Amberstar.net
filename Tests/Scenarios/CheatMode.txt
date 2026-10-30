@@ -1,9 +1,9 @@
-# The cheat mode of the original: typing "tempus fugit" activates it, then D selects the music.
+# The cheat mode of the original: typing "tempus fugit" activates it, then Ctrl+D selects the music (D also moves the party).
 waittext
 dismissall
-# --- without the password D does nothing
+# --- without the password Ctrl+D does nothing
 # the letter D
-key 113
+key 113 Control
 wait 200
 screen Map2D
 # --- a wrong password
@@ -11,21 +11,30 @@ typetext tempus fugix
 wait 200
 screen Map2D
 # the letter D
-key 113
+key 113 Control
 wait 200
 screen Map2D
 # --- the password shows a message
 typetext tempus fugit
 wait 200
 screen TextBox
-textshown CHEATMODUS
+textshown STRG+D
 dismissall
-# --- all songs can be played
+# --- D alone stays a movement key
 # the letter D
 key 113
+wait 200
+screen Map2D
+# --- all songs can be played, the list shows the sword cursor and not the movement arrow of the map
+hover 100 100
+cursor
+# the letter D
+key 113 Control
 waitscreen Jukebox
+cursor Sword
 click 40 94
 song 2
 click 100 100 right
 wait 300
 screen Map2D
+cursor

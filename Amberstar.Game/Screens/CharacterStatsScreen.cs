@@ -134,7 +134,8 @@ internal class CharacterStatsScreen : ButtonGridScreen
 
         Game.State.CurrentInventoryIndex = index;
         int partyMemberIndex = Game.State.PartyCharacterIndices[index - 1];
-        partyMember = (Game.AssetProvider.PersonLoader.LoadPerson(partyMemberIndex) as IPartyMember)!;
+        // Not from the person loader as the character editor and the game change the party members.
+        partyMember = Game.State.GetPartyMember(index)!;
         var graphicLoader = Game.AssetProvider.GraphicLoader;
         var uiPaletteIndex = Game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
 

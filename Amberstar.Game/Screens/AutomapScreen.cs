@@ -96,6 +96,31 @@ internal sealed class AutomapScreen : ButtonGridScreen
 		base.Close();
 	}
 
+	internal bool ScriptSpritesShown => mapSprites.Any(sprite => sprite.Visible);
+
+	// The inventory can be opened above this screen.
+	public override void ScreenPushed(Screen screen)
+	{
+		if (!screen.Transparent)
+		{
+			foreach (var sprite in mapSprites.Concat(legendSprites))
+				sprite.Visible = false;
+		}
+
+		base.ScreenPushed(screen);
+	}
+
+	public override void ScreenPopped(Screen screen)
+	{
+		if (!screen.Transparent)
+		{
+			foreach (var sprite in mapSprites.Concat(legendSprites))
+				sprite.Visible = true;
+		}
+
+		base.ScreenPopped(screen);
+	}
+
 	private ISprite CreateIconSprite(Position position, AutomapIcon icon)
 	{
 		var layer = Game.GetRenderLayer(Layer.UI);
