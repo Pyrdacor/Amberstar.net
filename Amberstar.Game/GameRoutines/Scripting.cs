@@ -56,6 +56,9 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public bool ScriptIsLanguageKnown(int slot, string languageName) =>
+		State.GetPartyMember(slot)?.ConversationData.LearnedLanguages.HasFlag((LanguageFlags)(1 << (int)Enum.Parse<Language>(languageName, true))) == true;
+
 	public int ScriptBattleTextsDuringAnimation => (ScreenHandler.ActiveScreen as BattleScreen)?.ScriptTextsDuringAnimation ?? 0;
 
 	public bool ScriptItemNameShown => (ScreenHandler.ActiveScreen as ItemScreen)?.ScriptNameShown == true;

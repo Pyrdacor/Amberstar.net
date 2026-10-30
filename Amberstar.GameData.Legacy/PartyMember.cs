@@ -162,6 +162,7 @@ internal class PartyMember : BattleCharacter, IPartyMember
             }
         }
 
+        WriteByte(0x37, (int)ConversationData.LearnedLanguages);
         WriteByte(0x3a, (int)PhysicalConditions);
         WriteByte(0x3b, (int)MentalConditions);
         WriteByte(0x42, defaultBattlePosition);

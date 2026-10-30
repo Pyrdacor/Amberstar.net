@@ -6,6 +6,7 @@
 - The music list of the cheat mode is now opened with Ctrl+D, as the key D also moves the party.
 
 ### Fixed
+- Languages which were learned in the game, like the language of animals from Sunny, are now kept in savegames.
 - In battles the text, the damage and the hit points are now shown while the attack or spell animation is running, like in the original. Before they were shown after it.
 - Hunting and staying monsters were swapped. For example the rat king in the sewers of Twinlake now waits in his room behind the scene at the altar, like in the original.
 - The name, type and gender of an item were missing when an item was examined for the second time.

@@ -1,0 +1,40 @@
+# Sunny teaches the language of animals to the active party member when Felix (item 157) is given to her (reaction 7 changes the character value at offset $37).
+waittext
+dismissall
+give 1 157
+itemslot 1 2 157
+languageknown 1 Animal 0
+teleport 67 24 9
+dismissall
+trigger 24 9 Mouth
+waitscreen Conversation
+wait 1000
+button 6
+wait 200
+slot 2
+wait 1000
+languageknown 1 Animal 1
+# --- the item is gone when her text was clicked away
+click 150 100
+wait 500
+itemslot 1 2 empty
+closeall
+wait 1000
+screen Map3D
+# --- the language is part of the savegame
+click 230 170 right
+wait 200
+button 8
+waitscreen Options
+optionsslot 3
+button 6
+waitscreen InputSavegameName
+typetext SUNNY
+key Enter
+wait 500
+language 1 Animal 0
+languageknown 1 Animal 0
+button 7
+yes
+waitidle
+languageknown 1 Animal 1

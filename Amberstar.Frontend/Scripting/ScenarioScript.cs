@@ -161,6 +161,7 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   languageknown &lt;slot&gt; &lt;name&gt; [0|1] print or check if a party member knows a language
 ///   battletextsduringanimation check that battle texts are shown while animations are running
 ///   itemnameshown [0|1]       print or check if the name is shown in the item window
 ///   optionsvisibleslots [n]   print or check the number of shown savegame slots in the options
@@ -969,6 +970,9 @@ public sealed class ScenarioScript
 			case "battletextsduringanimation":
 				output($"  battletextsduringanimation = {game.ScriptBattleTextsDuringAnimation}");
 				Report(game.ScriptBattleTextsDuringAnimation > 0, "a battle text was shown while an animation was running");
+				break;
+			case "languageknown":
+				CheckBool($"languageknown {Arg(0)} {args[1]}", game.ScriptIsLanguageKnown(Arg(0), args[1]), OptionalBool(2));
 				break;
 			case "cursor":
 			{
