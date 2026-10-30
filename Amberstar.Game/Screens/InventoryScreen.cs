@@ -175,7 +175,8 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             var targetSlot = equipmentSlot; // important to capture this for the click handler
             var position = EquipmentSlotPositions[equipmentSlot];
             var slot = AddItem(position.X, position.Y, item: null, count: 0, displayLayer: 10);
-            slot.Draggable = true;            
+            slot.Draggable = true;
+            slot.CoversSlotGraphic = true;
             slot.Clicked += (mouseButtons, keyModifiers) => EquipmentSlotClicked(targetSlot, mouseButtons, keyModifiers);
             slot.SlotChanged += () => UpdateEquipment(targetSlot);
             equippedItemSlots.Add(equipmentSlot, slot);

@@ -115,6 +115,26 @@ public sealed class HeadlessGameTests
 	}
 
 	[Fact]
+	public void PartySitsOnAChair()
+	{
+		using var game = StartGame();
+		var assetProvider = TestData.CreateAssetProvider(GameSetup.RepositoryDataFolders[0]);
+
+		// a chair in the inn "Zum tanzenden Drachen"
+		var map = (IMap2D)assetProvider.MapLoader.LoadMap(71);
+		var tileset = assetProvider.TilesetLoader.LoadTileset(map.TilesetIndex);
+		int chair = Array.FindIndex(map.Tiles, tile => tile.Overlay != 0 && tileset.Tiles[tile.Overlay - 1].Flags.HasFlag(TileFlags.ChairOrBed));
+		Assert.NotEqual(-1, chair);
+
+		Assert.Null(game.Game.ScriptTeleport(71, chair % map.Width + 1, chair / map.Width + 1));
+		game.Step(90);
+
+		// the chair shows the sitting party, so the party itself is not drawn
+		var screen = Assert.IsType<Amberstar.Game.Screens.Map2DScreen>(game.Game.ScreenHandler.ActiveScreen);
+		Assert.False(screen.ScriptPartyVisible);
+	}
+
+	[Fact]
 	public void EventBitsUseTheSaveIndexOfTheEvent()
 	{
 		using var game = StartGame();

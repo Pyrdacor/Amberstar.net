@@ -19,6 +19,8 @@ internal class ItemContainer : Control
 	readonly Game game;
 	Position position;
     ISprite? sprite;
+	// the empty slot below the item (see CoversSlotGraphic)
+	ISprite? emptySlot;
 	ISprite? brokenOverlay; // TODO
 	// The animations of the original wait 3 vertical blanks and the switch of the screens per frame (about 80 ms).
 	const long TicksPerAnimationFrame = 5;
@@ -52,6 +54,8 @@ internal class ItemContainer : Control
 
 			if (sprite != null)
 				sprite.DisplayLayer = displayLayer;
+			if (emptySlot != null)
+				emptySlot.DisplayLayer = (byte)(displayLayer - 1);
 			if (itemCountLabel != null)
 				itemCountLabel.DisplayLayer = (byte)(displayLayer + 4);
             if (brokenOverlay != null)
@@ -98,6 +102,12 @@ internal class ItemContainer : Control
 
 	public bool Draggable { get; set; }
 
+	/// <summary>
+	/// The equipment slots of the layout show what can be put there (e.g. a hand). The original draws an empty slot
+	/// before it draws an item there (INV2_Show_object), so the item covers it.
+	/// </summary>
+	public bool CoversSlotGraphic { get; set; }
+
 	public Position Position
 	{
 		get => position;
@@ -119,6 +129,8 @@ internal class ItemContainer : Control
 		{
 			if (sprite != null)
 				sprite.Visible = value;
+			if (emptySlot != null)
+				emptySlot.Visible = value;
 			if (itemCountLabel != null)
                 itemCountLabel.Visible = value;
             if (brokenOverlay != null)
@@ -257,8 +269,22 @@ internal class ItemContainer : Control
                 sprite.PaletteIndex = paletteIndex;
             }
 
-            sprite.TextureOffset = textureAtlas.GetOffset(itemGraphicIndex);            
+            sprite.TextureOffset = textureAtlas.GetOffset(itemGraphicIndex);
             sprite.Visible = true;
+
+			if (CoversSlotGraphic && emptySlot == null)
+			{
+				emptySlot = layer.SpriteFactory!.Create();
+				emptySlot.Position = sprite.Position;
+				emptySlot.Size = new(Width, Height);
+				emptySlot.DisplayLayer = (byte)(displayLayer - 1);
+				emptySlot.PaletteIndex = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
+				emptySlot.TextureOffset = textureAtlas.GetOffset(game.GraphicIndexProvider.GetUIGraphicIndex(UIGraphic.EmptyItemSlot));
+				emptySlot.Opaque = true;
+			}
+
+			if (emptySlot != null)
+				emptySlot.Visible = true;
 
 			if (count > 1)
 			{
@@ -407,6 +433,9 @@ internal class ItemContainer : Control
 				{
 					sprite.Visible = false;
 
+					if (emptySlot != null)
+						emptySlot.Visible = false;
+
 					if (brokenOverlay != null)
 						brokenOverlay.Visible = false;
 				}
@@ -431,6 +460,12 @@ internal class ItemContainer : Control
             sprite.Visible = false;
             sprite = null;
         }
+
+		if (emptySlot != null)
+		{
+			emptySlot.Visible = false;
+			emptySlot = null;
+		}
 
 		if (itemCountLabel != null)
 		{

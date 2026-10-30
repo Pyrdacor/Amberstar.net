@@ -490,7 +490,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
 
         if (item.Item != null && AllowedUnlockItemIndex != null && item.Item.Index == AllowedUnlockItemIndex)
         {
-            // Is it the right key/item?
+            // Is it the right key/item? It always opens the lock, items for one usage are destroyed
+            // if the event is saved (UseItemDoor_objselect in the original).
 
             if (item.Item.Flags.HasFlag(ItemFlags.DestroyAfterUsage) && lockedEvent!.SaveEvent)
             {
@@ -506,6 +507,11 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
                     Game.EnableInput(true);
                     Unlocked(Message.ItemOpensDoor);
                 });
+            }
+            else
+            {
+                lockOpened = true;
+                Unlocked(Message.ItemOpensDoor);
             }
         }
         else if (item.Item != null && item.Item.SpellSchool == SpellSchool.Special && item.Item.SpellIndex == (byte)SpecialSpell.PickLock)

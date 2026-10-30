@@ -1223,6 +1223,14 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
         // - Underlay <- Player <- Overlay (default)
         // - Underlay <- Overlay <- Player
 
+		var playerPosition = Game.State.PartyPosition;
+		int playerTileIndex = playerPosition.X + playerPosition.Y * map!.Width;
+		var playerTile = map.Tiles[playerTileIndex];
+		// In cities a chair or bed shows the next tile instead (the sitting or sleeping party)
+		// and the party is not drawn (C2_DisUpd in the original).
+		bool partyOnChairOrBed = !IsWilderness && playerTile.Overlay != 0 &&
+			GetTileInfo(playerTile.Overlay).Flags.HasFlag(TileFlags.ChairOrBed);
+
         for (int y = 0; y < TileRows; y++)
 		{
 			for (int x = 0; x < TilesPerRow; x++)
@@ -1253,7 +1261,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 				if (tile.Overlay != 0)
 				{
-					CreateTileSprite(overlay, gridIndex, OffsetX + x * TileWidth, OffsetY + y * TileHeight, tile.Overlay, 2 * RenderOrderOffset, index);
+					int overlayTile = partyOnChairOrBed && index == playerTileIndex ? tile.Overlay + 1 : tile.Overlay;
+					CreateTileSprite(overlay, gridIndex, OffsetX + x * TileWidth, OffsetY + y * TileHeight, overlayTile, 2 * RenderOrderOffset, index);
 				}
 				else if (overlay.TryGetValue(gridIndex, out var overlaySprite))
 				{
@@ -1261,10 +1270,6 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 				}
 			}
 		}
-
-		var playerPosition = Game.State.PartyPosition;
-		int playerTileIndex = playerPosition.X + playerPosition.Y * map!.Width;
-		var playerTile = map.Tiles[playerTileIndex];
 
 		int GetBaseLineOffset(Tile2D tile, out bool visible)
 		{
@@ -1294,6 +1299,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
         }
 
 		int playerBaseLineOffset = GetBaseLineOffset(playerTile, out bool playerVisible);
+
+		if (partyOnChairOrBed)
+			playerVisible = false;
 
 		// The party flies over everything (Display_sky_icons in the original).
 		if (Game.State.TravelType >= TravelType.Eagle)
@@ -1514,6 +1522,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 		return shadowedTiles;
 	}
+
+	internal bool ScriptPartyVisible => player?.Visible == true;
 
 	internal bool ScriptIsShadowed(int x, int y) => GetShadowedTiles(new Rect(0, 0, map!.Width, map.Height)).Contains(new Position(x, y));
 
