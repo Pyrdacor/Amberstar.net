@@ -254,6 +254,24 @@ partial class Game
 		ScreenHandler.PushScreen(ScreenType.Door);
     }
 
+	/// <summary>
+	/// Talks to a person of the map. The active party member must know one of the languages
+	/// of the person (Talk in EYE.ASM of the original).
+	/// </summary>
+	internal void TalkTo(ConversationCharacter character)
+	{
+		var person = AssetProvider.PersonLoader.LoadPerson(character.CharacterIndex);
+
+		if ((person.ConversationData.LearnedLanguages & State.ActivePartyMember!.ConversationData.LearnedLanguages) == 0)
+		{
+			ShowTextMessage(Message.NotUnderstood);
+			return;
+		}
+
+		State.CurrentConversationCharacter = character;
+		ScreenHandler.PushScreen(ScreenType.Conversation);
+	}
+
     internal void ShowChest()
     {
         ScreenHandler.PushScreen(ScreenType.Chest);

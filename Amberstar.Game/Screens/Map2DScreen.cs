@@ -236,7 +236,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	/// <summary>
 	/// The characters which are on the map now (not removed and present at the current date).
 	/// </summary>
-	IEnumerable<Characters.MapCharacter> PresentCharacters =>
+	internal IEnumerable<Characters.MapCharacter> PresentCharacters =>
 		characters.Where(character => character.IsPresent(Game.State) && Game.State.IsMapCharacterActive(map!.Index, 1 + character.Index));
 
 	IEnumerable<Position> IMapScreen.GetCharacterPositions() => PresentCharacters.Select(character => character.Position);
@@ -1043,8 +1043,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 			if (character != null && character.Type == MapCharacterType.Person)
 			{
-				Game.State.CurrentConversationCharacter = new(character.CharacterIndex, character.Map, character.Index);
-				Game.ScreenHandler.PushScreen(ScreenType.Conversation);
+				Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
 				return true;
 			}
 		}
@@ -1114,8 +1113,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
                     if (character != null && character.Type == MapCharacterType.Person)
                     {
-                        Game.State.CurrentConversationCharacter = new(character.CharacterIndex, character.Map, character.Index);
-                        Game.ScreenHandler.PushScreen(ScreenType.Conversation);
+                        Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
                         return true;
                     }
 

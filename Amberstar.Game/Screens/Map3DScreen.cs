@@ -330,8 +330,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 					if (character != null && character.Type == MapCharacterType.Person)
 					{
-						Game.State.CurrentConversationCharacter = new(character.CharacterIndex, character.Map, character.Index);
-						Game.ScreenHandler.PushScreen(ScreenType.Conversation);
+						Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
 						return;
 					}
 
@@ -964,8 +963,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 			if (character != null && character.Type == MapCharacterType.Person)
 			{
-				Game.State.CurrentConversationCharacter = new(character.CharacterIndex, character.Map, character.Index);
-				Game.ScreenHandler.PushScreen(ScreenType.Conversation);
+				Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
 				return true;
 			}
 		}

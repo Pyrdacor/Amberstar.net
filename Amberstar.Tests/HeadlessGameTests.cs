@@ -115,6 +115,36 @@ public sealed class HeadlessGameTests
 	}
 
 	[Fact]
+	public void PersonsCanOnlyBeTalkedToInTheirLanguage()
+	{
+		using var game = StartGame();
+
+		// Spike (person 8) in the house of the family only knows the animal language.
+		Assert.Null(game.Game.ScriptTeleport(69, 18, 10));
+		game.Step(90);
+
+		void TalkToSpike()
+		{
+			var screen = Assert.IsType<Amberstar.Game.Screens.Map2DScreen>(game.Game.ScreenHandler.ActiveScreen);
+			var spike = screen.PresentCharacters.Single(character => character.CharacterIndex == 8);
+			((Amberstar.Game.Screens.IMapScreen)screen).TriggerEvent(Amberstar.Game.Events.EventTrigger.Mouth, spike.Position.X, spike.Position.Y);
+			game.Step(90);
+		}
+
+		TalkToSpike();
+		Assert.Equal("TextBox", game.Game.ScriptActiveScreen);
+		Assert.Contains(game.Game.ScriptShownTexts, text => text.Contains("VERSTEHT MAN DICH NICHT"));
+
+		var result = game.RunScript(new ScenarioScript(["dismissall"], _ => { }), output: _ => { });
+		Assert.True(result.Success, game.Game.ScriptState());
+
+		// with the animal language the conversation starts
+		game.Game.State.ActivePartyMember!.ConversationData.LearnedLanguages |= LanguageFlags.Animal;
+		TalkToSpike();
+		Assert.Equal("Conversation", game.Game.ScriptActiveScreen);
+	}
+
+	[Fact]
 	public void PartySitsOnAChair()
 	{
 		using var game = StartGame();
