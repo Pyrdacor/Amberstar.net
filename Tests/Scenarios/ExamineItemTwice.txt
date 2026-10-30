@@ -1,0 +1,17 @@
+# The name, the type and the gender of an item are also shown when the item window is opened again. They were missing from the second time on.
+waittext
+dismissall
+click 32 17 right
+waitscreen Inventory
+wait 1000
+button 5
+invslot 1
+waitscreen ItemView
+itemnameshown 1
+key Escape
+wait 300
+screen Inventory
+button 5
+invslot 1
+waitscreen ItemView
+itemnameshown 1

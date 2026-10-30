@@ -155,6 +155,8 @@ internal sealed class OptionsScreen : ButtonGridScreen
 
 	internal string ScriptSlotText(int slot) => GetSlotText(slot);
 
+	internal int ScriptVisibleSlots => list?.ScriptVisibleItems ?? 0;
+
 	/// <summary>
 	/// The name of a used slot is the suggestion for a new name.
 	/// </summary>

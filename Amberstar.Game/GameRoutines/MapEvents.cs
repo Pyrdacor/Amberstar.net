@@ -291,6 +291,12 @@ partial class Game
 	}
 
 	/// <summary>
+	/// Some persons only say a text of the map ("Small talk" of Talk in EYE.ASM of the original).
+	/// Their index is the index of the text.
+	/// </summary>
+	internal void ShowPopupText(IMap map, int textIndex) => ShowTextMessage(GetMapText(map.Index, textIndex));
+
+	/// <summary>
 	/// Nobody is at the party position (Talk in EYE.ASM of the original).
 	/// </summary>
 	internal void TalkToYourself() => ShowTextMessage(Message.TalkingToYourself);

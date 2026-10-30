@@ -337,6 +337,8 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 					// nobody is there (Talk in EYE.ASM of the original)
 					if (character == null)
 						Game.TalkToYourself();
+					else if (character.Type == MapCharacterType.Popup)
+						Game.ShowPopupText(character.Map, character.CharacterIndex);
 
 					break;
 				}
@@ -970,6 +972,12 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			if (character != null && character.Type == MapCharacterType.Person)
 			{
 				Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
+				return true;
+			}
+
+			if (character != null && character.Type == MapCharacterType.Popup)
+			{
+				Game.ShowPopupText(character.Map, character.CharacterIndex);
 				return true;
 			}
 

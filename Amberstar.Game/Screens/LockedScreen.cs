@@ -157,20 +157,21 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
 
     public override void Open(Action? closeAction)
     {
-        base.Open(closeAction);
-
+        // The screen is reused and the buttons are set up when it opens, so the state of the last door or chest must be gone.
         lockedEvent = (Game.EventHandler.CurrentEvent as TEvent)!;
         lockpickReduction = Game.GetLockpickReduction(lockedEvent.Index, lockedEvent.LockpickReduction);
-
-        var palette = Game.PaletteIndexProvider.Get80x80ImagePaletteIndex(Image);
-        Game.SetLayout(Layout, palette);
-        Game.Cursor.CursorType = CursorType.Sword;
-
         trapFound = false;
         trapDisarmed = false;
         waitForClick = false;
         closeAfterClick = false;
         lockOpened = false;
+
+        base.Open(closeAction);
+
+        var palette = Game.PaletteIndexProvider.Get80x80ImagePaletteIndex(Image);
+        Game.SetLayout(Layout, palette);
+        Game.Cursor.CursorType = CursorType.Sword;
+
         // the last message of this or another door or chest must not be shown again
         HideMessage();
     }

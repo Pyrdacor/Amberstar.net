@@ -121,6 +121,8 @@ internal class ItemScreen() : WindowScreen(WindowX, WindowY, WindowWidthInTiles,
         }
     }
 
+	internal bool ScriptNameShown => itemNameLabel?.Visible == true;
+
 	private void InitTexts(IItem item)
 	{
         IText itemName = item.GetName(Game.AssetProvider.TextLoader);

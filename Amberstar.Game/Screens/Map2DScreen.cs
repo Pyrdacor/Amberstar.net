@@ -1088,6 +1088,18 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			return true;
 		}
 
+		if (character != null && character.Type == MapCharacterType.Popup)
+		{
+			var tile = map!.Tiles[x + y * map.Width];
+
+			if (IsChairOrBed(tile) && tile.Overlay + 1 == SleepingTile)
+				Game.ShowTextMessage(Message.PersonIsSleeping);
+			else
+				Game.ShowPopupText(character.Map, character.CharacterIndex);
+
+			return true;
+		}
+
 		if (character == null && Game.State.PartyPosition == new Position(x, y))
 		{
 			Game.TalkToYourself();

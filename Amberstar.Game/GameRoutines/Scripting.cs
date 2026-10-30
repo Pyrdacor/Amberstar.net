@@ -56,6 +56,10 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public bool ScriptItemNameShown => (ScreenHandler.ActiveScreen as ItemScreen)?.ScriptNameShown == true;
+
+	public int ScriptVisibleOptionsSlots => (ScreenHandler.ActiveScreen as OptionsScreen)?.ScriptVisibleSlots ?? 0;
+
 	public bool? ScriptMapOverviewShown => ScreenHandler.FindScreen(ScreenType.Automap) is AutomapScreen automapScreen ? automapScreen.ScriptSpritesShown
 		: ScreenHandler.FindScreen(ScreenType.Minimap) is MinimapScreen minimapScreen ? minimapScreen.ScriptSpritesShown : null;
 

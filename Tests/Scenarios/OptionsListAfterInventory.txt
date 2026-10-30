@@ -1,0 +1,16 @@
+# The savegame list shows only its 16 lines after another screen covered it. All 30 lines were shown over the screen.
+waittext
+dismissall
+click 230 170 right
+button 8
+waitscreen Options
+wait 1000
+optionsvisibleslots 16
+click 32 17 right
+waitscreen Inventory
+wait 1000
+optionsvisibleslots 0
+button 2
+wait 1500
+screen Options
+optionsvisibleslots 16

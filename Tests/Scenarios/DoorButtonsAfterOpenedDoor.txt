@@ -1,0 +1,25 @@
+# The door screen is reused: after an opened door the buttons of the next door are enabled. They were greyed out until it was shown again.
+waittext
+dismissall
+give 1 148
+teleport 66 11 10 up
+dismissall
+move up 1
+waitscreen Door
+wait 1000
+button 1
+wait 200
+slot 2
+wait 3000
+dismiss
+wait 1500
+screen Map2D
+# --- the next door is locked
+teleport 69 22 10 up
+dismissall
+move up 1
+waitscreen Door
+wait 1000
+buttonenabled 0 1
+buttonenabled 1 1
+buttonenabled 3 1

@@ -906,7 +906,7 @@ internal class Label(Game game) : Control, ILayeredDrawable
         renderText = game.TextManager.Create(text, maxWidth.Value, defaultTextColorIndex, defaultPaperColorIndex, paletteIndex);
 
         if (wasVisible)
-            Show();
+            Show(wasVisible);
         else
             needsShowCall = true;
     }

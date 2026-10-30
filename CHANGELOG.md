@@ -6,6 +6,10 @@
 - The music list of the cheat mode is now opened with Ctrl+D, as the key D also moves the party.
 
 ### Fixed
+- The name, type and gender of an item were missing when an item was examined for the second time.
+- The buttons of a door or chest were greyed out after another door or chest was opened, until it was shown a second time.
+- Persons who only say a short text can now be talked to. Nothing happened before.
+- The list of savegames in the options no longer shows all slots over the screen after the inventory or the dismiss window was closed.
 - The dungeon map and the map overview no longer stay visible above the inventory or character screen which is opened while they are shown.
 - Keys for one usage and lockpicks are now removed from the inventory when they are used at a door or chest. Before they only disappeared from the shown slots.
 - The inventory and the character screen show the portrait of the character editor. The character screen also shows the current name and values of the party member instead of the original ones.

@@ -1,0 +1,16 @@
+# Some persons only say a text of the map (small talk of Talk in EYE.ASM). Nothing happened when they were talked to.
+waittext
+dismissall
+# --- the wizard in Twinlake stands on the tile of the party on 3D maps
+teleport 67 11 32
+dismissall
+waitidle
+cleartexts
+click 230 170 right
+wait 200
+button 2
+wait 300
+screen TextBox
+textshown ZAUBERER
+dismissall
+screen Map3D

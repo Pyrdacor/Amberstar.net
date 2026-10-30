@@ -161,6 +161,8 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   itemnameshown [0|1]       print or check if the name is shown in the item window
+///   optionsvisibleslots [n]   print or check the number of shown savegame slots in the options
 ///   mapoverviewshown &lt;0|1&gt;    check if the graphics of the open automap or minimap are shown
 ///   value &lt;slot&gt; &lt;name&gt; [v]   print a party member value (gold, food, hp, maxhp, sp, maxsp, level, exp, slp,
 ///                             weight, defense, damage, hands, fingers, spellschools or an attribute or skill name),
@@ -956,6 +958,12 @@ public sealed class ScenarioScript
 				break;
 			case "mapoverviewshown":
 				Report(game.ScriptMapOverviewShown == (Arg(0) != 0), $"mapoverviewshown = {game.ScriptMapOverviewShown} (expected {Arg(0)})");
+				break;
+			case "optionsvisibleslots":
+				CheckValue("optionsvisibleslots", game.ScriptVisibleOptionsSlots, args.FirstOrDefault());
+				break;
+			case "itemnameshown":
+				CheckBool("itemnameshown", game.ScriptItemNameShown, OptionalBool(0));
 				break;
 			case "cursor":
 			{

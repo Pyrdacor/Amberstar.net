@@ -64,7 +64,7 @@ internal class List : Control
             if (!destroyed || !value)
             {
                 visible = value;
-                labels.ForEach(label => label.Visible = visible);
+                labels.ForEach(UpdateLabelVisibility);
 
                 if (background != null)
                     background.Visible = visible;
@@ -165,6 +165,14 @@ internal class List : Control
         return label;
     }
 
+    internal int ScriptVisibleItems => labels.Count(label => label.Visible);
+
+    // Only the lines inside the area are shown, the others are reached by scrolling.
+    private void UpdateLabelVisibility(Label label)
+    {
+        label.Visible = visible && label.Position.Y >= Area.Top && label.Position.Y + LineHeight <= Area.Bottom;
+    }
+
     private void Redraw(int scrollDiff)
     {
         scrollDiff *= LineHeight;
@@ -172,7 +180,7 @@ internal class List : Control
         labels.ForEach(label =>
         {
             label.Position = label.Position + new Position(0, -scrollDiff);
-            label.Visible = visible && label.Position.Y >= Area.Top && label.Position.Y + LineHeight <= Area.Bottom;
+            UpdateLabelVisibility(label);
         });
     }
 
