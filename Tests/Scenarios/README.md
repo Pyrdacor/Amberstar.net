@@ -75,6 +75,7 @@ The most important ones:
 | `eventbit <map> <save index> [0\|1]`     | Check an event bit (see below)                                       |
 | `value <slot> <name> [v\|+n\|-n\|+\|-]`  | Check gold, food, hp, sp, attributes, skills, ...                    |
 | `condition <slot> <condition> [0\|1]`    | Check a condition like Poisoned                                      |
+| `language <slot> <language> [0\|1]`     | Teach a party member a language like `Animal` (0: forget it)          |
 | `count <item> [amount]`, `give`          | Check or give items                                                  |
 | `textshown <text>`, `notextshown [text]` | Check the texts shown since the last `cleartexts`                    |
 | `animationshown <text>`                  | Check a battle animation since the last `cleartexts` (`damage NAME`) |

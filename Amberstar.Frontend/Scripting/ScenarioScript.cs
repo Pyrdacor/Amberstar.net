@@ -486,6 +486,9 @@ public sealed class ScenarioScript
 			case "setclass":
 				CheckResult(game.ScriptSetClass(Arg(0), args[1]));
 				break;
+			case "language":
+				CheckResult(game.ScriptSetLanguage(Arg(0), args[1], args.Length < 3 || args[2] != "0"));
+				break;
 			case "characters":
 				output($"  characters = {string.Join(" ", game.ScriptCharacterPositions.Select(position => $"{position.X},{position.Y}"))}");
 				break;

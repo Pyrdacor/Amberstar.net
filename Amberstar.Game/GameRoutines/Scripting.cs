@@ -406,6 +406,29 @@ partial class Game
 	}
 
 	/// <summary>
+	/// Teaches a party member a language or lets it forget it.
+	/// </summary>
+	public string? ScriptSetLanguage(int slot, string languageName, bool known)
+	{
+		var partyMember = State.GetPartyMember(slot);
+
+		if (partyMember == null)
+			return $"no party member in slot {slot}";
+
+		if (!Enum.TryParse<Language>(languageName, true, out var language))
+			return $"unknown language {languageName}";
+
+		var flag = (LanguageFlags)(1 << (int)language);
+
+		if (known)
+			partyMember.ConversationData.LearnedLanguages |= flag;
+		else
+			partyMember.ConversationData.LearnedLanguages &= ~flag;
+
+		return null;
+	}
+
+	/// <summary>
 	/// Gets the icon of a 1-based position in the shown automap.
 	/// </summary>
 	public string? ScriptAutomapIcon(int x, int y) => (ScreenHandler.ActiveScreen as AutomapScreen)?.GetIcon(x, y).ToString();
