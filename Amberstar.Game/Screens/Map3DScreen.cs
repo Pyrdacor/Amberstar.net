@@ -334,6 +334,10 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 						return;
 					}
 
+					// nobody is there (Talk in EYE.ASM of the original)
+					if (character == null)
+						Game.TalkToYourself();
+
 					break;
 				}
 				case ButtonType.UseMagic:
@@ -964,6 +968,12 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			if (character != null && character.Type == MapCharacterType.Person)
 			{
 				Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
+				return true;
+			}
+
+			if (character == null && position == Game.State.PartyPosition)
+			{
+				Game.TalkToYourself();
 				return true;
 			}
 		}

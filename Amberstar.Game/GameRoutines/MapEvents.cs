@@ -255,11 +255,17 @@ partial class Game
     }
 
 	/// <summary>
-	/// Talks to a person of the map. The active party member must know one of the languages
-	/// of the person (Talk in EYE.ASM of the original).
+	/// Talks to a person of the map (Talk in EYE.ASM of the original). A sleeping person only snores
+	/// and the active party member must know one of the languages of the person.
 	/// </summary>
-	internal void TalkTo(ConversationCharacter character)
+	internal void TalkTo(ConversationCharacter character, bool sleeping = false)
 	{
+		if (sleeping)
+		{
+			ShowTextMessage(Message.PersonIsSleeping);
+			return;
+		}
+
 		var person = AssetProvider.PersonLoader.LoadPerson(character.CharacterIndex);
 
 		if ((person.ConversationData.LearnedLanguages & State.ActivePartyMember!.ConversationData.LearnedLanguages) == 0)
@@ -271,6 +277,11 @@ partial class Game
 		State.CurrentConversationCharacter = character;
 		ScreenHandler.PushScreen(ScreenType.Conversation);
 	}
+
+	/// <summary>
+	/// Nobody is at the party position (Talk in EYE.ASM of the original).
+	/// </summary>
+	internal void TalkToYourself() => ShowTextMessage(Message.TalkingToYourself);
 
     internal void ShowChest()
     {

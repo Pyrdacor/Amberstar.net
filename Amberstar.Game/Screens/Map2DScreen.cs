@@ -220,6 +220,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	const int TransportTileIndex = 244;
 	// The tile of the shadow (Do_shadow in the original)
 	const int ShadowTileIndex = 1;
+	// A person on this overlay tile sleeps (SleepingIcon in EYE.ASM of the original).
+	const int SleepingTile = 148;
 	readonly List<ISprite> transportSprites = [];
 	const byte DarknessDisplayLayer = 1;
 	DarknessOverlay? darkness;
@@ -1037,18 +1039,35 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 	bool IMapScreen.TriggerEvent(EventTrigger trigger, int x, int y)
 	{
-		if (trigger == EventTrigger.Mouth)
-		{
-			var character = PresentCharacters.FirstOrDefault(character => character.Position.X == x && character.Position.Y == y);
-
-			if (character != null && character.Type == MapCharacterType.Person)
-			{
-				Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
-				return true;
-			}
-		}
+		if (trigger == EventTrigger.Mouth && Talk(x, y))
+			return true;
 
 		return TryExecuteMapEvent(trigger, x, y);
+	}
+
+	/// <summary>
+	/// Talks to the person at a position (Talk in EYE.ASM of the original). In cities a person on the
+	/// sleeping tile only snores. Nobody at the party position means talking to yourself.
+	/// Returns false if nobody is there.
+	/// </summary>
+	bool Talk(int x, int y)
+	{
+		var character = PresentCharacters.FirstOrDefault(character => character.Position.X == x && character.Position.Y == y);
+
+		if (character != null && character.Type == MapCharacterType.Person)
+		{
+			bool sleeping = !IsWilderness && map!.Tiles[x + y * map.Width].Overlay == SleepingTile;
+			Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index), sleeping);
+			return true;
+		}
+
+		if (character == null && Game.State.PartyPosition == new Position(x, y))
+		{
+			Game.TalkToYourself();
+			return true;
+		}
+
+		return false;
 	}
 
 	private Position MousePositionToMapTilePosition(Position mousePosition)
@@ -1108,6 +1127,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 					Game.Cursor.CursorType = CursorType.Sword;
                     Game.UntrapMouse();
+
+					if (eventTrigger == EventTrigger.Mouth && Talk(x, y))
+						return true;
 
                     var character = PresentCharacters.FirstOrDefault(character => character.Position.X == x && character.Position.Y == y);
 

@@ -145,6 +145,20 @@ public sealed class HeadlessGameTests
 	}
 
 	[Fact]
+	public void TalkingToYourself()
+	{
+		using var game = StartGame();
+		game.Game.ScriptClearShownTexts();
+
+		var screen = Assert.IsType<Amberstar.Game.Screens.Map2DScreen>(game.Game.ScreenHandler.ActiveScreen);
+		var position = game.Game.State.PartyPosition;
+		Assert.True(((Amberstar.Game.Screens.IMapScreen)screen).TriggerEvent(Amberstar.Game.Events.EventTrigger.Mouth, position.X, position.Y));
+		game.Step(30);
+
+		Assert.Contains(game.Game.ScriptShownTexts, text => text.Contains("SELBSTGESPR"));
+	}
+
+	[Fact]
 	public void PartySitsOnAChair()
 	{
 		using var game = StartGame();
