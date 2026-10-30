@@ -842,9 +842,11 @@ partial class Game
 		switch (name.ToLowerInvariant())
 		{
 			case "gold":
+				partyMember.TotalWeight = (uint)(partyMember.TotalWeight + (wordValue - (long)partyMember.Gold) * GoldWeight);
 				partyMember.Gold = wordValue;
 				break;
 			case "food":
+				partyMember.TotalWeight = (uint)(partyMember.TotalWeight + (wordValue - (long)partyMember.Food) * FoodWeight);
 				partyMember.Food = wordValue;
 				break;
 			case "hp":
