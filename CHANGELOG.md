@@ -1,11 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
 ### Changed
 - The compass also shows the direction of the party on 2D maps. In the original it always points north there.
 
 ### Fixed
+- The keys of the numeric keypad match the positions of the buttons. The upper and lower row were swapped, so 1 used the eye instead of the map. When a movement key was released the party also made a move in the wrong direction.
+- A screen shows its own layout again after the inventory was opened from it. In a conversation the layout of the inventory stayed visible.
 - The battle screen of the Amiga versions is no longer black. Its colors and other data were not loaded from the Amiga program: the positions of the monsters, the damage of spells, the damage digits, the shadows on maps, the song names and the altar puzzle.
 - The game no longer crashes when it is closed.
 - The count of items no longer stays visible on the map after leaving a merchant.
