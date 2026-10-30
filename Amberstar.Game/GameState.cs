@@ -222,7 +222,7 @@ internal class GameState(ISavegame savegame, IAssetProvider assetProvider)
 	{
         slotIndex = -1;
 
-		if (PartySize == ISavegame.MaxPartyMembers)
+		if (PartySize == ISavegame.MaxPartyMembers || PartyCharacterIndices.Contains(characterIndex))
 			return false;
 
         for (int i = 1; i < Game.MaxPartyMembers; i++)

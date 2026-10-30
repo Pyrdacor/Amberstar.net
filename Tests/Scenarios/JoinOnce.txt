@@ -1,0 +1,28 @@
+# A person joins the party only once, also if the button is used again while the person speaks.
+waittext
+dismissall
+settime 12 0
+teleport 71 33 21 right
+wait 2
+dismissall
+trigger 34 21 Mouth
+waitscreen Conversation
+wait 300
+buttonenabled 5 1
+partysize 1
+button 5
+wait 500
+partysize 2
+# --- the keypad clicks the buttons as well
+key Keypad6
+wait 300
+partysize 2
+buttonenabled 5 0
+# --- the mouse only ends the text
+click 272 161
+wait 300
+partysize 2
+buttonenabled 5 0
+key Keypad6
+wait 300
+partysize 2

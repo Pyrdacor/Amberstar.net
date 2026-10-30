@@ -518,6 +518,10 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
 
     protected override void ButtonClicked(int index)
     {
+        // The keys of the numeric keypad also click the buttons while a text is shown.
+        if (waitForClick)
+            return;
+
         switch (index)
         {
             case 0: // Give item to party
@@ -556,17 +560,22 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
                         return;
                     }
 
+                    // The buttons must be disabled at once, the text of the person is shown first.
+                    insideParty = true;
+                    RequestButtonSetup();
+
                     void Joined()
                     {
                         (person as IPartyMember)!.SaveBit = (word)((map!.Index - 1) * IMap.CharacterCount + mapCharacterIndex);
                         Game.State.SetMapCharacterActive(map.Index, mapCharacterIndex, false); // Remove from map
                         Game.UpdatePartyMembers();
-                        insideParty = true;
                         ShowReceivedItems();
                         RequestButtonSetup();
                     }
 
-                    TryExecuteReactionsForTrigger(InteractionTriggerType.Join, 0, Joined);
+                    // The action is only called if the person has a reaction to joining.
+                    if (!TryExecuteReactionsForTrigger(InteractionTriggerType.Join, 0, Joined))
+                        Joined();
                 }
 
                 break;
