@@ -1,0 +1,38 @@
+# The gold and food windows of the inventory have a button to throw the amount away.
+waittext
+dismissall
+setvalue 1 gold 79
+setvalue 1 food 5
+click 32 17 right
+waitscreen Inventory
+# --- nothing happens without an amount
+button 7
+waitscreen PlaceGiveGold
+click 136 168
+wait 200
+screen PlaceGiveGold
+# --- the confirmation can be denied, only this window is closed then
+click 56 168
+wait 200
+click 136 168
+waitscreen Confirmation
+textshown GOLD
+no
+wait 200
+screen PlaceGiveGold
+# --- after the confirmation both windows are closed and the gold is gone
+click 136 168
+waitscreen Confirmation
+yes
+waitscreen Inventory
+value 1 gold 78
+# --- the same for food
+button 8
+waitscreen PlaceGiveFood
+click 56 168
+wait 200
+click 136 168
+waitscreen Confirmation
+yes
+waitscreen Inventory
+value 1 food 4

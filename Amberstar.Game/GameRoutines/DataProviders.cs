@@ -12,6 +12,10 @@ partial class Game
     internal IItem? CurrentItem { get; set; }
     internal int CurrentAmount { get; set; } // Result from amount input screen etc (e.g. gold amount to give)
     internal int CurrentMaxAmount { get; set; } // For amount input screen etc (e.g. gold amount to give)
+    /// <summary>
+    /// The next amount input screen shows a button to throw the amount away with this confirmation text.
+    /// </summary>
+    internal (Message Message, Action<int> Dropped)? CurrentAmountDrop { get; set; }
     internal string? CurrentWord { get; set; }
     internal bool CurrentResult { get; set; } = false;
     /// <summary>

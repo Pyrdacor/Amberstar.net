@@ -477,6 +477,11 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             case 7: // Give gold
             {
                 var giver = partyMember!;
+                Game.CurrentAmountDrop = (Message.ReallyDropGold, amount =>
+                {
+                    Game.DropGold(giver, amount);
+                    ItemActionDone(null);
+                });
                 AskForAmount(giver.Gold, ScreenType.PlaceGiveGold, amount => StartTransfer(
                     receiver => Game.CanReceiveGold(receiver, amount),
                     receiver => Game.TransferGold(giver, receiver, amount), CursorType.Gold));
@@ -485,6 +490,11 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             case 8: // Give food
             {
                 var giver = partyMember!;
+                Game.CurrentAmountDrop = (Message.ReallyDropFood, amount =>
+                {
+                    Game.DropFood(giver, amount);
+                    ItemActionDone(null);
+                });
                 AskForAmount(giver.Food, ScreenType.PlaceGiveFood, amount => StartTransfer(
                     receiver => Game.CanReceiveFood(receiver, amount),
                     receiver => Game.TransferFood(giver, receiver, amount), CursorType.Food));

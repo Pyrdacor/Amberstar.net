@@ -1,4 +1,5 @@
 using Amber.Common;
+using Amberstar.Game;
 using Amberstar.Frontend;
 using Amberstar.Frontend.Scripting;
 using Amberstar.GameData;
@@ -142,6 +143,32 @@ public sealed class HeadlessGameTests
 		game.Game.State.ActivePartyMember!.ConversationData.LearnedLanguages |= LanguageFlags.Animal;
 		TalkToSpike();
 		Assert.Equal("Conversation", game.Game.ScriptActiveScreen);
+	}
+
+	[Fact]
+	public void HoldingAnArrowChangesTheAmountFasterAndFaster()
+	{
+		using var game = StartGame();
+		var result = game.RunScript(new ScenarioScript(["setvalue 1 gold 5000", "click 32 17 right", "waitscreen Inventory", "button 7", "waitscreen PlaceGiveGold"], _ => { }), output: _ => { });
+		Assert.True(result.Success, game.Game.ScriptState());
+
+		var arrowUp = new Position(56, 168);
+		game.Game.MouseMove(arrowUp, MouseButtons.None);
+		game.Game.MouseDown(arrowUp, MouseButtons.Left, KeyModifiers.None);
+		// the first click adds 1, then there is a short delay
+		game.Step(15);
+		Assert.Equal(1, game.Game.CurrentAmount);
+		game.Step(60);
+		int afterSecond = game.Game.CurrentAmount;
+		Assert.True(afterSecond > 1);
+		game.Step(60);
+		int afterNextSecond = game.Game.CurrentAmount;
+		Assert.True(afterNextSecond - afterSecond > afterSecond - 1);
+
+		// it stops when the mouse button is released
+		game.Game.MouseUp(arrowUp, MouseButtons.Left, KeyModifiers.None);
+		game.Step(60);
+		Assert.Equal(afterNextSecond, game.Game.CurrentAmount);
 	}
 
 	[Fact]

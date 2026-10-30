@@ -302,6 +302,18 @@ partial class Game
 		return moved;
 	}
 
+	internal static void DropGold(IPartyMember partyMember, int amount)
+	{
+		partyMember.Gold -= (word)amount;
+		partyMember.TotalWeight -= (uint)amount * GoldWeight;
+	}
+
+	internal static void DropFood(IPartyMember partyMember, int amount)
+	{
+		partyMember.Food -= (word)amount;
+		partyMember.TotalWeight -= (uint)amount * FoodWeight;
+	}
+
 	internal static void TransferGold(IPartyMember source, IPartyMember target, int amount)
 	{
 		source.Gold -= (word)amount;

@@ -19,6 +19,18 @@ internal abstract class InputAmountScreen() : WindowScreen(WindowX, WindowY, Win
     Label? messageLabel;
     Button? upButton;
     Button? downButton;
+    Button? dropButton;
+    (Message Message, Action<int> Dropped)? drop;
+    // Holding the left mouse button on an arrow changes the amount after a delay and faster and faster.
+    // The high byte of this value is added per vertical blank (Adding and ItemW_Up in the original).
+    const int FirstAdding = 256 - 8 * 20;
+    const int AddingStep = 8;
+    const int MaxAdding = 0x7fff;
+    const int VerticalBlanksPerSecond = 50;
+    int adding = FirstAdding;
+    int heldDirection = 0;
+    long verticalBlankTicks = 0;
+    Position mousePosition = new();
 
     protected abstract ItemGraphic Graphic { get; }
 
@@ -27,6 +39,8 @@ internal abstract class InputAmountScreen() : WindowScreen(WindowX, WindowY, Win
     protected abstract Message Message { get; }
 
     public override bool CloseOnEscape { get; } = false;
+
+    public override bool UpdateWhilePaused { get; } = true;
 
     /// <summary>
     /// If true, the graphic and the texts are updated whenever the
@@ -90,6 +104,9 @@ internal abstract class InputAmountScreen() : WindowScreen(WindowX, WindowY, Win
         downButton.ClickAction += () => ChangeAmount(-1);
         downButton.RightClickAction += () => ChangeAmount(short.MinValue);
 
+        dropButton = AddButton(x + 80, y, ButtonType.DropItem, ControlDisplayLayer);
+        dropButton.ClickAction += Drop;
+
         // the exit icon is at 128,176 like in the original (ItemW_DisInit)
         var exitButton = AddButton(x + 80, y + 16, ButtonType.Exit, ControlDisplayLayer);
         exitButton.ClickAction += () => Game.ScreenHandler.PopScreen();
@@ -103,6 +120,68 @@ internal abstract class InputAmountScreen() : WindowScreen(WindowX, WindowY, Win
         Game.CurrentAmount = MathUtil.Limit(0, Game.CurrentAmount + change, Game.CurrentMaxAmount);
 
         UpdateControls();
+    }
+
+    /// <summary>
+    /// Asks if the entered amount should be thrown away. Then this window is also closed.
+    /// </summary>
+    private void Drop()
+    {
+        int amount = Game.CurrentAmount;
+
+        if (amount == 0 || drop is not { } dropInfo)
+            return;
+
+        Game.AskForConfirmation(Game.LoadMessageText(dropInfo.Message), () =>
+        {
+            Game.CurrentAmount = 0;
+            Game.ScreenHandler.PopScreen();
+            dropInfo.Dropped(amount);
+        });
+    }
+
+    private void VerticalBlankWhileHeld()
+    {
+        var button = heldDirection > 0 ? upButton! : downButton!;
+
+        if (!button.Area.Contains(mousePosition))
+            return;
+
+        int amount = Game.CurrentAmount + heldDirection * (adding >> 8);
+        int limit = heldDirection > 0 ? Game.CurrentMaxAmount : 0;
+
+        if (Game.CurrentAmount == limit)
+            return;
+
+        if (heldDirection > 0 ? amount >= limit : amount < limit)
+        {
+            adding = FirstAdding;
+            amount = limit;
+        }
+
+        adding = Math.Min(adding + AddingStep, MaxAdding);
+        Game.CurrentAmount = amount;
+        UpdateControls();
+    }
+
+    public override void Update(long elapsedTicks)
+    {
+        base.Update(elapsedTicks);
+
+        if (heldDirection == 0)
+            return;
+
+        verticalBlankTicks += elapsedTicks * VerticalBlanksPerSecond;
+
+        for (; verticalBlankTicks >= Game.TicksPerSecond; verticalBlankTicks -= Game.TicksPerSecond)
+            VerticalBlankWhileHeld();
+    }
+
+    private void ReleaseArrow()
+    {
+        heldDirection = 0;
+        adding = FirstAdding;
+        verticalBlankTicks = 0;
     }
 
     private void UpdateControls()
@@ -119,6 +198,11 @@ internal abstract class InputAmountScreen() : WindowScreen(WindowX, WindowY, Win
 			throw new InvalidOperationException($"{nameof(InputAmountScreen)} needs {nameof(Game.CurrentMaxAmount)} to be set beforehand.");
 
 		base.Open(closeAction);
+
+        ReleaseArrow();
+        drop = Game.CurrentAmountDrop;
+        Game.CurrentAmountDrop = null;
+        dropButton!.Visible = drop != null;
 
         if (DynamicContent)
         {
@@ -173,9 +257,28 @@ internal abstract class InputAmountScreen() : WindowScreen(WindowX, WindowY, Win
 
 	public override bool MouseDown(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
 	{
+        ReleaseArrow();
+        mousePosition = position;
+
         if (keyModifiers != KeyModifiers.None)
             buttons = MouseButtons.Right;
+        else if (buttons == MouseButtons.Left)
+            heldDirection = upButton!.Area.Contains(position) ? 1 : downButton!.Area.Contains(position) ? -1 : 0;
 
         return base.MouseDown(position, buttons, keyModifiers);
+    }
+
+    public override bool MouseUp(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
+    {
+        ReleaseArrow();
+
+        return base.MouseUp(position, buttons, keyModifiers);
+    }
+
+    public override void MouseMove(Position position, MouseButtons buttons)
+    {
+        mousePosition = position;
+
+        base.MouseMove(position, buttons);
     }
 }
