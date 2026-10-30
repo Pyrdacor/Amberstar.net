@@ -15,6 +15,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
     bool waitForClick = false;
 
     public bool WaitingForClick => waitForClick;
+
+    internal bool ScriptMessageShown => message?.Visible == true;
     bool closeAfterClick = false;
     bool lockOpened = false;
     int lockpickReduction = 0;
@@ -168,6 +170,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         closeAfterClick = false;
         lockOpened = false;
         lockpickReduction = 0;
+        // the last message of this or another door or chest must not be shown again
+        HideMessage();
     }
 
     protected void CleanUpItems()

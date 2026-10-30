@@ -172,6 +172,33 @@ public sealed class HeadlessGameTests
 	}
 
 	[Fact]
+	public void DoorScreenDoesNotShowTheLastMessageAgain()
+	{
+		using var game = StartGame();
+
+		bool MessageShown()
+		{
+			var screen = Assert.IsType<Amberstar.Game.Screens.DoorScreen>(game.Game.ScreenHandler.ActiveScreen);
+			return screen.ScriptMessageShown;
+		}
+
+		void Run(params string[] commands)
+		{
+			var result = game.RunScript(new ScenarioScript(commands, _ => { }), output: _ => { });
+			Assert.True(result.Success, game.Game.ScriptState());
+		}
+
+		// the door in the house of the family, the use item button shows a question
+		Run("teleport 69 22 10 up", "dismissall", "move up 1", "waitscreen Door");
+		Run("button 1", "waitscreen LockedUseItem");
+		Run("click 160 100 right", "waitscreen Door", "button 2", "waitscreen Map2D");
+
+		// the door is opened again
+		Run("wait 1000", "waitidle", "move up 1", "waitscreen Door");
+		Assert.False(MessageShown());
+	}
+
+	[Fact]
 	public void TalkingToYourself()
 	{
 		using var game = StartGame();
