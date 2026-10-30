@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1
 
 ### Added
 - The cheat mode of the original: typing TEMPUS FUGIT activates it and the key D then opens the music list to play all songs.
