@@ -1,0 +1,31 @@
+# The keys of the numeric keypad are arranged like the buttons (7, 8, 9 is the upper row).
+waittext
+dismissall
+# --- a movement key moves the party one step and does not click a button when it is released
+map 65
+pos 8 11
+hold Keypad6 50
+wait 1000
+pos 9 11
+dir Right
+# --- the action buttons: 3 is the disk at the lower right
+click 230 170 right
+key Keypad3
+waitscreen Options
+button 2
+wait 1000
+screen Map2D
+# --- 1 is the map at the lower left (only enabled on 3D maps)
+teleport 67 7 15 down
+wait 2
+dismissall
+key Keypad1
+waitscreen Automap
+key Escape
+wait 1000
+screen Map3D
+# --- movement keys on 3D maps: 7 only turns left and does not rotate when it is released
+click 230 170 right
+hold Keypad7 50
+wait 1000
+dir Right

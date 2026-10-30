@@ -778,6 +778,8 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			CheckMove(forward, backward, left, right, turnLeft, turnRight);
 	}
 
+	protected override bool KeypadMovesParty(Key key) => Game.ButtonLayout == ButtonLayout.Movement && key != Key.Keypad5;
+
 	public override bool KeyDown(Key key, KeyModifiers keyModifiers)
 	{
 		if (base.KeyDown(key, keyModifiers))

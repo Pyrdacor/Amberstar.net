@@ -967,6 +967,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		return true;
 	}
 
+	protected override bool KeypadMovesParty(Key key) => Game.ButtonLayout == ButtonLayout.Movement && key != Key.Keypad5;
+
 	public override bool KeyUp(Key key, KeyModifiers keyModifiers)
 	{
         if (base.KeyUp(key, keyModifiers))

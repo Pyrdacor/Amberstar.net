@@ -10,6 +10,10 @@ internal abstract class ButtonGridScreen : Screen
 
 	protected abstract void SetupButtons(ButtonGrid buttonGrid);
 	protected abstract void ButtonClicked(int index);
+	/// <summary>
+	/// The map screens move the party while these keys are held, they don't click a button when they are released.
+	/// </summary>
+	protected virtual bool KeypadMovesParty(Key key) => false;
     internal abstract byte ButtonGridPaletteIndex { get; }
     protected void RequestButtonSetup()
     {
@@ -100,7 +104,12 @@ internal abstract class ButtonGridScreen : Screen
 	{
 		if (keyModifiers == KeyModifiers.None && key >= Key.Keypad1 && key <= Key.Keypad9)
 		{
-			int buttonIndex = (int)key - (int)Key.Keypad1;
+			if (KeypadMovesParty(key))
+				return false;
+
+			// The keys are arranged like the buttons, so the row of 7, 8 and 9 is the upper one.
+			int keyIndex = (int)key - (int)Key.Keypad1;
+			int buttonIndex = (2 - keyIndex / 3) * 3 + keyIndex % 3;
 
             if (buttonGrid?.IsButtonEnabled(buttonIndex) == true)
                 ButtonClicked(buttonIndex);
