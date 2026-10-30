@@ -1,0 +1,10 @@
+# No other event starts while the screen of an event opens during a fade (it crashed with the wrong current event).
+waittext
+dismissall
+teleport 69 22 10 up
+dismissall
+wait 2
+move up
+trigger 13 13 Move optional
+wait 1500
+screen Door

@@ -32,6 +32,12 @@ internal class Image : Control
         }
     }
 
+    public Position Position
+    {
+        get => image.Position;
+        set => image.Position = value;
+    }
+
     public override byte DisplayLayer
     {
         get => image.DisplayLayer;

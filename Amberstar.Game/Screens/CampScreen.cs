@@ -29,6 +29,7 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 	Action? afterClickAction = null;
 	bool slept = false;
 	bool learnSpellMode = false;
+	IInnData? leftInn = null;
 
 	public override ScreenType Type { get; } = ScreenType.Camp;
 
@@ -80,6 +81,13 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 		Game.UntrapMouse();
 
 		base.Close();
+
+		// The camp closes during a fade. The party can only be moved when the map is shown again.
+		if (leftInn is IInnData innData)
+		{
+			leftInn = null;
+			Game.AfterScreenClosed(() => Game.Teleport(innData.ExitX, innData.ExitY, innData.ExitDirection, Game.State.GetIndexOfMapWithPlayer(), false));
+		}
 	}
 
 	public override void ScreenPopped(Screen screen)
@@ -140,13 +148,9 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 
 	private void Leave()
 	{
+		leftInn = Game.CampInInn;
+		Game.CampInInn = null;
 		Game.ScreenHandler.PopScreen();
-
-		if (Game.CampInInn is IInnData innData)
-		{
-			Game.CampInInn = null;
-			Game.Teleport(innData.ExitX, innData.ExitY, innData.ExitDirection, Game.State.GetIndexOfMapWithPlayer(), false);
-		}
 	}
 
 	private void ShowItems()

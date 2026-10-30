@@ -357,7 +357,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 				}
 				case ButtonType.PartyPositions:
 				{
-					// TODO
+					Game.ScreenHandler.PushScreen(ScreenType.CombatPositions);
 					break;
 				}
 				case ButtonType.Disk: // options

@@ -26,6 +26,7 @@ public enum ScreenType
     SelectWord,
     InputWord,
     InputCharacterName,
+    CombatPositions,
     InputSavegameName,
     MainMenu,
     LoadGame,
@@ -697,6 +698,12 @@ internal class ScreenHandler(Game Game) : IDisposable
 	public Screen? ActiveScreen => screens.Count == 0 ? null : screens.Peek();
 
 	/// <summary>
+	/// A screen opens after the running fade. Until then the active screen must not start
+	/// anything else, as an opening screen reads for example the current event.
+	/// </summary>
+	public bool ScreenIsOpening { get; private set; } = false;
+
+	/// <summary>
 	/// Finds the map screen below other screens (e.g. below a text box).
 	/// </summary>
 	public IMapScreen? FindMapScreen() => screens.OfType<IMapScreen>().FirstOrDefault();
@@ -741,6 +748,7 @@ internal class ScreenHandler(Game Game) : IDisposable
             ScreenType.SelectWord => new SelectWordScreen(),
             ScreenType.InputWord => new InputWordScreen(),
             ScreenType.InputCharacterName => new CharacterNameScreen(),
+            ScreenType.CombatPositions => new CombatPositionsScreen(),
             ScreenType.InputSavegameName => new SavegameNameScreen(),
             ScreenType.CharacterCreation => new CharacterCreatorScreen(),
             ScreenType.MainMenu => new MainMenuScreen(),
@@ -800,6 +808,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 
 		void Push()
 		{
+			ScreenIsOpening = false;
 			screens.Push(screen!);
 
 			if (currentScreen != null && !screen!.Transparent)
@@ -818,6 +827,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 
         if (!transparent && (fadeIn || fadeOut))
         {
+			ScreenIsOpening = true;
 			Game.Fade(Game.DefaultFadeTime, null, Push);
 		}
 		else
@@ -867,6 +877,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 	public void ClearAllScreens()
 	{
 		coveredLayouts.Clear();
+		ScreenIsOpening = false;
 
 		while (screens.Count != 0)
 		{

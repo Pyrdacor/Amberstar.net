@@ -156,7 +156,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 	protected abstract void PlaceButtonClicked(int index);
 
 	/// <summary>
-	/// Called after the place was left.
+	/// Called when the place is left, before it is closed.
 	/// </summary>
 	protected virtual void Left()
 	{
@@ -213,8 +213,8 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 	{
 		void DoLeave()
 		{
-			Game.ScreenHandler.PopScreen();
 			Left();
+			Game.ScreenHandler.PopScreen();
 		}
 
 		if (SomethingLeftBehind)

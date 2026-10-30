@@ -357,6 +357,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		additionalMoveRequested = false;
 		mouseDown = false;
 
+        Game.Time.MinuteChanged -= MinuteChanged;
         Game.Time.MinuteChanged += MinuteChanged;
 
 		SetLayout();
@@ -405,7 +406,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
     private void MinuteChanged()
     {
-        if (Game.Paused)
+        // The handlers of the time run after the step. The map is closed if the last party member died in it.
+        if (Game.Paused || player == null)
             return;
 
         foreach (var character in characters)
@@ -497,6 +499,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
                     break;
 				case ButtonType.Disk:
 					Game.ScreenHandler.PushScreen(ScreenType.Options);
+					break;
+				case ButtonType.PartyPositions:
+					Game.ScreenHandler.PushScreen(ScreenType.CombatPositions);
 					break;
 				case ButtonType.Camp:
 					Game.OpenCamp();
@@ -594,7 +599,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 	public override void Update(long elapsedTicks)
 	{
-		if (Game.Paused || !Game.InputEnabled)
+		if (Game.Paused || !Game.InputEnabled || Game.ScreenHandler.ScreenIsOpening)
 			ResetMovement();
 
 		if (elapsedTicks == 0)
@@ -782,6 +787,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 	private bool TryExecuteMapEvent(EventTrigger trigger, int? x = null, int? y = null)
 	{
+		if (Game.ScreenHandler.ScreenIsOpening)
+			return false;
+
 		var position = Game.State.PartyPosition;
         var eventWithIndex = GetEventWithIndex(x ?? position.X, y ?? position.Y);
 
@@ -1132,14 +1140,6 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 					if (eventTrigger == EventTrigger.Mouth && Talk(x, y))
 						return true;
-
-                    var character = PresentCharacters.FirstOrDefault(character => character.Position.X == x && character.Position.Y == y);
-
-                    if (character != null && character.Type == MapCharacterType.Person)
-                    {
-                        Game.TalkTo(new(character.CharacterIndex, character.Map, character.Index));
-                        return true;
-                    }
 
                     TryExecuteMapEvent(eventTrigger, x, y);
 

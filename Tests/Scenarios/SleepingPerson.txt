@@ -10,3 +10,13 @@ trigger 33 12 Mouth
 wait 1
 screen TextBox
 textshown SCHNARCHEN
+# --- the eye does not talk to persons, only the mouth does (the person is at 120,121 on the screen)
+dismissall
+click 230 170 right
+wait 200
+button 0
+wait 300
+hover 120 121
+click 120 121
+wait 1500
+screen Map2D

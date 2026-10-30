@@ -121,7 +121,9 @@ using G = Game.Game;
 ///   turn &lt;dir&gt;                change the party direction
 ///   teleport &lt;map&gt; &lt;x&gt; &lt;y&gt; [dir]
 ///                             teleport the party without fading
-///   trigger &lt;x&gt; &lt;y&gt; [trigger] trigger the map event at a position (Eye, Move, Ear, Mouth or UseItem, default Eye).
+///   trigger &lt;x&gt; &lt;y&gt; [trigger] [optional]
+///                             trigger the map event at a position (Eye, Move, Ear, Mouth or UseItem, default Eye).
+///                             With optional it is no failure if nothing happens.
 ///                             With Mouth a person at that position is talked to.
 ///   cheat &lt;command&gt;           execute a cheat console command
 ///   seed &lt;number&gt;             make random numbers reproducible
@@ -856,9 +858,15 @@ public sealed class ScenarioScript
 				break;
 			}
 			case "trigger":
-				CheckResult(game.ScriptTrigger(args.Length > 2 ? args[2] : "Eye", Arg(0), Arg(1)));
+			{
+				var result = game.ScriptTrigger(args.Length > 2 ? args[2] : "Eye", Arg(0), Arg(1));
+
+				if (args.ElementAtOrDefault(3)?.Equals("optional", StringComparison.OrdinalIgnoreCase) != true)
+					CheckResult(result);
+
 				continueTime = time + 1;
 				break;
+			}
 			case "cheat":
 				Cheats.Execute(game, argument);
 				break;

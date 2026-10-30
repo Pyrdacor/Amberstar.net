@@ -13,6 +13,7 @@ internal sealed class InnScreen : PlaceScreen
 {
 	const int GuestroomButtonIndex = 3;
 	bool roomRented = false;
+	bool openCamp = false;
 
 	public override ScreenType Type { get; } = ScreenType.Inn;
 
@@ -25,6 +26,7 @@ internal sealed class InnScreen : PlaceScreen
 	public override void Open(Action? closeAction)
 	{
 		roomRented = false;
+		openCamp = false;
 
 		base.Open(closeAction);
 	}
@@ -41,9 +43,16 @@ internal sealed class InnScreen : PlaceScreen
 			AskToBuy(Game.LoadMessageText(Message.InnRoomPrice), TotalPrice, () => roomRented = true);
 	}
 
-	protected override void Left()
+	protected override void Left() => openCamp = roomRented;
+
+	public override void Close()
 	{
-		if (roomRented)
-			Game.OpenCamp((IInnData)Place.Data);
+		var innData = (IInnData)Place.Data;
+
+		base.Close();
+
+		// The inn closes during a fade. The camp must not open before the screen below it is shown again.
+		if (openCamp)
+			Game.AfterScreenClosed(() => Game.OpenCamp(innData));
 	}
 }

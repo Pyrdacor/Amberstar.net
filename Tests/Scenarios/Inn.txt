@@ -20,6 +20,10 @@ buttonenabled 3 0
 button 7
 button 2
 waitscreen Camp
+# --- the camp stays visible when the inn is closed
+wait 2000
+screen Camp
+layout Door
 button 6
 textshown ACHT STUNDEN
 dismiss
