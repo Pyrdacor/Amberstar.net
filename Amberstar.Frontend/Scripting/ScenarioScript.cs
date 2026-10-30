@@ -86,6 +86,7 @@ using G = Game.Game;
 ///   specialitem &lt;item&gt; [0|1]  print if a special item is used, optionally check it
 ///   specialdisplay [text|none] print the special items shown next to the map (e.g. Compass Up, Day, X:012, 16:00),
 ///                             optionally check that one of them starts with the text or that none is shown
+///   layout [name]             print the shown layout (e.g. Conversation, Inventory), optionally check it
 ///   blinkinglabels [count]    print the number of existing blinking labels (item counts), optionally check it
 ///   travel [type]             print the travel type (Walk, Horse, Raft, Ship, MagicDisc, ...), optionally check it
 ///   passtime &lt;minutes&gt;        let time pass in steps of 5 minutes (poison, diseases, aging, spell durations, ...)
@@ -529,6 +530,12 @@ public sealed class ScenarioScript
 					Report(shown.Any(item => item.StartsWith(argument, StringComparison.OrdinalIgnoreCase)), $"specialdisplay = {actual} (expected {argument})");
 				break;
 			}
+			case "layout":
+				if (args.Length == 0)
+					output($"  layout = {game.ScriptLayout}");
+				else
+					Report(string.Equals(game.ScriptLayout, args[0], StringComparison.OrdinalIgnoreCase), $"layout = {game.ScriptLayout} (expected {args[0]})");
+				break;
 			case "blinkinglabels":
 			{
 				int count = game.ScriptBlinkingLabelCount;
@@ -754,7 +761,12 @@ public sealed class ScenarioScript
 				var key = ParseEnum<Key>(args[0]);
 				double end = time + Arg(1);
 				host.SetKeyHeld(key, true);
-				wait = new($"hold {key}", double.MaxValue, _ => time >= end, Finish: () => host.SetKeyHeld(key, false));
+				game.KeyDown(key, KeyModifiers.None);
+				wait = new($"hold {key}", double.MaxValue, _ => time >= end, Finish: () =>
+				{
+					host.SetKeyHeld(key, false);
+					game.KeyUp(key, KeyModifiers.None);
+				});
 				break;
 			}
 			case "click":

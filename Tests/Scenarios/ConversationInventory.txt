@@ -1,0 +1,25 @@
+# The layout of the conversation is shown again after the inventory was opened during a conversation (Shandra gives items at once).
+waittext
+dismissall
+teleport 70 7 6 left
+wait 2
+trigger 6 6 Mouth
+waitscreen Conversation
+layout Conversation
+# --- the inventory can be opened while Shandra speaks and the conversation goes on
+key F1
+waitscreen Inventory
+layout Inventory
+key Escape
+waitscreen Conversation
+wait 1000
+layout Conversation
+dismisstext
+key F1
+waitscreen Inventory
+layout Inventory
+key Escape
+waitscreen Conversation
+# the screen changes during the fade
+wait 1000
+layout Conversation

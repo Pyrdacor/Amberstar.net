@@ -52,6 +52,8 @@ partial class Game
 	/// </summary>
 	public string? ScriptActiveScreen => ScreenHandler.ActiveScreen?.Type.ToString();
 
+	public string ScriptLayout => CurrentLayout.ToString();
+
 	public bool ScriptInputEnabled => InputEnabled;
 
 	public bool ScriptPaused => Paused;

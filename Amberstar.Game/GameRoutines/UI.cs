@@ -42,11 +42,16 @@ partial class Game
     internal Cursor Cursor { get; }
     internal Rect PortraitArea { get; } = new(16, 1, 6 * 48, 34);
 
+    internal Layout CurrentLayout { get; private set; }
+
+    internal byte CurrentLayoutPaletteIndex => layoutSprite.PaletteIndex;
+
     internal void SetLayout(Layout layout, byte? paletteIndex = null)
 	{
 		var renderLayer = GetRenderLayer(Layer.Layout);
 		var textureAtlas = renderLayer.Config.Texture!;
 		layoutSprite.TextureOffset = textureAtlas.GetOffset((int)layout);
+		CurrentLayout = layout;
 
 		if (paletteIndex != null)
 			layoutSprite.PaletteIndex = paletteIndex.Value;

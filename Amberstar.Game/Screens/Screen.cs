@@ -687,6 +687,8 @@ internal class ScreenHandler(Game Game) : IDisposable
 {
 	readonly Stack<Screen> screens = [];
 	readonly Dictionary<ScreenType, Screen> createdScreens = [];
+	// The layouts of covered screens, they are shown again when the covering screen is closed.
+	readonly Dictionary<Screen, (Layout Layout, byte PaletteIndex)> coveredLayouts = [];
 
 	public Screen? ActiveScreen => screens.Count == 0 ? null : screens.Peek();
 
@@ -791,6 +793,9 @@ internal class ScreenHandler(Game Game) : IDisposable
 		{
 			screens.Push(screen!);
 
+			if (currentScreen != null && !screen!.Transparent)
+				coveredLayouts[currentScreen] = (Game.CurrentLayout, Game.CurrentLayoutPaletteIndex);
+
 			currentScreen?.ScreenPushed(screen!);
             screen!.PreOpen();
             screen.Open(followAction);
@@ -825,6 +830,10 @@ internal class ScreenHandler(Game Game) : IDisposable
         void Pop()
 		{
 			screen.Close();
+
+			if (prevScreen != null && !screen.Transparent && coveredLayouts.Remove(prevScreen, out var covered))
+				Game.SetLayout(covered.Layout, covered.PaletteIndex);
+
             prevScreen?.ScreenPopped(screen);
 
             ScreenChanged?.Invoke(prevScreen ?? screen, screen);
@@ -848,6 +857,8 @@ internal class ScreenHandler(Game Game) : IDisposable
 
 	public void ClearAllScreens()
 	{
+		coveredLayouts.Clear();
+
 		while (screens.Count != 0)
 		{
 			screens.Pop().Close();
