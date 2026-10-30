@@ -2,7 +2,7 @@
 waittext
 dismissall
 specialdisplay none
-# --- the compass is used in the inventory and points north on 2D maps
+# --- the compass is used in the inventory and shows the direction of the party on 2D maps
 give 1 104
 itemslot 1 2 104
 click 32 17 right
@@ -15,7 +15,22 @@ dismiss
 key Escape
 waitidle
 specialitem Compass 1
+specialdisplay Compass Right
+move right
+specialdisplay Compass Right
+move left
+specialdisplay Compass Left
+# the party also turns if an obstacle blocks the way (arrow buttons)
+wait 500
+button 1
+wait 500
+pos
 specialdisplay Compass Up
+wait 500
+button 7
+wait 500
+pos
+specialdisplay Compass Down
 # --- the map locator shows the coordinates and the clock the time
 setspecialitem MapLocator 1
 setspecialitem Clock 1

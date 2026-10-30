@@ -50,7 +50,7 @@ internal sealed class SpecialItemDisplay(Game game)
 	public IEnumerable<string> ShownItems { get; private set; } = [];
 
 	/// <summary>
-	/// Updates the display. The compass shows the given direction (always north on 2D maps).
+	/// Updates the display. The compass shows the given direction.
 	/// The coordinates are 1-based (on world maps they are global).
 	/// </summary>
 	public void Update(byte paletteIndex, Direction compassDirection, Position coordinates)

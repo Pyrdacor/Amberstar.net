@@ -667,6 +667,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			{
 				// stop as we hit an obstacle
 				ShowOuchBubble();
+				UpdateSpecialItems(); // the direction might have changed
 				return false;
 			}
 		}
@@ -730,8 +731,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
     }
 
 	/// <summary>
-	/// Shows the used special items. The compass always points north and
-	/// the coordinates on world maps are global (Show_special_items in the original).
+	/// Shows the used special items. The compass shows the direction of the party (in the
+	/// original it always points north on 2D maps) and the coordinates on world maps are global.
 	/// </summary>
 	private void UpdateSpecialItems()
 	{
@@ -797,9 +798,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 			// On world maps the event belongs to the map part at the position (important for event bits and tile changes).
 			IMapEventProvider eventProvider = worldMap?.GetPartAt(x ?? position.X, y ?? position.Y) ?? map!;
-			Game.EventHandler.HandleEvent(trigger, mapEvent, eventProvider);
-
-			return true;
+			return Game.EventHandler.HandleEvent(trigger, mapEvent, eventProvider);
         }
 
 		return false;
