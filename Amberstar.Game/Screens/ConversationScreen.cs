@@ -194,6 +194,9 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
 
         ShowReceivedItems();
 
+        if (screen is GiveGoldScreen or GiveFoodScreen)
+            HideText();
+
         if (screen is SelectWordScreen && !string.IsNullOrEmpty(Game.CurrentWord))
         {
             CheckWord(Game.CurrentWord);
@@ -496,6 +499,17 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
         this.closeAfterClick = closeAfterClick;
     }
 
+    /// <summary>
+    /// The question is shown above the amount window and doesn't wait for a click (DIA_Give_gold in the original).
+    /// </summary>
+    private void ShowAmountQuestion(Message message)
+    {
+        ShowMessage(message, false);
+        textScrollHandler.Detach();
+        Game.UntrapMouse();
+        Game.Cursor.CursorType = CursorType.Sword;
+    }
+
     private void HideText()
     {
         conversationText!.Visible = false;
@@ -564,11 +578,13 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
             case 7: // Give gold to person
                 Game.CurrentAmount = 0;
                 Game.CurrentMaxAmount = Game.State.ActivePartyMember!.Gold;
+                ShowAmountQuestion(Message.TransferHowManyGold);
                 Game.ScreenHandler.PushScreen(ScreenType.ConversationGiveGold);
                 break;
             case 8: // Give food to person
                 Game.CurrentAmount = 0;
                 Game.CurrentMaxAmount = Game.State.ActivePartyMember!.Food;
+                ShowAmountQuestion(Message.TransferHowManyFood);
                 Game.ScreenHandler.PushScreen(ScreenType.ConversationGiveFood);
                 break;
         }

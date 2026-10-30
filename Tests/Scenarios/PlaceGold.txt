@@ -12,6 +12,7 @@ value 1 gold 0
 # --- give 40 gold to the hero
 button 8
 waitscreen PlaceGiveGold
+textshown WIEVIEL GOLD
 amount 40
 portrait 1
 placegold 110

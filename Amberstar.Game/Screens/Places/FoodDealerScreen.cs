@@ -104,6 +104,7 @@ internal sealed class FoodDealerScreen : PlaceScreen
 			case GiveFoodButtonIndex:
 				Game.CurrentAmount = 0;
 				Game.CurrentMaxAmount = placeFood;
+				ShowMessage(Message.TransferHowManyFood, false);
 				Game.ScreenHandler.PushScreen(ScreenType.PlaceGiveFood);
 				break;
 		}

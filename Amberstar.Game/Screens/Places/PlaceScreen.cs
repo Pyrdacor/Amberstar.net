@@ -141,6 +141,10 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 			Game.Cursor.CursorType = CursorType.Sword;
 		}
 
+		// the question is shown above the amount window (Transfer_gold_PLACES in the original)
+		if (screen is GiveGoldScreen or GiveFoodScreen)
+			HideMessage();
+
 		if (screen is GiveGoldScreen && Game.CurrentAmount > 0)
 			StartTransfer(TransferType.Gold, Game.CurrentAmount);
 		else if (screen is GiveFoodScreen && Game.CurrentAmount > 0)
@@ -196,6 +200,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 			case GiveGoldButtonIndex:
 				Game.CurrentAmount = 0;
 				Game.CurrentMaxAmount = placeGold;
+				ShowMessage(Message.TransferHowManyGold, false);
 				Game.ScreenHandler.PushScreen(ScreenType.PlaceGiveGold);
 				break;
 			default:

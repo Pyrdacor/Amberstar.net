@@ -87,6 +87,9 @@ internal class ChestScreen : LockedScreen<ChestEvent>
     {
         base.ScreenPopped(screen);
 
+        if (screen is GiveGoldScreen)
+            HideMessage();
+
         if (screen is GiveGoldScreen && Game.CurrentAmount > 0)
         {
             if (Game.SetHandIcons(null, partyMember => Game.CanReceiveGold(partyMember, Game.CurrentAmount)) > 0)
@@ -358,6 +361,8 @@ internal class ChestScreen : LockedScreen<ChestEvent>
 
         Game.CurrentAmount = 0;
         Game.CurrentMaxAmount = chestGold;
+        // the question is shown above the amount window (like in the original)
+        ShowMessage(Message.TransferHowManyGold, false);
         Game.ScreenHandler.PushScreen(ScreenType.ChestGiveGold);
     }
 

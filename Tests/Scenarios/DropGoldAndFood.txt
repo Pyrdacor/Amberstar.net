@@ -30,6 +30,7 @@ value 1 gold 78
 # --- the same for food
 button 8
 waitscreen PlaceGiveFood
+textshown WIEVIELE RATIONEN
 click 56 168
 wait 200
 click 136 168
