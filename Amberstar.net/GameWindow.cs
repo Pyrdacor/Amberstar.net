@@ -292,7 +292,8 @@ namespace Amberstar
             configuration = new Configuration // TODO: load it later!
             {
                 // scenario scripts start in the game
-                ShowIntro = scenarioScript == null
+                ShowIntro = scenarioScript == null,
+                ShowCharacterCreator = scenarioScript == null
             };
 
             if (versions.Count == 0)

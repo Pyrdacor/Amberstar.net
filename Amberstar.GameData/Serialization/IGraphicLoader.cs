@@ -3,6 +3,19 @@ using Amber.Common;
 
 namespace Amberstar.GameData.Serialization;
 
+/// <summary>
+/// The buttons of the character editor (index in the icons of INSTALL.PRG).
+/// </summary>
+public enum CharacterCreatorButton
+{
+	Portrait = 1,
+	Female = 2,
+	Male = 3,
+	Roll = 4,
+	Name = 5,
+	Ok = 13,
+}
+
 public interface IGraphicLoader
 {
 	IGraphic[] LoadWindowGraphics(bool dark);
@@ -11,7 +24,23 @@ public interface IGraphicLoader
 	IReadOnlyDictionary<int, IGraphic> LoadAllBackgroundGraphics();
     IReadOnlyDictionary<int, IGraphic> LoadAllCloudGraphics();
     IReadOnlyDictionary<DayTime, Color[]> LoadSkyGradients();
-    IReadOnlyDictionary<int, IGraphic> LoadPersonPortraits();
+	IReadOnlyDictionary<int, IGraphic> LoadPersonPortraits();
+	/// <summary>
+	/// Loads the 12 portraits of the character editor (6 male and then 6 female ones).
+	/// </summary>
+	IGraphic[] LoadCharacterCreatorPortraits();
+	/// <summary>
+	/// Loads the buttons of the character editor (see <see cref="CharacterCreatorButton"/>).
+	/// </summary>
+	IGraphic[] LoadCharacterCreatorButtons();
+	/// <summary>
+	/// Loads the title of the character editor which is shown above the layout.
+	/// </summary>
+	IGraphic LoadCharacterCreatorTitle();
+	/// <summary>
+	/// Loads the palette of the title of the character editor.
+	/// </summary>
+	IGraphic LoadCharacterCreatorTitlePalette();
 	/// <summary>
 	/// Loads the graphics of the altar puzzle in the order of <see cref="PuzzleGraphic"/>.
 	/// </summary>

@@ -1,0 +1,54 @@
+# The character editor: the portrait, the gender and the name can be changed and the values can be rolled.
+waittext
+dismissall
+hero THALION Male 0
+charactercreator
+waitscreen CharacterCreation
+wait 1000
+# --- the button of the current gender is disabled
+buttonenabled 8 0
+buttonenabled 7 1
+button 7
+wait 300
+buttonenabled 7 0
+buttonenabled 8 1
+# --- the next portrait
+button 0
+wait 300
+# --- the name
+button 3
+waitscreen InputCharacterName
+typetext HELENA
+key Enter
+wait 300
+screen CharacterCreation
+# --- the values are rolled
+seed 1
+setvalue 1 gold 1000
+setvalue 1 food 1000
+button 6
+wait 300
+value 1 gold 33
+value 1 food 10
+# --- the changes are kept when the editor is closed
+button 2
+wait 1000
+screen Map2D
+hero HELENA Female 7
+# --- and in the savegame
+click 230 170 right
+button 8
+waitscreen Options
+button 6
+yes
+wait 300
+button 2
+waitidle
+setvalue 1 gold 7
+button 8
+waitscreen Options
+button 7
+yes
+waitidle
+hero HELENA Female 7
+value 1 gold 33

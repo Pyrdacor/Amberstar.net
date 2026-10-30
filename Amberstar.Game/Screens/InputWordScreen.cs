@@ -16,6 +16,10 @@ internal class InputWordScreen() : WindowScreen(WindowX, WindowY, WindowWidthInT
 
 	public override ScreenType Type { get; } = ScreenType.InputWord;
 
+	protected virtual IText LabelText => Game.LoadUIText(UIText.EnterWord);
+
+	protected virtual int? MaxInputLength => null;
+
 	public override bool CloseOnRightClick { get; } = true;
 
     public override bool CloseOnSpace { get; } = false;
@@ -24,9 +28,9 @@ internal class InputWordScreen() : WindowScreen(WindowX, WindowY, WindowWidthInT
     {
         base.Init();
 
-		AddLabel(0, 7, Game.LoadUIText(UIText.EnterWord), 144, 7, ControlDisplayLayer);
+		AddLabel(0, 7, LabelText, 144, 7, ControlDisplayLayer);
 	
-		input = AddInput(-1, 16, 128, ControlDisplayLayer);
+		input = AddInput(-1, 16, 128, ControlDisplayLayer, MaxInputLength);
     }
 
     public override void Open(Action? closeAction)

@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- The graphics of the character editor of INSTALL.PRG. It is not part of the data of all versions. -->
+    <EmbeddedResource Include="CharacterCreator.dat" LogicalName="CharacterCreator.dat" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Amiga.FileFormats.LHA" Version="1.0.2" />
   </ItemGroup>
 

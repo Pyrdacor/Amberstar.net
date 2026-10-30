@@ -55,6 +55,11 @@ public interface IConfiguration
     /// </summary>
     bool ShowIntro { get; set; }
 
+    /// <summary>
+    /// A new game starts with the character editor (not for scenario scripts).
+    /// </summary>
+    bool ShowCharacterCreator { get; set; }
+
     KeyMovement3D KeyMovement3D { get; set; }
 
     Shortcut[] Shortcuts { get; set; }

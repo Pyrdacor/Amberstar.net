@@ -54,6 +54,25 @@ partial class Game
 
 	public string ScriptLayout => CurrentLayout.ToString();
 
+	public string ScriptHero
+	{
+		get
+		{
+			var hero = State.GetPartyMember(1)!;
+			return $"{hero.Name} {hero.Gender} {hero.CharacterCreatorPortrait?.ToString() ?? "-"}";
+		}
+	}
+
+	public string? ScriptOpenCharacterCreator()
+	{
+		if (!ScriptIdle)
+			return $"the character editor can only be opened while a map is shown and nothing happens: {ScriptActiveScreen}";
+
+		ScreenHandler.PushScreen(ScreenType.CharacterCreation);
+
+		return null;
+	}
+
 	public bool ScriptInputEnabled => InputEnabled;
 
 	public bool ScriptPaused => Paused;

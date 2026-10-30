@@ -64,7 +64,7 @@ internal sealed class DismissPartyMembersScreen : Screen
 
 			var (portrait, namePosition) = positions[slot - 2];
 			var image = AddImage(portrait.X, portrait.Y, PortraitWidth, PortraitHeight,
-				graphics.GetPersonPortraitIndex(Game.State.PartyCharacterIndices[slot - 1]), DisplayLayer);
+				Game.GetPartyMemberPortraitIndex(partyMember, Game.State.PartyCharacterIndices[slot - 1]), DisplayLayer);
 			image.PaletteIndex = palette;
 			var name = AddLabel(namePosition.X, namePosition.Y, 96, 7, DisplayLayer);
 			name.SetText(partyMember.Name, slot == Game.State.ActivePartyMemberIndex ? ActiveNameColorIndex : NameColorIndex,

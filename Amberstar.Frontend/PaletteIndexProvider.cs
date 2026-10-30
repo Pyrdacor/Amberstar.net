@@ -14,7 +14,8 @@ namespace Amberstar.Frontend
 		Dictionary<int, byte> combatPalettes,
 		Dictionary<(OutroPalette, int), byte> outroPalettes,
 		Dictionary<int, byte> introPalettes,
-		List<byte> loadingScreenPalettes
+		List<byte> loadingScreenPalettes,
+		byte characterCreatorTitlePalette
 	) : IPaletteIndexProvider
 	{
         public ReadOnlyDictionary<BuiltinPalette, byte> BuiltinPaletteIndices => builtinPaletteIndices.AsReadOnly();
@@ -26,6 +27,8 @@ namespace Amberstar.Frontend
 		public byte GetTextPaletteIndex() => BuiltinPaletteIndices[BuiltinPalette.UI]; // TODO?
 
 		public byte GetTilesetPaletteIndex(int tileset) => palettesTileset[tileset];
+
+		public byte GetCharacterCreatorTitlePaletteIndex() => characterCreatorTitlePalette;
 
 		public byte GetCombatPaletteIndex(int background) => combatPalettes[background];
 

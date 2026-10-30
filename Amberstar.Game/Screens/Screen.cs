@@ -25,6 +25,7 @@ public enum ScreenType
     ItemDetails,
     SelectWord,
     InputWord,
+    InputCharacterName,
     Confirmation,
     // Inventory sub screens
     InventoryDropItem,
@@ -736,6 +737,8 @@ internal class ScreenHandler(Game Game) : IDisposable
 			ScreenType.ItemDetails => new ItemDetailsScreen(),
             ScreenType.SelectWord => new SelectWordScreen(),
             ScreenType.InputWord => new InputWordScreen(),
+            ScreenType.InputCharacterName => new CharacterNameScreen(),
+            ScreenType.CharacterCreation => new CharacterCreatorScreen(),
             ScreenType.Confirmation => new ConfirmationScreen(),
             // Inventory sub screens
             ScreenType.InventoryDropItem => new InventoryScreen.DropItemScreen(),

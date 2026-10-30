@@ -28,4 +28,5 @@ public interface IPaletteIndexProvider
 	/// Gets the palette of the loading screen at a fade step (see <see cref="IGraphicLoader.LoadLoadingScreenPalette"/>).
 	/// </summary>
 	byte GetLoadingScreenPaletteIndex(int fadeStep);
+	byte GetCharacterCreatorTitlePaletteIndex();
 }

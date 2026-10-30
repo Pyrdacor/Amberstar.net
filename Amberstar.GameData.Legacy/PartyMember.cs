@@ -62,6 +62,23 @@ internal class PartyMember : BattleCharacter, IPartyMember
         return partyMember;
     }
 
+    const int GenderOffset = 0x03;
+    const int NameOffset = 0xf0;
+    const int NameLength = 16;
+    const int PortraitOffset = 0x6b0;
+    const int PortraitSize = 32 * 34 / 2;
+
+    public int? CharacterCreatorPortrait => CharacterCreatorData.FindPortrait(rawData.AsSpan(PortraitOffset, PortraitSize));
+
+    public void Customize(string name, Gender gender, int portraitIndex)
+    {
+        SetIdentity(name, gender);
+        rawData[GenderOffset] = (byte)gender;
+        Array.Clear(rawData, NameOffset, NameLength);
+        System.Text.Encoding.Latin1.GetBytes(name, rawData.AsSpan(NameOffset, NameLength - 1));
+        CharacterCreatorData.GetPortraitData(portraitIndex).CopyTo(rawData, PortraitOffset);
+    }
+
     public ClassFlags PossibleClasses { get; set; }
     public byte DefaultBattlePosition { get => defaultBattlePosition; init => defaultBattlePosition = value; }
     public word AttackPerRoundLevel { get => attackPerRoundLevel; set => attackPerRoundLevel = value; }

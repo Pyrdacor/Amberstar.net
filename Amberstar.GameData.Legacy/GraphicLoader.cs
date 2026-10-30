@@ -362,6 +362,16 @@ internal class GraphicLoader(AssetProvider assetProvider, byte[] loadingScreenDa
 		return skyGradients;
 	}
 
+	public IGraphic[] LoadCharacterCreatorPortraits() => Enumerable.Range(0, CharacterCreatorData.PortraitCount)
+		.Select(i => (IGraphic)Graphic.FromBitPlanes(32, 34, CharacterCreatorData.GetPortraitData(i), 4)).ToArray();
+
+	public IGraphic[] LoadCharacterCreatorButtons() => Enumerable.Range(0, CharacterCreatorData.ButtonCount)
+		.Select(i => (IGraphic)Graphic.FromBitPlanes(32, 16, CharacterCreatorData.GetButtonData(i), 4)).ToArray();
+
+	public IGraphic LoadCharacterCreatorTitle() => Graphic.FromBitPlanes(320, 32, CharacterCreatorData.GetTitleData(), 4);
+
+	public IGraphic LoadCharacterCreatorTitlePalette() => PaletteLoader.LoadPalette(new DataReader(CharacterCreatorData.GetTitlePaletteData()));
+
     public IReadOnlyDictionary<int, IGraphic> LoadPersonPortraits()
 	{
 		if (personPortraits.Count != 0)

@@ -23,6 +23,12 @@ internal class Character : ICharacter
             inventory[i] = new ItemSlot(0, null);
     }
 
+    protected void SetIdentity(string name, Gender gender)
+    {
+        this.name = name;
+        this.gender = gender;
+    }
+
     public static void Load(Character character, IDataReader reader)
     {
         reader.Position = 0x00;

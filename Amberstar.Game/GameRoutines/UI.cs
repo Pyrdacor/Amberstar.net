@@ -57,6 +57,27 @@ partial class Game
 			layoutSprite.PaletteIndex = paletteIndex.Value;
 	}
 
+    /// <summary>
+    /// A portrait of the character editor replaces the original one.
+    /// </summary>
+    internal int GetPartyMemberPortraitIndex(IPartyMember partyMember, int characterIndex) =>
+        partyMember.CharacterCreatorPortrait is int portrait
+            ? GraphicIndexProvider.GetCharacterCreatorPortraitIndex(portrait)
+            : GraphicIndexProvider.GetPersonPortraitIndex(characterIndex);
+
+    /// <summary>
+    /// The names are texts which would be shown above a screen which covers the portraits.
+    /// <see cref="UpdatePartyMembers"/> shows them again.
+    /// </summary>
+    internal void HidePartyMemberNames()
+    {
+        foreach (var name in partyMemberNames)
+        {
+            if (name != null)
+                name.Visible = false;
+        }
+    }
+
     internal void UpdatePartyMembers()
     {
         for (int i = 0; i < MaxPartyMembers; i++)
@@ -71,7 +92,7 @@ partial class Game
             ? GraphicIndexProvider.GetUIGraphicIndex(UIGraphic.EmptyCharSlot)
             : (partyMember.IsDead()
                 ? GraphicIndexProvider.GetUIGraphicIndex(UIGraphic.Skull)
-                : GraphicIndexProvider.GetPersonPortraitIndex(State.PartyCharacterIndices[slotIndex]));
+                : GetPartyMemberPortraitIndex(partyMember, State.PartyCharacterIndices[slotIndex]));
 
         var portrait = portraitSprites[slotIndex]!;
 

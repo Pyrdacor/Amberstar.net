@@ -23,8 +23,9 @@ namespace Amberstar.Frontend
 			// the loading screen palette with all fading steps
 			var loadingScreenPalettes = Enumerable.Range(0, IGraphicLoader.LoadingScreenFadeSteps + 1)
 				.Select(assetProvider.GraphicLoader.LoadLoadingScreenPalette).OfType<IGraphic>().ToArray();
+			var characterCreatorTitlePalette = assetProvider.GraphicLoader.LoadCharacterCreatorTitlePalette();
 			var palette = new Graphic(16, builtinPalettes.Length + 10 + 2 + 26 + combatPalettes.Length +
-				loadingScreenPalettes.Length, GraphicFormat.RGBA);
+				loadingScreenPalettes.Length + 1, GraphicFormat.RGBA);
             var generalPaletteIndices = new Dictionary<int, byte>();
 			var palettes = new Dictionary<int, IGraphic>();
             byte y = 0;
@@ -70,6 +71,10 @@ namespace Amberstar.Frontend
 			}
 
 			var loadingScreenPaletteIndices = new List<byte>();
+
+			byte characterCreatorTitlePaletteIndex = y;
+			palettes.Add(y, characterCreatorTitlePalette);
+			palette.AddOverlay(0, y++, characterCreatorTitlePalette);
 
 			foreach (var loadingScreenPalette in loadingScreenPalettes)
 			{
@@ -133,6 +138,14 @@ namespace Amberstar.Frontend
                 partyMemberPortraitIndices.Add(partyMemberPortrait.Key, graphics.Count);
                 graphics.Add(graphics.Count, partyMemberPortrait.Value);
             }
+			int characterCreatorPortraitOffset = graphics.Count;
+			foreach (var graphic in assetProvider.GraphicLoader.LoadCharacterCreatorPortraits())
+				graphics.Add(graphics.Count, graphic);
+			int characterCreatorButtonOffset = graphics.Count;
+			foreach (var graphic in assetProvider.GraphicLoader.LoadCharacterCreatorButtons())
+				graphics.Add(graphics.Count, graphic);
+			int characterCreatorTitleIndex = graphics.Count;
+			graphics.Add(graphics.Count, assetProvider.GraphicLoader.LoadCharacterCreatorTitle());
 			int puzzleGraphicOffset = graphics.Count;
 			foreach (var graphic in assetProvider.GraphicLoader.LoadPuzzleGraphics())
 				graphics.Add(graphics.Count, graphic);
@@ -445,9 +458,10 @@ namespace Amberstar.Frontend
 				image80x80Offset, itemGraphicOffset, windowGraphicOffset, cursorGraphicOffset,
 				backgroundGraphicIndices, cloudGraphicIndices, labBlockImageIndices,
 				partyMemberPortraitIndices, puzzleGraphicOffset, combatBackgroundOffset, tacticalIconOffset, monsterGraphicOffsets,
-				spellAnimationOffset, damageDigitOffset, outroGraphicOffsets, outroGlyphIndices, introGraphicOffsets, thalionLogoIndex, loadingScreenIndex);
+				spellAnimationOffset, damageDigitOffset, outroGraphicOffsets, outroGlyphIndices, introGraphicOffsets, thalionLogoIndex, loadingScreenIndex,
+				characterCreatorPortraitOffset, characterCreatorButtonOffset, characterCreatorTitleIndex);
 			paletteIndexProvider = new(builtinPaletteIndices, image80x80PaletteIndices, tilesetPaletteIndices, generalPaletteIndices, combatPaletteIndices,
-				outroPaletteIndices, introPaletteIndices, loadingScreenPaletteIndices);
+				outroPaletteIndices, introPaletteIndices, loadingScreenPaletteIndices, characterCreatorTitlePaletteIndex);
 			paletteColorProvider = new(palettes);
 			fontInfoProvider = new(textGlyphTextureIndices, runeGlyphTextureIndices, textShadowTextureIndices, runeShadowTextureIndices);
 		}

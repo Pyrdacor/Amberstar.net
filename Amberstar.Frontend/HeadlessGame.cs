@@ -30,10 +30,11 @@ public sealed class HeadlessGame : IScenarioScriptHost, IDisposable
 	/// <param name="dataPath">Path to the game data (see <see cref="GameSetup.FindDataPath"/>).</param>
 	/// <param name="randomSeed">Seed for random numbers to make runs reproducible.</param>
 	/// <param name="showIntro">The game starts with the intro (scenario scripts start in the game).</param>
-	public HeadlessGame(string dataPath, int randomSeed = 0, bool showIntro = false)
+	/// <param name="showCharacterCreator">A new game starts with the character editor (scenario scripts start in the game).</param>
+	public HeadlessGame(string dataPath, int randomSeed = 0, bool showIntro = false, bool showCharacterCreator = false)
 	{
 		G.SetRandomSeed(randomSeed);
-		Game = GameSetup.CreateGame(renderer, dataPath, new NullAudioOutput(), new Configuration { ShowIntro = showIntro },
+		Game = GameSetup.CreateGame(renderer, dataPath, new NullAudioOutput(), new Configuration { ShowIntro = showIntro, ShowCharacterCreator = showCharacterCreator },
 			() => [.. heldKeys], _ => { });
 		Game.QuitRequested += () => ExitRequested = true;
 		// every headless game has its own savegame

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- The character editor of the original installer is shown at the start of a new game. The name, the gender and the portrait can be changed and the values can be rolled.
+
 ## 0.2.1
 
 ### Changed

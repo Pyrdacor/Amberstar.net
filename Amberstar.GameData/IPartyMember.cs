@@ -30,6 +30,16 @@ public interface IPartyMember : IBattleCharacter, IPerson
      * -  SLP += (TotalINT / 20) + SLPPerLvl
      */
 
+    /// <summary>
+    /// The index of the portrait of the character editor which this member has, if any.
+    /// </summary>
+    int? CharacterCreatorPortrait { get; }
+
+    /// <summary>
+    /// Sets the name, the gender and the portrait chosen in the character editor.
+    /// </summary>
+    void Customize(string name, Gender gender, int portraitIndex);
+
     IPartyMember Clone();
 }
 

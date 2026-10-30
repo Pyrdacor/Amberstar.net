@@ -86,6 +86,10 @@ using G = Game.Game;
 ///   specialitem &lt;item&gt; [0|1]  print if a special item is used, optionally check it
 ///   specialdisplay [text|none] print the special items shown next to the map (e.g. Compass Up, Day, X:012, 16:00),
 ///                             optionally check that one of them starts with the text or that none is shown
+///   charactercreator          open the character editor (a new game shows it only outside of scripts)
+///   typetext &lt;text&gt;           type characters into the shown input
+///   hero [name gender portrait]
+///                             print the name, gender and editor portrait (or -) of the first party member, optionally check them
 ///   layout [name]             print the shown layout (e.g. Conversation, Inventory), optionally check it
 ///   blinkinglabels [count]    print the number of existing blinking labels (item counts), optionally check it
 ///   travel [type]             print the travel type (Walk, Horse, Raft, Ship, MagicDisc, ...), optionally check it
@@ -675,6 +679,20 @@ public sealed class ScenarioScript
 					Report(actual.Equals(args[0], StringComparison.OrdinalIgnoreCase), $"battleresult = {actual} (expected {args[0]})");
 				break;
 			}
+			case "charactercreator":
+				CheckResult(game.ScriptOpenCharacterCreator());
+				continueTime = time + 1;
+				break;
+			case "typetext":
+				foreach (char ch in argument)
+					game.KeyChar(ch, KeyModifiers.None);
+				break;
+			case "hero":
+				if (args.Length == 0)
+					output($"  hero = {game.ScriptHero}");
+				else
+					Report(string.Equals(game.ScriptHero, argument, StringComparison.OrdinalIgnoreCase), $"hero = {game.ScriptHero} (expected {argument})");
+				break;
 			case "startbattle":
 				CheckResult(game.ScriptStartBattle(Arg(0)));
 				continueTime = time + 1;

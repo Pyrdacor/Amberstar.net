@@ -43,4 +43,7 @@ public interface IGraphicIndexProvider
 	/// Gets the texture index of the loading screen (the dwarf) or null if it is not available.
 	/// </summary>
 	int? GetLoadingScreenIndex();
+	int GetCharacterCreatorPortraitIndex(int portrait);
+	int GetCharacterCreatorButtonIndex(CharacterCreatorButton button);
+	int GetCharacterCreatorTitleIndex();
 }
