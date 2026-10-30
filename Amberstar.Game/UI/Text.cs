@@ -49,6 +49,19 @@ internal class TextManager(Game game, IFont font,
     const int TicksPerScroll = 4; // TODO
     public const byte DefaultPaletteIndex = 0; // UI
 
+    /// <summary>
+    /// The texts of the game use the characters of the Atari ST for umlauts, this converts normal text to them.
+    /// </summary>
+    public static string ToGameCharacters(string text) => text
+        .Replace('\u00c4', '\u008e').Replace('\u00d6', '\u0099').Replace('\u00dc', '\u009a')
+        .Replace('\u00e4', '\u0084').Replace('\u00f6', '\u0094').Replace('\u00fc', '\u0081')
+        .Replace('\u00df', '\u009e');
+
+    /// <summary>
+    /// Checks if the font has a glyph for the character (given as normal text).
+    /// </summary>
+    public bool HasGlyph(char ch) => ch == ' ' || fontInfoProvider.TextGlyphTextureIndices.ContainsKey(ToGameCharacters(ch.ToString())[0]);
+
     public int GetTextRenderWidth(string text)
     {
         if (text.Trim('\n').Length == 0)

@@ -293,7 +293,7 @@ namespace Amberstar
             {
                 // scenario scripts start in the game
                 ShowIntro = scenarioScript == null,
-                ShowCharacterCreator = scenarioScript == null
+                ShowMainMenu = scenarioScript == null
             };
 
             if (versions.Count == 0)

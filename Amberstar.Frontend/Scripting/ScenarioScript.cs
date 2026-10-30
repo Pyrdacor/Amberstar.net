@@ -86,6 +86,14 @@ using G = Game.Game;
 ///   specialitem &lt;item&gt; [0|1]  print if a special item is used, optionally check it
 ///   specialdisplay [text|none] print the special items shown next to the map (e.g. Compass Up, Day, X:012, 16:00),
 ///                             optionally check that one of them starts with the text or that none is shown
+///   optionsslot &lt;slot&gt;        choose a savegame slot in the options (1-30)
+///   optionsslottext &lt;slot&gt; &lt;text&gt;
+///                             check the text of a savegame slot in the options
+///   dismissmembers            open the window to dismiss party members
+///   savefolder &lt;path&gt;         use another folder for the savegames
+///   saveslot &lt;slot&gt;           save the game to a savegame slot (1-30)
+///   mainmenu                  open the main menu (a game shows it only outside of scripts)
+///   mainmenuselect &lt;index&gt;    choose an entry of the main menu (0: continue, 1: new game, 2: load, 3: quit)
 ///   charactercreator          open the character editor (a new game shows it only outside of scripts)
 ///   typetext &lt;text&gt;           type characters into the shown input
 ///   hero [name gender portrait]
@@ -679,6 +687,29 @@ public sealed class ScenarioScript
 					Report(actual.Equals(args[0], StringComparison.OrdinalIgnoreCase), $"battleresult = {actual} (expected {args[0]})");
 				break;
 			}
+			case "optionsslot":
+				game.ScriptSelectSavegameSlot(Arg(0));
+				break;
+			case "optionsslottext":
+				Report(game.ScriptSavegameSlotText(Arg(0)) == string.Join(" ", args.Skip(1)), $"optionsslottext {Arg(0)} = {game.ScriptSavegameSlotText(Arg(0))} (expected {string.Join(" ", args.Skip(1))})");
+				break;
+			case "dismissmembers":
+				game.ScriptOpenDismissPartyMembers();
+				break;
+			case "savefolder":
+				game.SavegamePath = Path.Combine(argument, "Savegame.sav");
+				break;
+			case "saveslot":
+				game.SaveGame(game.ScriptSavegameSlotPath(Arg(0)));
+				break;
+			case "mainmenu":
+				game.ScriptShowMainMenuAgain();
+				continueTime = time + 1;
+				break;
+			case "mainmenuselect":
+				game.ScriptSelectMainMenuEntry(Arg(0));
+				continueTime = time + 1;
+				break;
 			case "charactercreator":
 				CheckResult(game.ScriptOpenCharacterCreator());
 				continueTime = time + 1;

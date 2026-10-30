@@ -54,6 +54,42 @@ partial class Game
 
 	public string ScriptLayout => CurrentLayout.ToString();
 
+	public bool ScriptHasEnglishTexts => HasEnglishTexts;
+
+	/// <summary>
+	/// The entries of the main menu as 0 (disabled) or 1 (enabled).
+	/// </summary>
+	public string? ScriptMainMenuEntries => (ScreenHandler.ActiveScreen as MainMenuScreen)?.ScriptEnabledEntries;
+
+	public void ScriptSelectMainMenuEntry(int index) => (ScreenHandler.ActiveScreen as MainMenuScreen)?.Select(index);
+
+	public int? ScriptLoadGameSlotCount => (ScreenHandler.ActiveScreen as LoadGameScreen)?.ScriptSlotCount;
+
+	public void ScriptSelectLoadGameEntry(int index) => (ScreenHandler.ActiveScreen as LoadGameScreen)?.Select(index);
+
+	public string ScriptSavegameSlotPath(int slot) => GetSavegameSlotPath(slot);
+
+	public string ScriptSavegameNamesPath => SavegameNamesPath!;
+
+	public bool ScriptSaveToSlot(int slot, string name) => SaveGameToSlot(slot, name);
+
+	public void ScriptSelectSavegameSlot(int slot) => (ScreenHandler.ActiveScreen as OptionsScreen)?.SelectSlot(slot);
+
+	public string? ScriptSavegameSlotText(int slot) => (ScreenHandler.ActiveScreen as OptionsScreen)?.ScriptSlotText(slot);
+
+	public IEnumerable<string> ScriptLoadGameEntries => GetSavegameSlots().Select(slot => $"{slot.Slot}:{slot.Name}");
+
+	public void ScriptOpenDismissPartyMembers() => ScreenHandler.PushScreen(ScreenType.DismissPartyMembers);
+
+	/// <summary>
+	/// Opens the main menu again, it checks which savegames exist.
+	/// </summary>
+	public void ScriptShowMainMenuAgain()
+	{
+		ScreenHandler.ClearAllScreens();
+		ScreenHandler.PushScreen(ScreenType.MainMenu);
+	}
+
 	public string ScriptHero
 	{
 		get

@@ -20,6 +20,10 @@ internal class InputWordScreen() : WindowScreen(WindowX, WindowY, WindowWidthInT
 
 	protected virtual int? MaxInputLength => null;
 
+	protected virtual string InitialText => "";
+
+	protected virtual Func<char, bool>? CharacterFilter => null;
+
 	public override bool CloseOnRightClick { get; } = true;
 
     public override bool CloseOnSpace { get; } = false;
@@ -31,12 +35,13 @@ internal class InputWordScreen() : WindowScreen(WindowX, WindowY, WindowWidthInT
 		AddLabel(0, 7, LabelText, 144, 7, ControlDisplayLayer);
 	
 		input = AddInput(-1, 16, 128, ControlDisplayLayer, MaxInputLength);
+		input.CharacterFilter = CharacterFilter;
     }
 
     public override void Open(Action? closeAction)
     {
         Game.CurrentWord = "";
-        input?.Clear();
+        input?.SetText(InitialText);
 
         base.Open(closeAction);
     }

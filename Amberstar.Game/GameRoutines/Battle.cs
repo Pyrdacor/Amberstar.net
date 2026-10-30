@@ -352,18 +352,21 @@ partial class Game
 			return;
 		}
 
+		ResetGameState();
+		ScreenHandler.ClearAllScreens();
+
+		if (Configuration.ShowMainMenu)
+			ScreenHandler.PushScreen(ScreenType.MainMenu);
+		else
+			Teleport(1 + State.PartyPosition.X, 1 + State.PartyPosition.Y, State.PartyDirection, State.MapIndex, true, true);
+	}
+
+	void ResetGameState()
+	{
 		State.LoadFrom(AssetProvider.SavegameLoader.LoadSavegame());
 		State.ResetPartyMembers();
 		ResetStatusIcons();
 		UpdatePartyMembers();
-		ScreenHandler.ClearAllScreens();
-
-		void Continue() => Teleport(1 + State.PartyPosition.X, 1 + State.PartyPosition.Y, State.PartyDirection, State.MapIndex, true, true);
-
-		if (Configuration.ShowCharacterCreator)
-			ScreenHandler.PushScreen(ScreenType.CharacterCreation, () => AfterScreenClosed(Continue));
-		else
-			Continue();
 	}
 
 	internal void ShowNotImplementedMessage(string feature, Action? nextAction = null) => ShowTextMessage($"{feature} is not implemented yet.", nextAction);

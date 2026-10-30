@@ -15,11 +15,42 @@ buttonenabled 3 1
 buttonenabled 4 0
 button 3
 buttonenabled 4 1
+# --- saving and loading need a chosen slot, loading also a used one
+buttonenabled 6 0
+buttonenabled 7 0
+optionsslottext 3 03 (leer)
+optionsslot 3
+buttonenabled 6 1
+buttonenabled 7 0
 # --- save the game
 setvalue 1 gold 123
 button 6
-yes
+waitscreen InputSavegameName
+typetext Mein Spiel!
+key Enter
+wait 500
+screen Options
+optionsslottext 3 03 MEIN SPIEL!
 buttonenabled 7 1
+# --- without a name nothing is saved
+optionsslot 4
+button 6
+waitscreen InputSavegameName
+typetext  x
+key Backspace
+key Backspace
+key Enter
+wait 500
+optionsslottext 4 04 (leer)
+buttonenabled 7 0
+# --- the name of a used slot is suggested
+optionsslot 3
+button 6
+waitscreen InputSavegameName
+key Backspace
+key Enter
+wait 500
+optionsslottext 3 03 MEIN SPIEL
 button 2
 waitidle
 # --- change the game
@@ -29,6 +60,7 @@ pos 9 12
 # --- load the savegame (the action buttons are still shown)
 button 8
 waitscreen Options
+optionsslot 3
 button 7
 yes
 waitidle

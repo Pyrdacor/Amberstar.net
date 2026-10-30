@@ -42,6 +42,11 @@ partial class Game
     internal Cursor Cursor { get; }
     internal Rect PortraitArea { get; } = new(16, 1, 6 * 48, 34);
 
+    /// <summary>
+    /// Texts which are not part of the game data are only available in English and German.
+    /// </summary>
+    internal bool HasEnglishTexts => GetFullText(LoadUIText(UIText.Male)).Contains("MALE");
+
     internal Layout CurrentLayout { get; private set; }
 
     internal byte CurrentLayoutPaletteIndex => layoutSprite.PaletteIndex;

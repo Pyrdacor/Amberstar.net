@@ -222,7 +222,8 @@ internal class PartyMember : BattleCharacter, IPartyMember
         clone.spellLearningPointsPerLevel = spellLearningPointsPerLevel;
         clone.conversationData = conversationData?.Clone();
         clone.saveBit = saveBit;
-        clone.rawData = rawData;
+        // The character editor changes the record of the copy.
+        clone.rawData = (byte[])rawData.Clone();
 
         // Copy properties
         clone.PossibleClasses = PossibleClasses;

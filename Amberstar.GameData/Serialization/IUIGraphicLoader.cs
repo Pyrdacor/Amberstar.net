@@ -118,7 +118,8 @@ public enum ButtonType
 	LastOriginalButton = Forward,
     // Custom buttons
     DistributeItems,
-	LastButton = DistributeItems
+    DismissPartyMembers, // group and arrow pointing to a person
+	LastButton = DismissPartyMembers
 }
 
 public enum StatusIcon

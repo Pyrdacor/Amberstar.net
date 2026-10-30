@@ -17,7 +17,7 @@ public sealed class Configuration : IConfiguration
     public int MonitorIndex { get; set; } = DefaultMonitorIndex;
     public bool Fullscreen { get; set; } = false;
     public bool ShowIntro { get; set; } = true;
-    public bool ShowCharacterCreator { get; set; } = true;
+    public bool ShowMainMenu { get; set; } = true;
     public GameOptions GameOptions { get; set; } = GameOptions.UnmaskedDraggedItem | GameOptions.ShowDwarfLoadingScreen; // TODO: for now we implement the original, later set this to GameOptions.Default
     public KeyMovement3D KeyMovement3D { get; set; } = KeyMovement3D.QEWASD;
     public Shortcut[] Shortcuts { get; set; } =

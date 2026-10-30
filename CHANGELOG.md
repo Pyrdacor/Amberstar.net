@@ -4,6 +4,14 @@
 
 ### Added
 - The character editor of the original installer is shown at the start of a new game. The name, the gender and the portrait can be changed and the values can be rolled.
+- A main menu after the intro: continue the game, start a new game, load a game or quit.
+- Up to 30 named savegames besides the savegame to continue the game. The options show them in a list to save or load, and the main menu can load them with the newest savegames first. Saving to a slot also updates the savegame to continue the game.
+
+### Changed
+- Party members are no longer dismissed when saving. The options have their own button for it.
+
+### Fixed
+- A person can no longer join the party several times. The keys of the numeric keypad still clicked the buttons of a conversation while a text was shown.
 
 ## 0.2.1
 

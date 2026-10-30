@@ -19,6 +19,11 @@ internal class Input : Control
 
     public string Text => text[..^1];
 
+    /// <summary>
+    /// Limits the characters which can be entered.
+    /// </summary>
+    public Func<char, bool>? CharacterFilter { get; set; }
+
     public Input(Game game, int x, int y, int width, byte displayLayer, int? maxLength = null)
     {
         this.game = game;
@@ -109,15 +114,17 @@ internal class Input : Control
         label?.Destroy();
     }
 
-    public void Clear()
+    public void Clear() => SetText("");
+
+    public void SetText(string text)
     {
-        text = "_";
+        this.text = text + "_";
         UpdateText();
     }
 
     private void UpdateText()
     {
-        label?.SetText(text);
+        label?.SetText(TextManager.ToGameCharacters(text));
     }
 
     public bool KeyDown(Key key)
@@ -144,12 +151,14 @@ internal class Input : Control
         if (destroyed || !Visible)
             return false;
 
-        if (text.Length == maxLength)
+        // the cursor is part of the text
+        if (text.Length > maxLength)
             return true;
 
-        if (char.IsLetterOrDigit(ch) || // TODO: later limit to printable chars
+        if (CharacterFilter?.Invoke(ch) ??
+            (char.IsLetterOrDigit(ch) || // TODO: later limit to printable chars
             ch == ' ' || ch == '.' /* ||
-            ch == '/' || ch == ':' || ch == '\'' || ch == '_'*/)
+            ch == '/' || ch == ':' || ch == '\'' || ch == '_'*/))
         {
             text = text.Insert(text.Length - 1, char.ToUpper(ch).ToString());
             UpdateText();

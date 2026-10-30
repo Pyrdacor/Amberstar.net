@@ -30,15 +30,15 @@ public sealed class HeadlessGame : IScenarioScriptHost, IDisposable
 	/// <param name="dataPath">Path to the game data (see <see cref="GameSetup.FindDataPath"/>).</param>
 	/// <param name="randomSeed">Seed for random numbers to make runs reproducible.</param>
 	/// <param name="showIntro">The game starts with the intro (scenario scripts start in the game).</param>
-	/// <param name="showCharacterCreator">A new game starts with the character editor (scenario scripts start in the game).</param>
-	public HeadlessGame(string dataPath, int randomSeed = 0, bool showIntro = false, bool showCharacterCreator = false)
+	/// <param name="showMainMenu">The main menu is shown before the game (scenario scripts start in the game).</param>
+	public HeadlessGame(string dataPath, int randomSeed = 0, bool showIntro = false, bool showMainMenu = false)
 	{
 		G.SetRandomSeed(randomSeed);
-		Game = GameSetup.CreateGame(renderer, dataPath, new NullAudioOutput(), new Configuration { ShowIntro = showIntro, ShowCharacterCreator = showCharacterCreator },
+		Game = GameSetup.CreateGame(renderer, dataPath, new NullAudioOutput(), new Configuration { ShowIntro = showIntro, ShowMainMenu = showMainMenu },
 			() => [.. heldKeys], _ => { });
 		Game.QuitRequested += () => ExitRequested = true;
-		// every headless game has its own savegame
-		Game.SavegamePath = Path.Combine(Path.GetTempPath(), $"Amberstar.net-{Guid.NewGuid():N}.sav");
+		// every headless game has its own savegames
+		Game.SavegamePath = Path.Combine(Path.GetTempPath(), $"Amberstar.net-{Guid.NewGuid():N}", "Savegame.sav");
 	}
 
 	public G Game { get; }
@@ -131,8 +131,10 @@ public sealed class HeadlessGame : IScenarioScriptHost, IDisposable
 	{
 		if (!disposed)
 		{
-			if (Game.SavegamePath != null && File.Exists(Game.SavegamePath))
-				File.Delete(Game.SavegamePath);
+			var savegameFolder = Path.GetDirectoryName(Game.SavegamePath);
+
+			if (savegameFolder != null && Directory.Exists(savegameFolder))
+				Directory.Delete(savegameFolder, true);
 
 			Game.Dispose();
 			disposed = true;

@@ -6,10 +6,9 @@ using Amberstar.GameData.Serialization;
 namespace Amberstar.Game.Screens;
 
 /// <summary>
-/// Before saving, party members can be dismissed (Save_game in EYE.ASM of the original).
-/// The portraits of the members 2 to 6 are shown, a click marks a member (chequered
-/// portrait) or unmarks it. The OK icon removes the marked members and saves the game,
-/// the exit icon aborts saving.
+/// Party members can be dismissed in the options. In the original this is part of saving
+/// (Save_game in EYE.ASM). The portraits of the members 2 to 6 are shown, a click marks a member
+/// (chequered portrait) or unmarks it. The OK icon removes the marked members, the exit icon aborts.
 /// </summary>
 internal sealed class DismissPartyMembersScreen : Screen
 {
@@ -166,7 +165,7 @@ internal sealed class DismissPartyMembersScreen : Screen
 	}
 
 	/// <summary>
-	/// Removes the marked members and saves the game (Do_SaveGame in the original).
+	/// Removes the marked members (Do_SaveGame in the original, which also saves the game).
 	/// </summary>
 	internal void Confirm()
 	{
@@ -177,7 +176,6 @@ internal sealed class DismissPartyMembersScreen : Screen
 		}
 
 		Game.UpdatePartyMembers();
-		Game.SaveGame();
 		Game.ScreenHandler.PopScreen();
 	}
 

@@ -56,9 +56,9 @@ public interface IConfiguration
     bool ShowIntro { get; set; }
 
     /// <summary>
-    /// A new game starts with the character editor (not for scenario scripts).
+    /// The main menu is shown before the game (not for scenario scripts).
     /// </summary>
-    bool ShowCharacterCreator { get; set; }
+    bool ShowMainMenu { get; set; }
 
     KeyMovement3D KeyMovement3D { get; set; }
 

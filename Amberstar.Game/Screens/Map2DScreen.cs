@@ -363,9 +363,10 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		LoadMap(Game.State.MapIndex);
         ShowMapName();
         InitPlayer();
-		AfterMove(moved: false);
+		// An event of the first tile can open a screen at once when a fade is running (e.g. when a game is loaded).
 		darkness ??= new(Game, new Rect(OffsetX, OffsetY, MapViewWidth, MapViewHeight), DarknessDisplayLayer);
 		darkness.Visible = true;
+		AfterMove(moved: false);
 		UpdateLight(true);
 	}
 

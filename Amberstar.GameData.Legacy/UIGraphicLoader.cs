@@ -70,6 +70,47 @@ internal class UIGraphicLoader(Amber.Assets.Common.IAssetProvider assetProvider,
 
 				return button;
 			}
+			case ButtonType.DismissPartyMembers:
+			{
+				// The parts of the button to ask someone to join swap their places: the group is left
+				// and the person is right. They are not mirrored as the shadows are always on the right.
+				const int Width = 32;
+				const int Height = 16;
+				var askToJoin = LoadButtonGraphic(ButtonType.AskToJoin).GetData();
+				var pixels = (byte[])askToJoin.Clone();
+				byte background = askToJoin[2 + 1 * Width];
+
+				// the corners of the frame stay
+				static bool IsFrameCorner(int x, int y) => (x == 30 && y == 1) || (x == 1 && y == 14) || (x >= 29 && y >= 13);
+
+				for (int y = 1; y < Height - 1; y++)
+				{
+					for (int x = 1; x < Width - 1; x++)
+					{
+						if (!IsFrameCorner(x, y))
+							pixels[x + y * Width] = background;
+					}
+				}
+
+				void Move(int left, int top, int right, int bottom, int offsetX, Func<int, int, bool>? skip = null)
+				{
+					for (int y = top; y <= bottom; y++)
+					{
+						for (int x = left; x <= right; x++)
+						{
+							if (!IsFrameCorner(x, y) && skip?.Invoke(x, y) != true && askToJoin[x + y * Width] != background)
+								pixels[x + offsetX + y * Width] = askToJoin[x + y * Width];
+						}
+					}
+				}
+
+				// The head of the arrow and the shadow of the group share a column.
+				Move(18, 2, 29, 14, -17, (x, y) => x == 18 && y <= 9); // group
+				Move(12, 3, 18, 9, 1); // arrow
+				Move(1, 3, 11, 12, 19); // person
+
+				return new Graphic(Width, Height, pixels, GraphicFormat.PaletteIndices);
+			}
 			default:
 				throw new InvalidOperationException($"Button type '{buttonType}' is no valid custom button type.");
 		}

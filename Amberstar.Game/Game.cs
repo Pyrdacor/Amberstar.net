@@ -126,11 +126,27 @@ public partial class Game : IDisposable
 
     void StartGame()
     {
-        // The original creates the character when it is installed, so this is only done for a new game.
-        if (Configuration.ShowCharacterCreator && !HasSavegame)
-            ScreenHandler.PushScreen(ScreenType.CharacterCreation, () => AfterScreenClosed(EnterGame));
+        if (Configuration.ShowMainMenu)
+            ScreenHandler.PushScreen(ScreenType.MainMenu);
         else
             EnterGame();
+    }
+
+    internal void ReturnToMainMenu()
+    {
+        ScreenHandler.ClearAllScreens();
+        ResetGameState();
+        ScreenHandler.PushScreen(ScreenType.MainMenu);
+    }
+
+    /// <summary>
+    /// A new game starts with the character editor. The original creates the character when it is installed.
+    /// </summary>
+    internal void StartNewGame()
+    {
+        ResetGameState();
+        ScreenHandler.ClearAllScreens();
+        ScreenHandler.PushScreen(ScreenType.CharacterCreation, () => AfterScreenClosed(EnterGame));
     }
 
     void EnterGame()

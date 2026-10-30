@@ -123,6 +123,12 @@ internal class List : Control
         currentLabelY = 0;
     }
 
+    public void SetItem(int index, string text, byte colorIndex = 15)
+    {
+        labels[index].SetText(text, colorIndex, TextManager.TransparentPaper, paletteIndex);
+        texts[index] = text;
+    }
+
     public void AddItem(string text, byte colorIndex = 15)
     {
         AddItem().SetText(text, colorIndex, TextManager.TransparentPaper, paletteIndex);

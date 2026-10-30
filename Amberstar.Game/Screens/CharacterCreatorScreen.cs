@@ -15,7 +15,7 @@ internal sealed class CharacterNameScreen : InputWordScreen
 
 	// The text is only part of the program of the installer.
 	protected override IText LabelText => Game.AssetProvider.TextLoader.FromString(
-		Game.GetFullText(Game.LoadUIText(UIText.Male)) == "MALE" ? "ENTER NAME :" : "GIB NAME EIN :");
+		Game.HasEnglishTexts ? "ENTER NAME :" : "GIB NAME EIN :");
 
 	protected override int? MaxInputLength => CharacterCreatorScreen.MaxNameLength;
 }
@@ -31,6 +31,7 @@ internal sealed class CharacterCreatorScreen : ButtonGridScreen
 	const int PortraitButtonIndex = 0;
 	const int OkButtonIndex = 2;
 	const int NameButtonIndex = 3;
+	const int ExitButtonIndex = 5;
 	const int RollButtonIndex = 6;
 	const int FemaleButtonIndex = 7;
 	const int MaleButtonIndex = 8;
@@ -63,6 +64,13 @@ internal sealed class CharacterCreatorScreen : ButtonGridScreen
 	readonly Label?[] skillLabels = new Label?[10];
 
 	public override ScreenType Type { get; } = ScreenType.CharacterCreation;
+
+	// The main menu is replaced at once as a fade would show the layout without the menu.
+	public override ScreenFadeType FadeType { get; } = ScreenFadeType.Out;
+
+	public override bool CloseOnEscape { get; } = false;
+
+	public override bool CloseOnRightClick { get; } = false;
 
 	public override bool AllowInventoryAccess => false;
 
@@ -240,12 +248,33 @@ internal sealed class CharacterCreatorScreen : ButtonGridScreen
 		UpdateValues();
 	}
 
+	/// <summary>
+	/// Not part of the original (the installer has no main menu). The game does not start and the changes are lost.
+	/// </summary>
+	void Cancel()
+	{
+		SetCloseAction(null);
+		Game.ReturnToMainMenu();
+	}
+
+	public override bool KeyDown(Key key, KeyModifiers keyModifiers)
+	{
+		if (key == Key.Escape)
+		{
+			Cancel();
+			return true;
+		}
+
+		return base.KeyDown(key, keyModifiers);
+	}
+
 	protected override void SetupButtons(ButtonGrid buttonGrid)
 	{
 		// The buttons of the original are shown above them.
 		foreach (int index in new[] { PortraitButtonIndex, OkButtonIndex, NameButtonIndex, RollButtonIndex, FemaleButtonIndex, MaleButtonIndex })
 			buttonGrid.SetButton(index, ButtonType.Exit);
 
+		buttonGrid.SetButton(ExitButtonIndex, ButtonType.Exit);
 		buttonGrid.EnableButton(FemaleButtonIndex, gender != Gender.Female);
 		buttonGrid.EnableButton(MaleButtonIndex, gender != Gender.Male);
 	}
@@ -264,6 +293,9 @@ internal sealed class CharacterCreatorScreen : ButtonGridScreen
 				break;
 			case NameButtonIndex:
 				Game.ScreenHandler.PushScreen(ScreenType.InputCharacterName);
+				break;
+			case ExitButtonIndex:
+				Cancel();
 				break;
 			case RollButtonIndex:
 				RollValues();
