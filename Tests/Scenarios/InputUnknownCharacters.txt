@@ -1,0 +1,27 @@
+# Characters which the font can't show (e.g. typed with Alt+number) are not entered. They crashed the game.
+waittext
+dismissall
+charactercreator
+waitscreen CharacterCreation
+wait 1000
+button 3
+waitscreen InputCharacterName
+typetext ÉA²ΕЕB
+key Enter
+wait 300
+screen CharacterCreation
+wait 300
+screen CharacterCreation
+# --- the values are rolled
+seed 1
+setvalue 1 gold 1000
+setvalue 1 food 1000
+button 6
+wait 300
+value 1 gold 33
+value 1 food 10
+# --- the changes are kept when the editor is closed
+button 2
+wait 1000
+screen Map2D
+hero AB Male 0

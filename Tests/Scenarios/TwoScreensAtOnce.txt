@@ -1,0 +1,23 @@
+# Only one screen opens if two keys are released at the same time. Both opened on top of each other and closing them crashed the game.
+waittext
+dismissall
+teleport 67 14 28
+dismissall
+waitidle
+click 230 170 right
+wait 200
+key Keypad1
+key Keypad3
+wait 1500
+screen Automap
+key Escape
+wait 1500
+screen Map3D
+# --- no other screen opens while one closes
+key Keypad1
+wait 1500
+screen Automap
+key Escape
+key Keypad3
+wait 1500
+screen Map3D

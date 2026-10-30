@@ -1,0 +1,37 @@
+# The item pickers are reused: after a chest the picker of the loot must not show the items of the chest (nothing could be taken).
+waittext
+dismissall
+teleport 69 18 13
+waitscreen Chest
+wait 100
+button 5
+wait 100
+screen ChestGiveItem
+click 230 170 right
+wait 100
+screen Chest
+button 2
+waitidle
+setvalue 1 hp 900
+setvalue 1 attack 100
+setvalue 1 strength 9000
+startbattle 5
+waitscreen Battle
+battleaction parry
+battleround
+battleaction attack 2 2
+battleround
+battleresult Won
+waittext
+dismiss
+waitscreen Loot
+loot 189 3 4
+button 5
+wait 100
+screen ChestGiveItem
+click 24 153
+wait 100
+screen Loot
+click 30 20
+wait 100
+loot 189 3 3

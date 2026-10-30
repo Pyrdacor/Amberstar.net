@@ -155,12 +155,16 @@ internal class Input : Control
         if (text.Length > maxLength)
             return true;
 
-        if (CharacterFilter?.Invoke(ch) ??
+        char upperChar = char.ToUpper(ch);
+
+        // Keyboards can enter more than the font can show (e.g. with Alt+number).
+        if (game.TextManager.HasGlyph(upperChar) &&
+            (CharacterFilter?.Invoke(ch) ??
             (char.IsLetterOrDigit(ch) || // TODO: later limit to printable chars
             ch == ' ' || ch == '.' /* ||
-            ch == '/' || ch == ':' || ch == '\'' || ch == '_'*/))
+            ch == '/' || ch == ':' || ch == '\'' || ch == '_'*/)))
         {
-            text = text.Insert(text.Length - 1, char.ToUpper(ch).ToString());
+            text = text.Insert(text.Length - 1, upperChar.ToString());
             UpdateText();
         }
 

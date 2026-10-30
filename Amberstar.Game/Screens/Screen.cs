@@ -704,6 +704,15 @@ internal class ScreenHandler(Game Game) : IDisposable
 	/// </summary>
 	public bool ScreenIsOpening { get; private set; } = false;
 
+	// A closed or replaced screen is removed after the running fade.
+	bool screenIsClosing = false;
+
+	/// <summary>
+	/// The screens change after the running fade. The active screen must not get any input
+	/// until then, otherwise it could open another screen (e.g. with two keys at the same time).
+	/// </summary>
+	public bool ScreensAreChanging => ScreenIsOpening || screenIsClosing;
+
 	/// <summary>
 	/// Finds the map screen below other screens (e.g. below a text box).
 	/// </summary>
@@ -849,6 +858,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 
         void Pop()
 		{
+			screenIsClosing = false;
 			screen.Close();
 
 			if (prevScreen != null && !screen.Transparent && coveredLayouts.Remove(prevScreen, out var covered))
@@ -865,6 +875,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 
         if (!transparent && (fadeIn || fadeOut))
         {
+            screenIsClosing = true;
             Game.Fade(Game.DefaultFadeTime, null, Pop);
         }
         else
@@ -879,6 +890,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 	{
 		coveredLayouts.Clear();
 		ScreenIsOpening = false;
+		screenIsClosing = false;
 
 		while (screens.Count != 0)
 		{
@@ -911,6 +923,7 @@ internal class ScreenHandler(Game Game) : IDisposable
 
 		void Replace()
 		{
+			screenIsClosing = false;
 			screens.Pop();
 			oldScreen.Close();
 			screens.Push(screen);
@@ -925,9 +938,14 @@ internal class ScreenHandler(Game Game) : IDisposable
 		bool fadeIn = screen.FadeType == ScreenFadeType.In || screen.FadeType == ScreenFadeType.Both;
 
 		if (!transparent && (fadeIn || fadeOut))
+		{
+			screenIsClosing = true;
 			Game.Fade(Game.DefaultFadeTime, null, Replace);
+		}
 		else
+		{
 			Replace();
+		}
 	}
 
 	public Screen? FindScreen(ScreenType screenType)

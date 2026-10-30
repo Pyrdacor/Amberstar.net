@@ -9,6 +9,9 @@
 - Horses, rafts and ships can no longer enter map exits like the entrances of cities, so they are no longer lost there. The original also blocks the entrance of Twinlake with a horse.
 
 ### Fixed
+- Two screens could open at the same time, for example the map and the options with the keypad keys 1 and 3, which showed a broken screen and crashed the game. Input is now ignored while a screen opens or closes.
+- A crash when a character which the font can't show was typed into a text input, for example with Alt+number. Such characters are now ignored.
+- Items of the loot after a battle could not be taken or examined once a chest was opened before. The same applies to using items on doors and chests.
 - The digits of the keypad no longer select party members. Only the number keys 1 to 6 do this.
 - Horses, rafts and ships can no longer pass tiles with events which do not allow them, like in the original.
 - Transports are no longer hidden by the overlay of their tile, for example a horse on a path. Like in the original the transport replaces it.

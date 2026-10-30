@@ -33,17 +33,12 @@ internal abstract class ItemPickerScreen : Screen
     /// </summary>
     public virtual bool EquipmentOnly => false;
 
-    public override void Init()
-	{
-        base.Init();
-
-        // Note: During Init the ActiveScreen is still the last one.
-        parentScreen = Game.ScreenHandler.ActiveScreen as ItemGridScreen;
-    }
-
     public override void Open(Action? closeAction)
     {
         base.Open(closeAction);
+
+        // The screen is reused, for example by chests and the loot after a battle.
+        parentScreen = Game.ScreenHandler.LastScreen as ItemGridScreen;
 
         // Note: Controls which are added in Open are destroyed when the screen is closed.
         var (x, y, width, height) = ItemTooltipArea;

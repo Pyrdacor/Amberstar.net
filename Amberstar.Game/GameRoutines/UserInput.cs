@@ -51,6 +51,9 @@ partial class Game
 	{
 		LastKeyDown = key;
 
+		if (ScreenHandler.ScreensAreChanging)
+			return;
+
 		if (key == Key.F10)
 			PlaySong(1);
 		else if (key == Key.F5 && SavegamePath != null && ScreenHandler.ActiveScreen is IMapScreen)
@@ -83,7 +86,7 @@ partial class Game
 
 	public void KeyUp(Key key, KeyModifiers keyModifiers)
 	{
-		if (!InputEnabled)
+		if (!InputEnabled || ScreenHandler.ScreensAreChanging)
 			return;
 
 		if (ScreenHandler.ActiveScreen?.KeyUp(key, keyModifiers) == true)
@@ -92,7 +95,7 @@ partial class Game
 
 	public void KeyChar(char ch, KeyModifiers keyModifiers)
 	{
-		if (!InputEnabled)
+		if (!InputEnabled || ScreenHandler.ScreensAreChanging)
 			return;
 
 		CheckCheatPassword(ch);
@@ -103,7 +106,7 @@ partial class Game
 
 	public void MouseDown(Position position, MouseButtons buttons, KeyModifiers keyModifiers)
 	{
-		if (!InputEnabled)
+		if (!InputEnabled || ScreenHandler.ScreensAreChanging)
 			return;
 
 		if (ScreenHandler.ActiveScreen?.MouseDown(position, buttons, keyModifiers) == true)
