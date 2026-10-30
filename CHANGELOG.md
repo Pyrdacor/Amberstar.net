@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Items can be used while the party stands on a map event. For example the magic picture of the family house only closed the inventory without any effect when it was used on the tile of its chest.
+
 ## 0.2.0
 
 ### Fixed

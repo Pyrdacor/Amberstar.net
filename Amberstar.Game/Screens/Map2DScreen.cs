@@ -747,7 +747,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			coordinates = new(x + (mapIndex - 1) % WorldMapWidthInMaps * WorldMapWidth, y + (mapIndex - 1) / WorldMapWidthInMaps * WorldMapHeight);
 		}
 
-		specialItemDisplay?.Update(palette, Direction.Up, coordinates);
+		specialItemDisplay?.Update(palette, Game.State.PartyDirection, coordinates);
 	}
 
 	internal IEnumerable<string> ScriptSpecialItemDisplay => specialItemDisplay?.ShownItems ?? [];

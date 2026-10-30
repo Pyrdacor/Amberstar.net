@@ -22,9 +22,11 @@ namespace Amberstar.Game.Events
 
         public override bool Handle(EventTrigger trigger, Game game, IMapEventProvider eventProvider)
 		{
-            if (trigger == EventTrigger.Move || trigger == EventTrigger.Eye)
-                game.ShowChest();
-                
+            if (trigger != EventTrigger.Move && trigger != EventTrigger.Eye)
+                return false;
+
+            game.ShowChest();
+
             return true;
 		}
 	}

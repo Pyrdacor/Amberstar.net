@@ -21,7 +21,7 @@ namespace Amberstar.Game.Events
         public override bool Handle(EventTrigger trigger, Game game, IMapEventProvider eventProvider)
 		{
             if (trigger != EventTrigger.Move)
-                return true;
+                return false;
 
             // With the Amberstar every door is open. Only the follow-up event of the door is executed.
             if (game.State.SpecialItems.HasFlag(SpecialItems.Amberstar))

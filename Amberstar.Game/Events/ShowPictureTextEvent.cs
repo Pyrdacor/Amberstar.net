@@ -15,6 +15,9 @@ namespace Amberstar.Game.Events
 
 		public override bool Handle(EventTrigger trigger, Game game, IMapEventProvider eventProvider)
 		{
+			if (trigger == EventTrigger.UseItem)
+				return false;
+
 			int expectedTriggerMask = (int)Trigger + 1;
 			int triggerMask = ((int)trigger + 1) & 0x3;
 

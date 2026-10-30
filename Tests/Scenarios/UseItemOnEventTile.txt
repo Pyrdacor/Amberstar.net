@@ -1,0 +1,23 @@
+# Items without an effect on the event of the party position are used normally (e.g. the magical picture on the chest of the family house).
+waittext
+dismissall
+teleport 69 18 13
+waitscreen Chest
+closeall
+map 69
+pos 18 13
+give 1 106
+itemslot 1 2 106
+click 32 17 right
+waitscreen Inventory
+button 3
+invslot 2
+# the destruction of the picture is shown before the message
+wait 1500
+screen Inventory
+dismiss
+itemslot 1 2 empty
+specialitem MagicalPicture 1
+closeall
+screen Map2D
+specialdisplay Day
