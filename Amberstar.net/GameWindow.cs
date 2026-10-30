@@ -524,6 +524,11 @@ namespace Amberstar
             finally
             {
                 closed = true;
+                // OpenAL Soft aborts the process on exit if the device is still open.
+                // Dispose alone would wait forever for the playback, only Stop cancels it.
+                audioOutput?.Stop();
+                audioOutput?.Dispose();
+                audioOutput = null;
             }
         }
     }
