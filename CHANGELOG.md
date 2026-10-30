@@ -6,6 +6,8 @@
 - The music list of the cheat mode is now opened with Ctrl+D, as the key D also moves the party.
 
 ### Fixed
+- In battles the text, the damage and the hit points are now shown while the attack or spell animation is running, like in the original. Before they were shown after it.
+- Hunting and staying monsters were swapped. For example the rat king in the sewers of Twinlake now waits in his room behind the scene at the altar, like in the original.
 - The name, type and gender of an item were missing when an item was examined for the second time.
 - The buttons of a door or chest were greyed out after another door or chest was opened, until it was shown a second time.
 - Persons who only say a short text can now be talked to. Nothing happened before.

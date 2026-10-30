@@ -697,7 +697,8 @@ internal sealed class BattleScreen : ButtonGridScreen, IWaitForClickScreen
 	}
 
 	/// <summary>
-	/// Animations are started at once. The other events wait until the attack and spell animations are finished.
+	/// Animations only start (L16766 and L19650 in the original), so the texts and the damage are shown
+	/// while they run. Changes of the battle field and the next action wait for their end (L167aa).
 	/// </summary>
 	void ShowNextEvent()
 	{
@@ -739,7 +740,7 @@ internal sealed class BattleScreen : ButtonGridScreen, IWaitForClickScreen
 					continue;
 			}
 
-			if (AnimationRunning)
+			if (AnimationRunning && battleEvent is not (BattleTextEvent or BattleSpellEvent))
 			{
 				waitingForAnimations = true;
 				return;
@@ -851,6 +852,9 @@ internal sealed class BattleScreen : ButtonGridScreen, IWaitForClickScreen
 		{
 			ShownTexts.Add(message);
 			Game.ScriptTextShown(message);
+
+			if (AnimationRunning)
+				ScriptTextsDuringAnimation++;
 		}
 
 		// Long texts are wrapped into the 2 lines of the text area.
@@ -1168,6 +1172,8 @@ internal sealed class BattleScreen : ButtonGridScreen, IWaitForClickScreen
 	#region Animations
 
 	bool AnimationRunning => attackingMonster != null || spellAnimations.Count != 0;
+
+	internal int ScriptTextsDuringAnimation { get; private set; } = 0;
 
 	/// <summary>
 	/// Every 8 vertical blanks the running idle animations advance and a random participant may start one.

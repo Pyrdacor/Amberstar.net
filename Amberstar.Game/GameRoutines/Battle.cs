@@ -59,7 +59,8 @@ partial class Game
 	/// </summary>
 	internal void MonsterReachedParty(MapCharacter monster)
 	{
-		if (CurrentBattle != null || State.TravelType >= TravelType.Eagle || ScreenHandler.ActiveScreen is not IMapScreen ||
+		// A screen which opens after the running fade (e.g. a chest on this tile) goes first.
+		if (ScreenHandler.ScreensAreChanging || CurrentBattle != null || State.TravelType >= TravelType.Eagle || ScreenHandler.ActiveScreen is not IMapScreen ||
 			!State.IsMapCharacterActive(monster.Map.Index, 1 + monster.Index))
 			return;
 

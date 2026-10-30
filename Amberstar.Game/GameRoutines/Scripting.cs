@@ -56,6 +56,8 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public int ScriptBattleTextsDuringAnimation => (ScreenHandler.ActiveScreen as BattleScreen)?.ScriptTextsDuringAnimation ?? 0;
+
 	public bool ScriptItemNameShown => (ScreenHandler.ActiveScreen as ItemScreen)?.ScriptNameShown == true;
 
 	public int ScriptVisibleOptionsSlots => (ScreenHandler.ActiveScreen as OptionsScreen)?.ScriptVisibleSlots ?? 0;

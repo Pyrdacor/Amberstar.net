@@ -1,0 +1,13 @@
+# The text and the damage of an attack are shown while its animation is running (the animation only starts in L16766, the end of the action waits in L167aa).
+waittext
+dismissall
+setvalue 1 hp 500
+startbattle 1
+waitscreen Battle
+battleaction parry
+battleround
+battleaction parry
+battleround
+battleaction parry
+battleround
+battletextsduringanimation

@@ -77,7 +77,7 @@ internal class Map3D : Map, IMap3D
 				: (characterFlags & 0x10) != 0 ? MapCharacterType.Popup
 				: MapCharacterType.Person;
 			character.WalkType = character.Type == MapCharacterType.Monster
-				? ((characterFlags & 0x04) != 0 ? MapCharacterWalkType.Chase : MapCharacterWalkType.Stationary)
+				? ((characterFlags & 0x04) != 0 ? MapCharacterWalkType.Stationary : MapCharacterWalkType.Chase)
 				: ((characterFlags & 0x02) != 0 ? MapCharacterWalkType.Random : MapCharacterWalkType.Path);
 			bool hasSpawnDate = (characterFlags & 0x08) != 0;
 			var spawnDay = *day++;

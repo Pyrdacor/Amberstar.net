@@ -1,4 +1,4 @@
-# Listening and hunting monsters in Breth's cellar (map 72, a monster starts at 17,19).
+# Listening to monsters, staying and hunting monsters. Bit 2 of the character flags means staying (Hunting in PERSONS.ASM).
 waittext
 dismissall
 teleport 72 17 16
@@ -19,18 +19,19 @@ button 1
 waittext
 textshown SÜDEN
 dismissall
-# --- in the same corridor the monster sees the party and comes closer
+# --- the slime in Breth's cellar (map 72) stays where it is, also if it sees the party
 teleport 72 14 19
 dismissall
 characterat 17 19 1
 passtime 5
 wait 200
-characterat 16 19 1
 passtime 5
 wait 200
-characterat 15 19 1
-# --- the monster reaches the party: fight or flee?
-passtime 5
+characterat 17 19 1
+# --- staying monsters fight the party when it walks onto them
+teleport 72 16 19 right
+dismissall
+move right 1
 waitscreen Confirmation
 textshown ANGREIFEN ODER FLIEHEN
 yes
@@ -39,12 +40,19 @@ battlecell 3 2 WEINSCHLEIM
 # --- the monster stays on the map if the party flees from the battle
 leavebattle
 waitidle
-characterat 15 19 1
-# --- staying monsters fight the party when it walks onto them (sewers of Twinlake, a giant rat at 16,16)
-teleport 68 16 18 up
+characterat 17 19 1
+# --- hunting monsters which see the party come closer (sewers of Twinlake, a giant rat at 16,16)
+teleport 68 16 19 up
 dismissall
 characterat 16 16 1
-move up 2
+passtime 5
+wait 200
+characterat 16 17 1
+passtime 5
+wait 200
+characterat 16 18 1
+# --- the monster reaches the party: fight or flee?
+passtime 5
 waitscreen Confirmation
 textshown ANGREIFEN ODER FLIEHEN
 yes

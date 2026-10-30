@@ -1,0 +1,29 @@
+# The rat king in the sewers of Twinlake waits in his room: first the scene at the altar is shown, then he fights when the party walks onto him.
+waittext
+dismissall
+teleport 68 14 18 up
+dismissall
+characterat 14 15 1
+passtime 5
+wait 200
+passtime 5
+wait 200
+characterat 14 15 1
+move up 1
+wait 200
+characterat 14 15 1
+cleartexts
+move up 1
+waitscreen PictureText
+textshown RATTENK
+closeall
+wait 1000
+characterat 14 15 1
+screen Map3D
+pos 14 16
+move up 1
+waitscreen Confirmation
+textshown ANGREIFEN ODER FLIEHEN
+yes
+waitscreen Battle
+battlecell 3 0 RATTENKÖNIG

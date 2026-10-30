@@ -161,6 +161,7 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   battletextsduringanimation check that battle texts are shown while animations are running
 ///   itemnameshown [0|1]       print or check if the name is shown in the item window
 ///   optionsvisibleslots [n]   print or check the number of shown savegame slots in the options
 ///   mapoverviewshown &lt;0|1&gt;    check if the graphics of the open automap or minimap are shown
@@ -964,6 +965,10 @@ public sealed class ScenarioScript
 				break;
 			case "itemnameshown":
 				CheckBool("itemnameshown", game.ScriptItemNameShown, OptionalBool(0));
+				break;
+			case "battletextsduringanimation":
+				output($"  battletextsduringanimation = {game.ScriptBattleTextsDuringAnimation}");
+				Report(game.ScriptBattleTextsDuringAnimation > 0, "a battle text was shown while an animation was running");
 				break;
 			case "cursor":
 			{
