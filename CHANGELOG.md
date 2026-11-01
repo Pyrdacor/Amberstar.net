@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- The experience, hit points and spell points of a person are no longer shown in conversations, like in the original. The texts of spell casters were outside of the box.
+
+### Added
+- The console commands "items" to list all items and "item" to give an item by its index or name.
+
 ## 0.3.2
 
 ### Added

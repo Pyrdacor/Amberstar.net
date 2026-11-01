@@ -246,6 +246,8 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
         ShowMessage(Message.NothingToSayAboutThat);
     }
 
+    internal int ScriptVisibleInfoTexts => personInfoView?.ScriptVisibleTexts ?? -1;
+
     private bool TryExecuteReactionsForTrigger(InteractionTriggerType triggerType, word param = 0, Action? finishAction = null)
     {
         var conversationData = person!.ConversationData;

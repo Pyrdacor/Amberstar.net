@@ -56,6 +56,10 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public int ScriptConversationInfoTexts => (ScreenHandler.FindScreen(ScreenType.Conversation) as ConversationScreen)?.ScriptVisibleInfoTexts ?? -1;
+
+	public uint? ScriptShownInventoryItem(int slot) => (ScreenHandler.FindScreen(ScreenType.Inventory) as InventoryScreen)?.ScriptShownItem(slot);
+
 	public bool ScriptHasStatusIcon(int slot, string icon) => playerStatusIconTypes[slot - 1].Contains(Enum.Parse<Amberstar.GameData.Serialization.StatusIcon>(icon, true));
 
 	public int ScriptConditionIcons => (ScreenHandler.ActiveScreen as CharacterStatsScreen)?.ScriptConditionIcons ?? -1;
@@ -1018,6 +1022,25 @@ partial class Game
 	/// <summary>
 	/// Adds an item to the inventory of a party member.
 	/// </summary>
+	/// <summary>
+	/// All items of the game data with their index and name.
+	/// </summary>
+	public IEnumerable<(uint Index, string Name)> GetItems() => AssetProvider.ItemLoader.LoadAllItems()
+		.Select(item => (item.Index, GetFullText(AssetProvider.TextLoader.FromTextFragmentIndex(item.NameIndex)).Trim()));
+
+	/// <summary>
+	/// The inventory shows copies of the items and values, so it has to be updated after changes from outside.
+	/// </summary>
+	public void RefreshShownInventory()
+	{
+		if (ScreenHandler.ActiveScreen is InventoryScreen or ItemPickerScreen &&
+			ScreenHandler.FindScreen(ScreenType.Inventory) is InventoryScreen inventoryScreen &&
+			State.CurrentInventoryIndex is int index)
+		{
+			inventoryScreen.SwitchToPartyMember(index, true);
+		}
+	}
+
 	public string? ScriptGiveItem(int slot, uint itemIndex, int count)
 	{
 		if (!State.HasPartyMemberInSlot(slot))
@@ -1039,6 +1062,8 @@ partial class Game
 
 		if (!TryAddItem(slot, item, count))
 			return $"the inventory of slot {slot} is full";
+
+		RefreshShownInventory();
 
 		return null;
 	}

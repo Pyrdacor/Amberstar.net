@@ -36,6 +36,8 @@ public static class Cheats
         AddCommand("events", Events, "Shows the events of a map with their positions and raw data", 0, "mapIndex");
         AddCommand("gold", Gold, "Gives gold", 1, "amount");
         AddCommand("food", Food, "Gives food", 1, "amount");
+        AddCommand("items", Items, "Shows all items", 0, "partialItemName");
+        AddCommand("item", Item, "Gives an item", 1, "itemIndexOrName", "count", new("slot", "1 to 6, default is the active party member"));
     }
 
     public static void Init()
@@ -259,6 +261,63 @@ public static class Cheats
             Console.WriteLine(description);
     }
 
+    private static IEnumerable<(uint Index, string Name)> FindItems(G game, string partialName) =>
+        game.GetItems().Where(item => item.Name.Contains(partialName, StringComparison.OrdinalIgnoreCase)).OrderBy(item => item.Index);
+
+    private static void Items(G game, string[] args)
+    {
+        var items = args.Length == 0 ? game.GetItems().OrderBy(item => item.Index) : FindItems(game, string.Join(" ", args));
+
+        if (!items.Any())
+        {
+            Console.WriteLine("No matching items found.");
+            return;
+        }
+
+        foreach (var (index, name) in items)
+            Console.WriteLine($"{index:000}: {name}");
+    }
+
+    private static void Item(G game, string[] args)
+    {
+        uint itemIndex;
+
+        if (uint.TryParse(args[0], out var parsedIndex))
+        {
+            itemIndex = parsedIndex;
+        }
+        else
+        {
+            var items = FindItems(game, args[0]).ToList();
+            var exactMatches = items.Where(item => item.Name.Equals(args[0], StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (exactMatches.Count != 0)
+                items = exactMatches;
+
+            if (items.Count != 1)
+            {
+                Console.WriteLine(items.Count == 0 ? "No matching items found." : "Multiple items match. Use the item index:");
+                items.ForEach(item => Console.WriteLine($"{item.Index:000}: {item.Name}"));
+                return;
+            }
+
+            itemIndex = items[0].Index;
+        }
+
+        int count = args.Length > 1 ? ParseNumber(args[1], -1) : 1;
+
+        if (count < 1 || count > 99)
+        {
+            Console.WriteLine("Invalid value for parameter count. Provide a valid number in range 1 to 99.");
+            return;
+        }
+
+        int slot = args.Length > 2 ? ParseNumber(args[2], -1) : game.ScriptActivePartyMember;
+        var error = game.ScriptGiveItem(slot, itemIndex, count);
+
+        Console.WriteLine(error ?? $"Gave {count} x item {itemIndex} to the party member in slot {slot}");
+    }
+
     private static void Gold(G game, string[] args)
     {
         if (!int.TryParse(args[0], out int amount) || amount < 0 || amount > short.MaxValue)
@@ -271,6 +330,8 @@ public static class Cheats
             return;
 
         int remaining = game.DistributeGold(amount);
+
+        game.RefreshShownInventory();
 
         if (remaining == 0)
             Console.WriteLine($"Distributed {amount} gold");
@@ -290,6 +351,8 @@ public static class Cheats
             return;
 
         int remaining = game.DistributeFood(amount);
+
+        game.RefreshShownInventory();
 
         if (remaining == 0)
             Console.WriteLine($"Distributed {amount} food");

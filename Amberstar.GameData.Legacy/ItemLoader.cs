@@ -49,6 +49,8 @@ namespace Amberstar.GameData.Legacy
 
         public IStaticItemData LoadItem(uint index) => items[index];
 
+        public IEnumerable<IStaticItemData> LoadAllItems() => items.Values;
+
         public IItem ReadItem(IDataReader reader)
         {
             var graphicIndex = (ItemGraphic)reader.ReadByte();

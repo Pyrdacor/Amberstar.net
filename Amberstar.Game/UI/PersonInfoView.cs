@@ -200,7 +200,7 @@ internal class PersonInfoView
 
                 if (text != null)
                 {
-                    if (i == (int)InfoText.GoldAndFood || i == (int)InfoText.Damage || i == (int)InfoText.Protection)
+                    if (i >= (int)InfoText.EP)
                         text.Visible = value && extended;
                     else
                         text.Visible = value;
@@ -213,6 +213,8 @@ internal class PersonInfoView
                 shieldIcon.Visible = value && extended;
         }
     }
+
+    internal int ScriptVisibleTexts => personInfoTexts.Count(text => text?.Visible == true);
 
     public bool Extended
     {
@@ -232,6 +234,11 @@ internal class PersonInfoView
                     text.Visible = visible && extended;
             }
 
+            // Conversations only show the race, gender, age and class (Dialogue_DisInit in the original).
+            SetExtendedTextVisibility((int)InfoText.EP);
+            SetExtendedTextVisibility((int)InfoText.LP);
+            SetExtendedTextVisibility((int)InfoText.SP);
+            SetExtendedTextVisibility((int)InfoText.SLP);
             SetExtendedTextVisibility((int)InfoText.GoldAndFood);
             SetExtendedTextVisibility((int)InfoText.Damage);
             SetExtendedTextVisibility((int)InfoText.Protection);

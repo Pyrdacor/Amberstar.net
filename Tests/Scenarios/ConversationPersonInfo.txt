@@ -1,0 +1,24 @@
+# Conversations only show the race, gender, age and class of a person (Dialogue_DisInit in EYE.ASM). The values of spell casters like Crag were outside of the box.
+waittext
+dismissall
+language 1 Elf
+language 1 Dwarf
+language 1 Gnome
+language 1 Halfling
+language 1 Orc
+language 1 Animal
+teleport 135 8 14 up
+dismissall
+characterat 8 13 1
+trigger 8 13 Mouth
+waitscreen Conversation
+wait 1000
+conversationinfotexts 4
+# --- also after another screen covered it
+key F1
+waitscreen Inventory
+wait 500
+key Escape
+waitscreen Conversation
+wait 1000
+conversationinfotexts 4

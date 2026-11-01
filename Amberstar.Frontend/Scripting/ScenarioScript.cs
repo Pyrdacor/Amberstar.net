@@ -161,6 +161,8 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   conversationinfotexts [n] print or check the number of shown texts about the person in a conversation
+///   shownitem &lt;slot&gt; &lt;item|empty&gt; check the item which the open inventory shows in a backpack slot
 ///   statusicon &lt;slot&gt; &lt;icon&gt; [0|1] print or check a status icon of the portrait
 ///   conditionicons [n]        print or check the number of condition icons on the character screen
 ///   poisonground              the effect of a step on poisonous ground
@@ -990,6 +992,12 @@ public sealed class ScenarioScript
 			case "trap":
 				game.ScriptTriggerTrap(args[0]);
 				continueTime = time + 1;
+				break;
+			case "shownitem":
+				Report(game.ScriptShownInventoryItem(Arg(0)) == (args[1] == "empty" ? null : (uint)Arg(1)), $"shownitem {Arg(0)} = {game.ScriptShownInventoryItem(Arg(0))} (expected {args[1]})");
+				break;
+			case "conversationinfotexts":
+				CheckValue("conversationinfotexts", game.ScriptConversationInfoTexts, args.FirstOrDefault());
 				break;
 			case "cursor":
 			{

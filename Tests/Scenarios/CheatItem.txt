@@ -1,0 +1,18 @@
+# The console commands give items by their index or name, to the active party member or a given one.
+waittext
+dismissall
+join 61
+partysize 2
+count 148 0
+cheat item 148
+count 148 1
+itemslot 1 2 148
+# --- by the name and to another party member
+cheat items TRANK
+cheat item MESSER 1 2
+# --- invalid values give nothing
+count 148 1
+cheat item 9999
+cheat item 148 0
+cheat item 148 1 6
+count 148 1

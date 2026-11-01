@@ -1,0 +1,30 @@
+# An item from the console appears at once in the open inventory. Later changes of the slots don't remove it.
+waittext
+dismissall
+click 32 17 right
+waitscreen Inventory
+wait 1000
+shownitem 2 empty
+cheat item 148
+shownitem 2 148
+count 148 1
+# --- also while the items are chosen
+button 5
+wait 200
+count 127
+cheat item 127
+shownitem 3 127
+key Escape
+wait 300
+screen Inventory
+count 127 +1
+shownitem 2 148
+shownitem 3 127
+# --- it can be used right away
+button 5
+invslot 2
+waitscreen ItemView
+key Escape
+wait 300
+screen Inventory
+count 148 1

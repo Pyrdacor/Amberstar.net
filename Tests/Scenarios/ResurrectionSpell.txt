@@ -1,0 +1,35 @@
+# The resurrection spell only works in the camp. Crag brings the dead hero back to life with one hit point (Resurrect in MAGIC.ASM).
+waittext
+dismissall
+join 61
+partysize 2
+setvalue 2 usemagic 100
+setvalue 2 sp 300
+learnspell 2 White 7
+activate 2
+setvalue 1 hp 0
+setcondition 1 Dead 1
+wait 200
+teleport 37 12 14
+dismissall
+waitidle
+click 230 170 right
+wait 200
+button 5
+waitscreen Camp
+wait 1000
+button 0
+waitscreen SpellSelect
+spell White 7
+waitscreen SelectPartyMember
+portrait 1
+wait 1000
+condition 1 Dead 0
+value 1 hp 1
+statusicon 1 Dead 0
+screen Camp
+button 2
+wait 1500
+screen Map2D
+condition 1 Dead 0
+value 1 hp 1
