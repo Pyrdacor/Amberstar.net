@@ -222,6 +222,8 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
 
     internal uint? ScriptShownItem(int slot) => inventoryItemSlots[slot - 1].Item?.Index;
 
+    internal string? ScriptShownProtection => personInfoView?.ScriptProtection;
+
     private void CleanUpItems()
     {
         ignoreItemChangeEvents = true;

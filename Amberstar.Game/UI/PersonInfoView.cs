@@ -136,9 +136,11 @@ internal class PersonInfoView
 
             // Damage and proection
             var placeholderString = textLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.Colon)).GetString();
-            var damageString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Damage + partyMember.BonusDamage, 3, '0');
-            var protectionString = Game.InsertNumberIntoString(placeholderString, ":", true, partyMember.Defense + partyMember.BonusDefense, 3, '0');
+            // The boni are signed, e.g. cursed items have negative values.
+            var damageString = Game.InsertNumberIntoString(placeholderString, ":", true, Math.Max(0, partyMember.Damage + (short)partyMember.BonusDamage), 3, '0');
+            var protectionString = Game.InsertNumberIntoString(placeholderString, ":", true, Math.Max(0, partyMember.Defense + (short)partyMember.BonusDefense), 3, '0');
             personInfoTexts[(int)InfoText.Damage] = game.TextManager.Create(damageString, 15, paperColor, palette);
+            ScriptProtection = protectionString;
             personInfoTexts[(int)InfoText.Protection] = game.TextManager.Create(protectionString, 15, paperColor, palette);
             swordIcon = game.CreateSprite(Layer.UI, new Position(208, 120), new Size(16, 10), (int)UIGraphic.Sword, palette);
             shieldIcon = game.CreateSprite(Layer.UI, new Position(256, 120), new Size(16, 10), (int)UIGraphic.Shield, palette);
@@ -215,6 +217,8 @@ internal class PersonInfoView
     }
 
     internal int ScriptVisibleTexts => personInfoTexts.Count(text => text?.Visible == true);
+
+    internal string? ScriptProtection { get; }
 
     public bool Extended
     {

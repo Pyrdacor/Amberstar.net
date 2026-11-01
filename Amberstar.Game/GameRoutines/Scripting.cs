@@ -56,6 +56,8 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public string? ScriptShownProtection => (ScreenHandler.ActiveScreen as InventoryScreen)?.ScriptShownProtection;
+
 	public int ScriptConversationInfoTexts => (ScreenHandler.FindScreen(ScreenType.Conversation) as ConversationScreen)?.ScriptVisibleInfoTexts ?? -1;
 
 	public uint? ScriptShownInventoryItem(int slot) => (ScreenHandler.FindScreen(ScreenType.Inventory) as InventoryScreen)?.ScriptShownItem(slot);
@@ -938,6 +940,12 @@ partial class Game
 			case "food":
 				partyMember.TotalWeight = (uint)(partyMember.TotalWeight + (wordValue - (long)partyMember.Food) * FoodWeight);
 				partyMember.Food = wordValue;
+				break;
+			case "bonusdefense":
+				partyMember.BonusDefense = wordValue;
+				break;
+			case "bonusdamage":
+				partyMember.BonusDamage = wordValue;
 				break;
 			case "hp":
 				partyMember.HitPoints.CurrentValue = wordValue;

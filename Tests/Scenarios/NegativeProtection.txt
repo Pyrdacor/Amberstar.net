@@ -1,0 +1,9 @@
+# The boni of damage and protection are signed. A negative total was shown as ***.
+waittext
+dismissall
+setvalue 1 bonusdefense 65000
+setvalue 1 bonusdamage 65000
+click 32 17 right
+waitscreen Inventory
+wait 1000
+shownprotection 000

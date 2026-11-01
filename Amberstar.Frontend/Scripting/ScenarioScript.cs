@@ -161,6 +161,7 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   shownprotection &lt;text&gt;    check the protection which the open inventory shows
 ///   conversationinfotexts [n] print or check the number of shown texts about the person in a conversation
 ///   shownitem &lt;slot&gt; &lt;item|empty&gt; check the item which the open inventory shows in a backpack slot
 ///   statusicon &lt;slot&gt; &lt;icon&gt; [0|1] print or check a status icon of the portrait
@@ -998,6 +999,9 @@ public sealed class ScenarioScript
 				break;
 			case "conversationinfotexts":
 				CheckValue("conversationinfotexts", game.ScriptConversationInfoTexts, args.FirstOrDefault());
+				break;
+			case "shownprotection":
+				Report(game.ScriptShownProtection?.Contains(args[0]) == true, $"shownprotection = {game.ScriptShownProtection} (expected {args[0]})");
 				break;
 			case "cursor":
 			{
