@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.3
 
 ### Changed
 - The spells to resurrect a person show a text if the person is ashes or dust or if they have no effect. The original shows nothing, and dead, ashes and dust look the same.
