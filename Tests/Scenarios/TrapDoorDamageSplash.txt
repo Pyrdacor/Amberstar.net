@@ -1,0 +1,16 @@
+# The damage splashes at the portraits disappear if the party falls through a trap door (map 129, 9,9 leads to map 128).
+waittext
+dismissall
+teleport 129 8 9
+waitidle
+value 1 hp
+click 230 170 right
+setvalue 1 hp 40
+move right 1
+map
+wait 300
+dismissall
+waitidle
+wait 300
+map
+damagesplashes 0

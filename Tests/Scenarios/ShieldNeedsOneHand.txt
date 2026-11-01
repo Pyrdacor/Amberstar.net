@@ -1,0 +1,36 @@
+# The data of the PARADESCHILD says it needs no hand. This is treated as one hand, so it can't be carried with a two-handed weapon.
+waittext
+dismissall
+give 1 241
+give 1 138
+setclass 1 Warrior
+itemslot 1 2 241
+itemslot 1 3 138
+itemslot 1 RightHand 127
+click 32 17 right
+waitscreen Inventory
+invslot 2
+itemslot 1 LeftHand 241:1
+value 1 hands 2
+# --- there is no free hand for the two-handed sword
+invslot 3
+dismiss
+itemslot 1 RightHand 127
+itemslot 1 LeftHand 241:1
+itemslot 1 3 138:1
+value 1 hands 2
+# --- without the weapon the two-handed sword replaces the shield
+invslot RightHand
+value 1 hands 1
+invslot 3
+itemslot 1 RightHand 138:1
+itemslot 1 LeftHand empty
+itemslot 1 3 241:1
+value 1 hands 2
+# --- and the shield replaces the two-handed sword
+invslot 3
+itemslot 1 LeftHand 241:1
+itemslot 1 RightHand empty
+itemslot 1 3 138:1
+value 1 hands 1
+screen Inventory

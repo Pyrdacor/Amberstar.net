@@ -14,6 +14,7 @@ partial class Game
 	// conditions of party members which are not affected (like $e400 in the original)
 	const Condition UnaffectedConditions = Condition.Dead | Condition.Ashes | Condition.Dust | Condition.Petrified;
 	const long TicksPerDamageSplash = TicksPerSecond;
+	readonly List<long> damageSplashActions = [];
 
 	void InitConditionEffects()
 	{
@@ -194,11 +195,15 @@ partial class Game
 			damageText.ShowInArea(position.X, position.Y + 12, 32, 7, 60, TextAlignment.Center);
 		}
 
-		AddDelayedAction(TicksPerDamageSplash, () =>
+		long actionKey = -1;
+
+		actionKey = AddDelayedAction(TicksPerDamageSplash, () =>
 		{
+			damageSplashActions.Remove(actionKey);
 			splash.Visible = false;
 			damageText?.Delete();
 		});
+		damageSplashActions.Add(actionKey);
 	}
 
 	/// <summary>

@@ -1,0 +1,13 @@
+# A short key press moves at once, also if the last key press was short too. Holding the key continues without a long delay.
+waittext
+dismissall
+pos 8 11
+wait 1000
+hold Keypad6 50
+pos 9 11
+wait 1000
+hold Keypad4 50
+pos 8 11
+wait 1000
+hold Keypad6 300
+pos 10 11

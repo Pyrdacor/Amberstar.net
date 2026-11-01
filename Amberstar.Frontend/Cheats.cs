@@ -156,9 +156,8 @@ public static class Cheats
 
     private static int ParseNumber(string arg, int defaultValue) => int.TryParse(arg, out int n) ? n : defaultValue;
 
-    private static TEnum ParseNumberAsEnum<TEnum>(string arg, TEnum defaultValue) where TEnum : struct, Enum => (TEnum)Enum.ToObject(typeof(TEnum), ParseNumber(arg, Convert.ToInt32(defaultValue)));
-
-    private static TEnum ParseEnum<TEnum>(string arg, TEnum defaultValue) where TEnum : struct, Enum => Enum.TryParse(arg, true, out TEnum n) ? n : ParseNumberAsEnum(arg, defaultValue);
+    // Enum.TryParse also accepts any number, even if the enum has no such value.
+    private static TEnum ParseEnum<TEnum>(string arg, TEnum defaultValue) where TEnum : struct, Enum => Enum.TryParse(arg, true, out TEnum n) && Enum.IsDefined(n) ? n : defaultValue;
 
     private static void Maps(G game, string[] args)
     {

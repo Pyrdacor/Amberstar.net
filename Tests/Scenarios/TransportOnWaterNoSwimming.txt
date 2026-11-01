@@ -1,0 +1,25 @@
+# Stepping onto a raft or ship which waits in the water causes no swimming damage. The original only checks if the party is on foot. 15,14 of the world map part 37 is the shore and the water starts at 16,14.
+waittext
+dismissall
+setvalue 1 swim 0
+placetransport 37 16 14 raft
+placetransport 37 17 14 ship
+teleport 37 15 14
+waitidle
+value 1 hp
+click 230 170 right
+move right
+pos 16 14
+wait 100
+travel Walk
+value 1 hp +0
+move right
+pos 17 14
+wait 100
+travel Walk
+value 1 hp +0
+# --- the water next to them still hurts
+move right
+pos 18 14
+wait 100
+value 1 hp -

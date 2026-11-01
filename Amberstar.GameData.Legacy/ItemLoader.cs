@@ -12,38 +12,37 @@ namespace Amberstar.GameData.Legacy
 
         }
 
-        public ItemLoader(Lazy<IMonsterLoader> monsterLoader, Lazy<IPersonLoader> personLoader, Lazy<IChestLoader> chestLoader)
+        public ItemLoader(Lazy<IMonsterLoader> monsterLoader, Lazy<IPersonLoader> personLoader, Lazy<IChestLoader> chestLoader, Lazy<IPlaceLoader> placeLoader)
         {
             IEnumerable<ICharacter> monsters = monsterLoader.Value.LoadAllMonsters().Values;
             IEnumerable<ICharacter> persons = personLoader.Value.LoadAllPersons().Values;
             var chests = chestLoader.Value.LoadAllChests();
 
+            void AddItem(IItem? item)
+            {
+                if (item != null)
+                    items.TryAdd(item.Index, item);
+            }
+
             foreach (ICharacter character in monsters.Concat(persons))
             {
-                foreach (var itemSlot in character.Inventory)
+                foreach (var itemSlot in character.Inventory.Concat(character.Equipment.Values))
                 {
-                    if (itemSlot?.Item == null || itemSlot.Count == 0)
-                        continue;
-
-                    if (!items.ContainsKey(itemSlot.Item.Index))
-                    {
-                        items.Add(itemSlot.Item.Index, itemSlot.Item);
-                    }
+                    if (itemSlot?.Count != 0)
+                        AddItem(itemSlot?.Item);
                 }
             }
 
             foreach (var chest in chests.Values)
             {
                 foreach (var item in chest.Items)
-                {
-                    if (item == null)
-                        continue;
+                    AddItem(item);
+            }
 
-                    if (!items.ContainsKey(item.Index))
-                    {
-                        items.Add(item.Index, item);
-                    }
-                }
+            foreach (var wares in placeLoader.Value.LoadAllMerchantWares())
+            {
+                foreach (var item in wares)
+                    AddItem(item);
             }
         }
 
@@ -96,7 +95,8 @@ namespace Amberstar.GameData.Legacy
                 GraphicIndex = graphicIndex,
                 UsedAmmoType = usedAmmoType,
                 Genders = genders,
-                Hands = numHands,
+                // Some items of the data need no hand by mistake (e.g. the PARADESCHILD).
+                Hands = numHands == 0 && itemType is ItemType.CloseRangedWeapon or ItemType.LongRangedWeapon or ItemType.Shield or ItemType.Ammunition ? (byte)1 : numHands,
                 Fingers = numFingers,
                 HitPoints = hitPoints,
                 SpellPoints = spellPoints,

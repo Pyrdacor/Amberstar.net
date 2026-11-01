@@ -83,5 +83,12 @@ partial class Game
 
     internal IConfiguration Configuration { get; }
 
+    /// <summary>
+    /// The player changed a setting. The frontend applies and stores it.
+    /// </summary>
+    public event Action? ConfigurationChanged;
+
+    internal void SettingsChanged() => ConfigurationChanged?.Invoke();
+
     public bool IsOptionSet(GameOptions option) => supportedGameOptions.HasFlag(option) && Configuration.GameOptions.HasFlag(option);
 }

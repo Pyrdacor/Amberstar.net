@@ -68,16 +68,14 @@ namespace Amberstar
 
 		MousePosition WindowToVirtualScreen(MousePosition position)
         {
-            float x = position.X * 320.0f / Width;
-			float y = position.Y * 200.0f / Height;
+            var (x, y) = ViewArea.Calculate(Width, Height).ToVirtual(position.X, position.Y);
 
             return new MousePosition(x, y);
 		}
 
         Position VirtualScreenToWindow(Position position)
         {
-            float x = position.X * Width / 320.0f;
-            float y = position.Y * Height / 200.0f;
+            var (x, y) = ViewArea.Calculate(Width, Height).FromVirtual(position.X, position.Y);
 
             return new Position(MathUtil.Round(x), MathUtil.Round(y));
         }
@@ -275,6 +273,7 @@ namespace Amberstar
             window.Center();
 
             renderer = new(this, new Size(Width, Height), new Size(320, 200));
+            UpdateViewport();
 
             if (options.ScriptPath != null)
                 scenarioScript = ScenarioScript.FromFile(options.ScriptPath);
@@ -289,12 +288,27 @@ namespace Amberstar
                 Game.Game.SetRandomSeed(randomSeed.Value);
 
             audioOutput = new AudioOutput();
-            configuration = new Configuration // TODO: load it later!
+            configuration = new Configuration
             {
                 // scenario scripts start in the game
                 ShowIntro = scenarioScript == null,
                 ShowMainMenu = scenarioScript == null
             };
+
+            // Scenario scripts must not use or change the settings of the player.
+            if (scenarioScript == null)
+            {
+                var monitorSize = window!.Monitor?.Bounds.Size;
+
+                if (monitorSize != null)
+                {
+                    configuration.Resolutions = Game.Resolution.ForMonitor(monitorSize.Value.X, monitorSize.Value.Y);
+                    configuration.Resolution = configuration.Resolutions.Length - 1;
+                }
+
+                configuration.Load(SettingsPath);
+                ApplyWindowSettings();
+            }
 
             if (versions.Count == 0)
             {
@@ -314,9 +328,57 @@ namespace Amberstar
 
         static string SavegameFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Amberstar.net", "Saves");
 
+        static string SettingsPath => Path.Combine(SavegameFolder, "Settings.txt");
+
+        /// <summary>
+        /// Applies the resolution and the window mode of the settings.
+        /// </summary>
+        void ApplyWindowSettings()
+        {
+            var bounds = window!.Monitor?.Bounds;
+
+            switch (configuration!.WindowMode)
+            {
+                case Game.WindowMode.Native:
+                    window.WindowState = WindowState.Fullscreen;
+                    break;
+                case Game.WindowMode.BorderlessWindow:
+                    window.WindowState = WindowState.Normal;
+                    window.WindowBorder = WindowBorder.Hidden;
+
+                    if (bounds != null)
+                    {
+                        window.Position = bounds.Value.Origin;
+                        window.Size = bounds.Value.Size;
+                    }
+                    break;
+                default:
+                {
+                    window.WindowState = WindowState.Normal;
+                    window.WindowBorder = WindowBorder.Fixed;
+
+                    var resolution = configuration.Resolutions[configuration.Resolution];
+                    window.Size = new WindowDimension(resolution.Width, resolution.Height);
+                    window.Center();
+                    break;
+                }
+            }
+
+            UpdateViewport();
+        }
+
+        void ConfigurationChanged()
+        {
+            ApplyWindowSettings();
+
+            if (scenarioScript == null)
+                configuration!.Save(SettingsPath);
+        }
+
         void SetupGame(string savegamePath)
         {
             game!.QuitRequested += window!.Close;
+            game.ConfigurationChanged += ConfigurationChanged;
             game.SavegamePath = savegamePath;
         }
 
@@ -344,6 +406,7 @@ namespace Amberstar
             game = null;
             renderer!.Dispose();
             renderer = new(this, new Size(Width, Height), new Size(320, 200));
+            UpdateViewport();
             CreateGame(versionIndex, false);
         }
 
@@ -417,13 +480,27 @@ namespace Amberstar
                 window!.Size = new WindowDimension(Width, Height);
                 EnsureWindowOnMonitor();
 
-                renderer?.Resize(new Size(window!.FramebufferSize.X, window.FramebufferSize.Y));
+                UpdateViewport();
             }
         }
 
         void Window_FramebufferResize(WindowDimension size)
         {
-            renderer?.Resize(new Size(size.X, size.Y));
+            UpdateViewport();
+        }
+
+        /// <summary>
+        /// The game keeps its aspect ratio. The cleared rest of the window are black bars.
+        /// </summary>
+        void UpdateViewport()
+        {
+            if (renderer == null)
+                return;
+
+            var area = ViewArea.Calculate(window!.FramebufferSize.X, window.FramebufferSize.Y);
+
+            renderer.Resize(new Size(area.Width, area.Height));
+            GL.GetApi(GLContext).Viewport(area.X, area.Y, (uint)area.Width, (uint)area.Height);
         }
 
         void Window_StateChanged(WindowState state)

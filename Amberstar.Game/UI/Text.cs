@@ -317,8 +317,15 @@ internal class TextManager(Game game, IFont font,
                         x += font.Advance;
                     else
                     {
-						shadowLine.Add(CreateTextSprite(x + 1, y + 1, shadowMapper[ConvertChar(ch)], 0, textBlock.PaperColorIndex, 0, true));
-						glyphLine.Add(CreateTextSprite(x, y, mapper[ConvertChar(ch)], textBlock.TextColorIndex, textBlock.PaperColorIndex, 2, false));						
+						var glyph = ConvertChar(ch);
+
+						// The data uses some characters without a glyph (e.g. a dollar). They stay blank.
+						if (mapper.TryGetValue(glyph, out int glyphIndex))
+						{
+							shadowLine.Add(CreateTextSprite(x + 1, y + 1, shadowMapper[glyph], 0, textBlock.PaperColorIndex, 0, true));
+							glyphLine.Add(CreateTextSprite(x, y, glyphIndex, textBlock.TextColorIndex, textBlock.PaperColorIndex, 2, false));
+						}
+
 						x += font.Advance;
                     }
                 }

@@ -57,7 +57,7 @@ internal class PartyMember : BattleCharacter, IPartyMember
         partyMember.TotalWeight = reader.ReadDword();
 
         // We ensure that some equipment related values are correctly set.
-
+        partyMember.UsedHands = (byte)partyMember.Equipment.Values.Where(slot => slot.Count != 0 && slot.Item != null).Sum(slot => slot.Item!.Hands);
 
         return partyMember;
     }

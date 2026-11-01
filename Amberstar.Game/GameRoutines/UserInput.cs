@@ -47,6 +47,16 @@ partial class Game
 	/// </summary>
 	internal Key LastKeyDown { get; private set; } = Key.Invalid;
 
+	/// <summary>
+	/// Chooses the next window mode. This is possible with F11 on every screen.
+	/// </summary>
+	internal void SelectNextWindowMode()
+	{
+		Configuration.WindowMode = (WindowMode)(((int)Configuration.WindowMode + 1) % Enum.GetValues<WindowMode>().Length);
+		(ScreenHandler.ActiveScreen as SettingsScreen)?.UpdateTexts();
+		SettingsChanged();
+	}
+
 	public void KeyDown(Key key, KeyModifiers keyModifiers)
 	{
 		LastKeyDown = key;
@@ -56,7 +66,12 @@ partial class Game
 
 		if (key == Key.F10)
 			PlaySong(1);
-		else if (key == Key.F5 && SavegamePath != null && ScreenHandler.ActiveScreen is IMapScreen)
+		else if (key == Key.F11)
+		{
+			SelectNextWindowMode();
+			return;
+		}
+		else if (key == Key.F5&& SavegamePath != null && ScreenHandler.ActiveScreen is IMapScreen)
 		{
 			// quick save
 			SaveGame();

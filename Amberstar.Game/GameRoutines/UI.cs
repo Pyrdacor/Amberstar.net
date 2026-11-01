@@ -178,69 +178,6 @@ partial class Game
         AddBar(partyMember.SpellPoints, SpellPointBarColumns);
     }
 
-    internal int SetHandIconsByItem(IItem item, int count = 1)
-    {
-        int takerCount = 0;
-        int weight = item.Weight * count;
-
-        ForeachPartyMemberSlot((index, partyMember) =>
-        {
-            if (partyMember == null)
-                HideStatusIcon(index);
-            else if (partyMember.TotalWeight + weight <= partyMember.MaxWeight())
-            {
-                SetStatusIcon(index, StatusIcon.HandOpen, true, true);
-                takerCount++;
-            }
-            else
-                SetStatusIcon(index, StatusIcon.HandStop, true, true);
-        });
-
-        return takerCount;
-    }
-
-    internal int SetHandIconsByGold(int amount)
-    {
-        int takerCount = 0;
-        long weight = amount * GoldWeight;
-
-        ForeachPartyMemberSlot((index, partyMember) =>
-        {
-            if (partyMember == null)
-                HideStatusIcon(index);
-            else if (partyMember.Gold + amount <= short.MaxValue && partyMember.TotalWeight + weight <= partyMember.MaxWeight())
-            {
-                SetStatusIcon(index, StatusIcon.HandOpen, true, true);
-                takerCount++;
-            }
-            else
-                SetStatusIcon(index, StatusIcon.HandStop, true, true);
-        });
-
-        return takerCount;
-    }
-
-    internal int SetHandIconsByFood(int amount)
-    {
-        int takerCount = 0;
-        long weight = amount * FoodWeight;
-
-        ForeachPartyMemberSlot((index, partyMember) =>
-        {
-            if (partyMember == null)
-                HideStatusIcon(index);
-            else if (partyMember.Food + amount <= short.MaxValue && partyMember.TotalWeight + weight <= partyMember.MaxWeight())
-            {
-                SetStatusIcon(index, StatusIcon.HandOpen, true, true);
-                takerCount++;
-            }
-            else
-                SetStatusIcon(index, StatusIcon.HandStop, true, true);
-        });
-
-        return takerCount;
-    }
-
     internal void ResetStatusIcons()
     {
         ForeachPartyMemberSlot((index, partyMember) =>

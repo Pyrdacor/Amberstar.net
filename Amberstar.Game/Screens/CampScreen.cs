@@ -278,9 +278,9 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 			}
 			else
 			{
-				// 10% of the maximum in the camp for one food ration, at least 1 hit point ($101ac in the program)
-				hitPoints = Math.Min(Math.Max(1, partyMember.HitPoints.TotalMax / 10), Math.Max(0, partyMember.HitPoints.TotalMax - partyMember.HitPoints.CurrentValue));
-				spellPoints = Math.Min(partyMember.SpellPoints.TotalMax / 10, Math.Max(0, partyMember.SpellPoints.TotalMax - partyMember.SpellPoints.CurrentValue));
+				// a part of the maximum in the camp for one food ration (10% in the original), at least 1 hit point ($101ac in the program)
+				hitPoints = Math.Min(Math.Max(1, partyMember.HitPoints.TotalMax * Game.Configuration.CampRegeneration / 100), Math.Max(0, partyMember.HitPoints.TotalMax - partyMember.HitPoints.CurrentValue));
+				spellPoints = Math.Min(partyMember.SpellPoints.TotalMax * Game.Configuration.CampRegeneration / 100, Math.Max(0, partyMember.SpellPoints.TotalMax - partyMember.SpellPoints.CurrentValue));
 				partyMember.Food--;
 				partyMember.TotalWeight -= Game.FoodWeight;
 			}

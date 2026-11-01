@@ -83,7 +83,7 @@ partial class Game
 		Pause();
 
 		// Avoid triggering existing delayed actions from old screen
-		ClearDelayedActions(fadeActionIndex);
+		ClearDelayedActions([fadeActionIndex, .. damageSplashActions]);
 
 		if (State.GetIndexOfMapWithPlayer() != mapIndex)
 		{

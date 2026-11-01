@@ -933,7 +933,10 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			return;
 
 		mapInstance.ChangeTile(x, y, tileIndex);
-		UpdateView();
+
+		// A screen like the riddlemouth can cover the map. The map is updated when the screen is closed.
+		if (Game.ScreenHandler.ActiveScreen == this || Game.ScreenHandler.ActiveScreen?.Transparent == true)
+			UpdateView();
 	}
 
 	bool IScriptMapScreen.ScriptMove(int x, int y)

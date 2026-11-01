@@ -246,7 +246,7 @@ public class AssetProvider : IAssetProvider
         cursorLoader = new(() => new CursorLoader(this));
         monsterLoader = new(() => new MonsterLoader(this));
         personLoader = new(() => new PersonLoader(this, textLoader));
-        itemLoader = new(() => new ItemLoader(monsterLoader, personLoader, chestLoader));
+        itemLoader = new(() => new ItemLoader(monsterLoader, personLoader, chestLoader, placeLoader));
         itemFactory = new(() => new ItemFactory());
         classDataLoader = new(() => new ClassDataLoader(() => Data.ClassData));
         spellDataLoader = new(() => new SpellDataLoader(() => Data.SpellData));

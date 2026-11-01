@@ -56,6 +56,10 @@ partial class Game
 
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
+	public string ScriptSettings => $"{Configuration.Resolution} {Configuration.WindowMode} {Configuration.CampRegeneration}";
+
+	public void ScriptSelectSetting(int entry) => (ScreenHandler.ActiveScreen as SettingsScreen)?.Select(entry);
+
 	public string? ScriptShownProtection => (ScreenHandler.ActiveScreen as InventoryScreen)?.ScriptShownProtection;
 
 	public int ScriptConversationInfoTexts => (ScreenHandler.FindScreen(ScreenType.Conversation) as ConversationScreen)?.ScriptVisibleInfoTexts ?? -1;
@@ -319,6 +323,12 @@ partial class Game
 	/// Checks if there is a transport at a position (like it is stored in the savegame).
 	/// </summary>
 	public string? ScriptGetTransport(int mapIndex, int x, int y) => State.GetTransportAtLocation(x, y, mapIndex)?.Type.ToString();
+
+	public bool ScriptMapShown => ScreenHandler.FindMapScreen() is Map2DScreen { ScriptMapShown: true };
+
+	public int ScriptDamageSplashes => damageSplashActions.Count;
+
+	public bool ScriptPlaceTransport(int mapIndex, int x, int y, string type) => State.TryAddTransport(Enum.Parse<TransportType>(type, true), x, y, mapIndex);
 
 	/// <summary>
 	/// Trains a skill in the shown skill training window (after a level-up).

@@ -35,6 +35,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 	TransferType transfer = TransferType.None;
 	IItem? transferItem = null;
 	Action? itemTransferred = null;
+	Func<IPartyMember, bool>? transferCheck = null;
 
 	protected enum TransferType
 	{
@@ -278,7 +279,9 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 	/// </summary>
 	protected void StartItemTransfer(IItem item, int count, Action transferred)
 	{
-		if (Game.SetHandIconsByItem(item, count) == 0)
+		bool CanReceive(IPartyMember partyMember) => Game.CanReceiveItems(partyMember, item, count);
+
+		if (Game.SetHandIcons(null, CanReceive) == 0)
 		{
 			Game.ResetStatusIcons();
 			ShowMessage(Message.NoMemberHasRoomForItem);
@@ -288,6 +291,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 		transfer = TransferType.Item;
 		transferItem = item;
 		itemTransferred = transferred;
+		transferCheck = CanReceive;
 		Game.CurrentAmount = count;
 		Game.TrapMouseInPortraitArea();
 		Game.Cursor.CursorType = CursorType.Sword;
@@ -318,9 +322,11 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 
 	private void StartTransfer(TransferType transferType, int amount)
 	{
-		int takers = transferType == TransferType.Gold ? Game.SetHandIconsByGold(amount) : Game.SetHandIconsByFood(amount);
+		Func<IPartyMember, bool> canReceive = transferType == TransferType.Gold
+			? partyMember => Game.CanReceiveGold(partyMember, amount)
+			: partyMember => Game.CanReceiveFood(partyMember, amount);
 
-		if (takers == 0)
+		if (Game.SetHandIcons(null, canReceive) == 0)
 		{
 			Game.ResetStatusIcons();
 			ShowMessage(transferType == TransferType.Gold ? Message.NoMemberCanCarryThatMuchGold : Message.NoMemberHasRoomForItem);
@@ -328,6 +334,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 		}
 
 		transfer = transferType;
+		transferCheck = canReceive;
 		Game.TrapMouseInPortraitArea();
 		Game.Cursor.CursorType = transferType == TransferType.Gold ? CursorType.Gold : CursorType.Food;
 	}
@@ -336,6 +343,7 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 	{
 		transfer = TransferType.None;
 		transferItem = null;
+		transferCheck = null;
 		Game.CurrentAmount = 0;
 		Game.Cursor.CursorType = CursorType.Sword;
 		Game.UntrapMouse();
@@ -384,12 +392,13 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 			int amount = Game.CurrentAmount;
 			var item = transferItem;
 			var transferred = itemTransferred;
+			var canReceive = transferCheck;
 			itemTransferred = null;
 			EndTransfer();
 
 			int? slot = buttons == MouseButtons.Left ? Game.TestPartyPortraitHit(position) : null;
 
-			if (slot != null)
+			if (slot != null && Game.State.GetPartyMember(slot.Value) is { } receiver && canReceive!(receiver))
 			{
 				if (transferType == TransferType.Gold && Game.TryAddGold(slot.Value, amount))
 					PlaceGold -= amount;

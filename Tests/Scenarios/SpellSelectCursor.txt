@@ -1,0 +1,17 @@
+# The spell selection shows the sword cursor also if it is opened on the map with a movement arrow as the cursor.
+waittext
+dismissall
+join 61
+partysize 2
+setvalue 2 usemagic 100
+setvalue 2 sp 300
+learnspell 2 White 7
+activate 2
+click 230 170 right
+wait 200
+hover 90 70
+wait 50
+cursor
+button 4
+waitscreen SpellSelect
+cursor Sword

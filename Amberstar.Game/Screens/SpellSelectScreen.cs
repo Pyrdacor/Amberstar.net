@@ -58,6 +58,7 @@ internal sealed class SpellSelectScreen() : WindowScreen(WindowX, WindowY, Windo
 	{
 		base.Open(closeAction);
 
+		Game.Cursor.CursorType = CursorType.Sword;
 		Game.SelectedSpell = null;
 		schools.Clear();
 		schools.AddRange(Game.GetSpellSchoolsWithKnownSpells(Game.SpellCaster!));

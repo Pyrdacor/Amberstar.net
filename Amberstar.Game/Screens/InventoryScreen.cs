@@ -386,10 +386,9 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
         if (partyMember.Equipment.TryGetValue(EquipmentSlot.RightHand, out var rightHandEquipment) && rightHandEquipment.Item != null
             && rightHandEquipment.Item.IsTwoHanded())
         {
-            if (equippedItemSlots[EquipmentSlot.LeftHand].ItemCount > 0)
-                throw new AmberException(ExceptionScope.Application, "Two-handed weapon equipped but left hand is not empty.");
-
-            equippedItemSlots[EquipmentSlot.LeftHand].SetItem(ItemContainer.TwoHandedSecondSlotMarker, rightHandEquipment.Item);
+            // Old savegames can have an item in the left hand because some items needed no hand (the PARADESCHILD).
+            if (equippedItemSlots[EquipmentSlot.LeftHand].ItemCount <= 0)
+                equippedItemSlots[EquipmentSlot.LeftHand].SetItem(ItemContainer.TwoHandedSecondSlotMarker, rightHandEquipment.Item);
         }
 
         for (int i = 0; i < partyMember.Inventory.Length; i++)
@@ -456,6 +455,10 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
 
     protected override void ButtonClicked(int index)
     {
+        // A used up item is already gone while it sparkles, so it must not be chosen for another action.
+        if (runningDestructions != 0)
+            return;
+
         switch (index)
         {
             case 0: // Stats
@@ -786,7 +789,14 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     {
         var owner = partyMember!;
         var itemSlot = owner.Inventory[slotIndex];
-        var item = itemSlot.Item!;
+        var item = itemSlot.Item;
+
+        // The shown items were not up to date.
+        if (item == null || itemSlot.Count == 0)
+        {
+            ItemActionDone(null);
+            return;
+        }
 
         if (!item.CanThrowAway())
         {

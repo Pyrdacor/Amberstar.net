@@ -10,4 +10,8 @@ public interface IPlaceLoader
 	/// Empty slots are null. The available amounts are stored in the savegame.
 	/// </summary>
 	IItem?[] LoadMerchantWares(int waresIndex);
+	/// <summary>
+	/// Loads the wares of all merchants.
+	/// </summary>
+	IEnumerable<IItem?[]> LoadAllMerchantWares();
 }

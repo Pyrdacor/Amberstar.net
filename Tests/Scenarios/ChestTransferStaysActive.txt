@@ -1,0 +1,24 @@
+# The item transfer of a chest stays active until a right click, so the button is not needed for every item (Do_TIChest).
+waittext
+dismissall
+teleport 69 22 23
+waitscreen Chest
+wait 100
+button 5
+wait 100
+screen ChestGiveItem
+# --- the first item goes to the hero and the next one can be chosen at once
+click 24 153
+wait 100
+click 30 20
+wait 100
+screen ChestGiveItem
+# --- a right click only aborts the transfer of the chosen item
+click 56 153
+wait 100
+click 230 170 right
+wait 100
+screen ChestGiveItem
+click 230 170 right
+wait 100
+screen Chest

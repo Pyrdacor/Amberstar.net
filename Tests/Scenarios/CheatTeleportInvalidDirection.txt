@@ -1,0 +1,12 @@
+# The teleport cheat keeps the direction if the given one does not exist. It crashed on 3D maps which look up the direction.
+waittext
+dismissall
+waitidle
+cheat teleport 73 7 11 15
+waitidle
+pos 7 11
+screen Map3D
+dir Right
+cheat teleport 73 7 11 left
+waitidle
+dir Left

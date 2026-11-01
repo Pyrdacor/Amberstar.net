@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- A settings screen with its own button in the options: the resolution, window, fullscreen window or native fullscreen and the regeneration in the camp (10% like in the original or 50%). The settings are stored. In fullscreen the aspect ratio of the game is kept with black bars. F11 switches the window mode.
+
+### Fixed
+- Weapons, shields and ammunition which need no hand in the data (MÖRDERKLINGE and PARADESCHILD) now need one hand. This also fixes a crash if the PARADESCHILD was equipped together with a two-handed weapon.
+- A short key press no longer delays the next step on 2D maps by a whole step. The party also walks a bit faster in cities and starts to walk continuously sooner.
+- Transferring items from a chest stays active until a right click like in the original, so the button is not needed for every item.
+- The buttons of doors and chests are updated if the active party member changes.
+- The teleport cheat no longer crashes with a direction which does not exist.
+- The console commands "items" and "item" also know the items which persons and monsters wear and merchants sell, for example the gold ring.
+- The game no longer crashes when giving the bone to Firlas in the Amiga versions (a sharp s in runes) or with other characters which the font does not have.
+- The hands at the portraits in places like merchants and libraries show who can take something, like in the original. A full backpack, dead party members and animals were not considered, and party members could also be given items they could not carry.
+- A waiting raft or ship protects from swimming damage when stepping onto it, like in the original. A transport replaces the properties of its tile.
+- The damage values at the portraits no longer stay visible if the party falls through a trap door.
+- The map no longer appears above the screen of a riddlemouth if the right answer changes a tile.
+- The spell selection always shows the sword cursor instead of the previous cursor, for example a movement arrow.
+- The game no longer crashes when an item is dropped or given away while the last used item of its slot still sparkles. The buttons of the inventory wait for the end of the animation.
+- The game no longer freezes if a monster casts a spell or shoots and nobody of the party is left on the battle field.
+
 ## 0.3.3
 
 ### Changed

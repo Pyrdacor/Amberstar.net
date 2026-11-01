@@ -500,7 +500,7 @@ internal sealed class Battle
 		var rangedWeapon = HasRangedWeaponWithAmmunition(character);
 
 		if (rangedWeapon == true)
-			return new(BattleActionType.Attack, GetRandomPartyPosition(), true);
+			return GetRandomPartyPosition() is Position target ? new(BattleActionType.Attack, target, true) : BattleAction.Parry;
 
 		// Ranged weapons without ammunition make the monster retreat.
 		if (rangedWeapon == false)
@@ -530,13 +530,13 @@ internal sealed class Battle
 	}
 
 	/// <summary>
-	/// A random cell of a party member (L175c4 in the original).
+	/// A random cell of a party member (L175c4 in the original) or null if nobody is left on the battle field.
 	/// </summary>
-	Position GetRandomPartyPosition()
+	Position? GetRandomPartyPosition()
 	{
 		int index = Random(0x1000);
 
-		while (true)
+		for (int i = 0; i < 2 * Columns; i++)
 		{
 			index %= 2 * Columns;
 
@@ -545,6 +545,8 @@ internal sealed class Battle
 
 			index++;
 		}
+
+		return null;
 	}
 
 	#endregion
@@ -1333,7 +1335,7 @@ internal sealed class Battle
 			return partyOnBattleField.Where(partyMember => partyMember.Position.Y == row);
 		}
 
-		return [(PartyMemberParticipant)this[GetRandomPartyPosition()]!];
+		return GetRandomPartyPosition() is Position position ? [(PartyMemberParticipant)this[position]!] : [];
 	}
 
 	/// <summary>
@@ -1399,7 +1401,10 @@ internal sealed class Battle
 		if (!MonsterConditionSpells.TryGetValue(spell, out var effect))
 			return;
 
-		var victim = this[GetRandomPartyPosition()]!;
+		if (GetRandomPartyPosition() is not Position victimPosition)
+			return;
+
+		var victim = this[victimPosition]!;
 
 		if (ResistsSpell(victim))
 		{

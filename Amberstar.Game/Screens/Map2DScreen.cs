@@ -185,7 +185,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
     // For movement in cities it was even 0 for waling.
     // However this is way too fast when using automatic movement
     // (e.g. holding the key down).
-    const int CityTicksPerStep = 20;
+    const int CityTicksPerStep = 16;
+	// A short key press must not cause a second step, also not with fast means of travel.
+	const int MinTicksTillFirstRepeat = 12;
 	const int WorldMapBaseTicksPerStep = 2;
 	const long OuchDisplayTime = Game.TicksPerSecond / 6;
 	static readonly Dictionary<TravelType, int> TicksPerStep = new()
@@ -767,6 +769,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		specialItemDisplay?.Update(palette, Game.State.PartyDirection, coordinates);
 	}
 
+	internal bool ScriptMapShown => player!.Visible;
+
 	internal bool? ScriptOverlayShown(int mapIndex, int x, int y)
 	{
 		if (worldMap?.GetPosition(mapIndex, x, y) is not Position position)
@@ -942,7 +946,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			additionalMoveRequested = (currentTicks - lastMoveStartTicks) < GetTicksPerStep();
 		}
 
-		bool wasMovingBefore = moveX != 0 || moveY != 0 || additionalMoveRequested;
+		bool wasMovingBefore = moveX != 0 || moveY != 0;
 
 		if (left && !right)
 		{
@@ -976,12 +980,20 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 		if (!wasMovingBefore && (moveX != 0 || moveY != 0))
 		{
-			if (MovePlayer(moveX, moveY))
+			long ticksSinceLastMove = currentTicks - lastMoveStartTicks;
+
+			if (ticksSinceLastMove < GetTicksPerStep())
+			{
+				// The last step is not over, the next one follows when it is.
+				Game.DeleteDelayedActions(delayedMoveActionIndex);
+				moveTickCounter = ticksSinceLastMove;
+			}
+			else if (MovePlayer(moveX, moveY))
 			{
 				lastMoveStartTicks = currentTicks;
-				moveTickCounter = -GetTicksPerStep();
+				moveTickCounter = Math.Min(0, GetTicksPerStep() - MinTicksTillFirstRepeat);
 
-				AfterMove();					
+				AfterMove();
 			}
 		}
 	}
@@ -1018,7 +1030,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		else
 			return;
 
-		UpdateMap();
+		// A screen like the riddlemouth can cover the map. The map is updated when the screen is closed.
+		if (Game.ScreenHandler.ActiveScreen == this || Game.ScreenHandler.ActiveScreen?.Transparent == true)
+			UpdateMap();
 	}
 
 	/// <summary>
@@ -2033,17 +2047,34 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
     {
 		var tile = map!.Tiles[x + y * map.Width];
 		var underlayFlags = tile.Underlay == 0 ? TileFlags.None : GetTileInfo(tile.Underlay).Flags;
+		// A transport replaces the overlay of its tile (Enter_transport_icons in the original).
+		int transportTile = GetTransportTile(x, y);
+		int overlayTile = transportTile != 0 ? transportTile : tile.Overlay;
 
-		if (tile.Overlay == 0)
+		if (overlayTile == 0)
 			return underlayFlags;
 
-		var overlayFlags = GetTileInfo(tile.Overlay).Flags;
+		var overlayFlags = GetTileInfo(overlayTile).Flags;
 
         if (overlayFlags.HasFlag(TileFlags.UnderlayHasPriority))
             return underlayFlags;
 
         return overlayFlags;
     }
+
+	private int GetTransportTile(int x, int y)
+	{
+		if (worldMap == null)
+			return 0;
+
+		foreach (var transport in Game.State.PlacedTransports)
+		{
+			if (worldMap.GetPosition(transport.MapIndex, transport.X, transport.Y) == new Position(x, y))
+				return TransportTileIndex + (int)transport.Type;
+		}
+
+		return 0;
+	}
 
     private bool CanMoveTo(int x, int y, bool player, int collisionClass)
     {

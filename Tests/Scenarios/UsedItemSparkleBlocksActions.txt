@@ -1,0 +1,41 @@
+# A used up item is already gone while it sparkles. The buttons of the inventory wait for the end of the animation, otherwise it could be dropped which crashed the game. Item 10: conversion of dust.
+waittext
+dismissall
+join 61
+partysize 2
+give 2 10
+setvalue 1 hp 0
+setcondition 1 Dust 1
+wait 200
+teleport 37 12 14
+dismissall
+waitidle
+click 230 170 right
+wait 200
+button 5
+waitscreen Camp
+wait 1000
+click 80 17 right
+waitscreen Inventory
+button 3
+wait 50
+click 120 121
+waitscreen SelectPartyMember
+portrait 1
+wait 5
+screen Inventory
+count 10 0
+shownitem 4 10
+# --- the button does nothing during the animation
+button 1
+wait 2
+screen Inventory
+wait 800
+shownitem 4 empty
+# --- afterwards it works again
+button 1
+wait 2
+screen InventoryDropItem
+key Escape
+wait 10
+screen Inventory

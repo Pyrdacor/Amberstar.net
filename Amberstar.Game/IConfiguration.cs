@@ -34,8 +34,59 @@ public record Shortcut(ShortcutAction Action, Key Key, KeyModifiers KeyModifiers
 }
 
 // TODO: Use the stuff from the config :D
+public enum WindowMode
+{
+    Window,
+    BorderlessWindow,
+    Native
+}
+
+/// <summary>
+/// The size of the game window.
+/// </summary>
+public readonly record struct Resolution(int Width, int Height)
+{
+    const int VirtualWidth = 320;
+    const int VirtualHeight = 200;
+    const int MaxCount = 3;
+    const int ReservedMonitorHeight = 100; // title bar and task bar
+
+    public static readonly Resolution[] Defaults = [new(960, 600), new(1280, 800), new(1920, 1200)];
+
+    /// <summary>
+    /// The largest multiples of the game size which fit into a window on the given monitor, ascending.
+    /// There are less of them only on very small monitors. The smallest multiple is always available.
+    /// </summary>
+    public static Resolution[] ForMonitor(int monitorWidth, int monitorHeight)
+    {
+        int maxFactor = Math.Max(1, Math.Min((monitorWidth - 1) / VirtualWidth, (monitorHeight - ReservedMonitorHeight) / VirtualHeight));
+        int count = Math.Min(MaxCount, maxFactor);
+
+        return Enumerable.Range(maxFactor - count + 1, count).Select(factor => new Resolution(factor * VirtualWidth, factor * VirtualHeight)).ToArray();
+    }
+
+    public override string ToString() => $"{Width}X{Height}";
+}
+
 public interface IConfiguration
 {
+    /// <summary>
+    /// The window sizes which can be chosen.
+    /// </summary>
+    Resolution[] Resolutions { get; set; }
+
+    /// <summary>
+    /// Index into <see cref="Resolutions"/>.
+    /// </summary>
+    int Resolution { get; set; }
+
+    WindowMode WindowMode { get; set; }
+
+    /// <summary>
+    /// The percentage of the maximum hit points and spell points which a rest in the camp gives.
+    /// </summary>
+    int CampRegeneration { get; set; }
+
     int WindowX { get; set; }
 
     int WindowY { get; set; }

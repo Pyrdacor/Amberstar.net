@@ -32,6 +32,7 @@ internal sealed class OptionsScreen : ButtonGridScreen
 	const int ExitButtonIndex = 2;
 	const int MusicOnButtonIndex = 3;
 	const int MusicOffButtonIndex = 4;
+	const int SettingsButtonIndex = 5;
 	const int SaveButtonIndex = 6;
 	const int LoadButtonIndex = 7;
 	const int DismissButtonIndex = 8;
@@ -213,6 +214,7 @@ internal sealed class OptionsScreen : ButtonGridScreen
 		buttonGrid.SetButton(ExitButtonIndex, ButtonType.Exit);
 		buttonGrid.SetButton(MusicOnButtonIndex, ButtonType.Music);
 		buttonGrid.SetButton(MusicOffButtonIndex, ButtonType.NoMusic);
+		buttonGrid.SetButton(SettingsButtonIndex, ButtonType.Equipment);
 		buttonGrid.SetButton(SaveButtonIndex, ButtonType.Save);
 		buttonGrid.SetButton(LoadButtonIndex, ButtonType.Load);
 		buttonGrid.SetButton(DismissButtonIndex, ButtonType.DismissPartyMembers);
@@ -238,6 +240,9 @@ internal sealed class OptionsScreen : ButtonGridScreen
 			case MusicOffButtonIndex:
 				Game.SetMusic(index == MusicOnButtonIndex);
 				RequestButtonSetup();
+				break;
+			case SettingsButtonIndex:
+				Game.ScreenHandler.PushScreen(ScreenType.Settings);
 				break;
 			case SaveButtonIndex:
 				Game.ScreenHandler.PushScreen(ScreenType.InputSavegameName);

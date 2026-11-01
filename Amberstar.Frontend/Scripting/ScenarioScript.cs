@@ -111,6 +111,10 @@ using G = Game.Game;
 ///   placefood [amount]        print the food of the shown food dealer, optionally check it
 ///   transport &lt;map&gt; &lt;x&gt; &lt;y&gt; [type]
 ///                             print the transport at a position (none, Horse, Raft or Ship), optionally check it
+///   mapshown &lt;0|1&gt;             check if the sprites of a 2D map are shown
+///   damagesplashes &lt;count&gt;     check the amount of shown damage splashes at the portraits
+///   placetransport &lt;map&gt; &lt;x&gt; &lt;y&gt; &lt;type&gt;
+///                             place a transport (Horse, Raft or Ship) on the world map
 ///   key &lt;key&gt; [modifiers]     press and release a key (Amberstar.Game.Key name, e.g. Enter, Escape, F5)
 ///   hold &lt;key&gt; &lt;ms&gt;          hold a key for some milliseconds (e.g. movement keys)
 ///   click &lt;x&gt; &lt;y&gt; [right]     click at a game position (320x200)
@@ -161,6 +165,8 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   setting &lt;res&gt; &lt;mode&gt; &lt;camp&gt; check the settings (index of the resolution, window mode, camp regeneration)
+///   settingsselect &lt;entry&gt;     choose the next value of an entry of the settings screen
 ///   lockeditem &lt;slot&gt; &lt;item|empty&gt; check the item which a door or chest shows in a slot
 ///   shownprotection &lt;text&gt;    check the protection which the open inventory shows
 ///   conversationinfotexts [n] print or check the number of shown texts about the person in a conversation
@@ -660,6 +666,15 @@ public sealed class ScenarioScript
 					Report(transport.Equals(args[3], StringComparison.OrdinalIgnoreCase), $"transport = {transport} (expected {args[3]})");
 				break;
 			}
+			case "mapshown":
+				CheckBool("mapshown", game.ScriptMapShown, ParseBool(args[0]));
+				break;
+			case "damagesplashes":
+				Report(game.ScriptDamageSplashes == Arg(0), $"damage splashes = {game.ScriptDamageSplashes} (expected {Arg(0)})");
+				break;
+			case "placetransport":
+				Report(game.ScriptPlaceTransport(Arg(0), Arg(1), Arg(2), args[3]), $"placed {args[3]} at {Arg(1)},{Arg(2)} of map {Arg(0)}");
+				break;
 			case "battleaction":
 				CheckResult(game.ScriptBattleAction(args[0], args.Length > 2 ? new Position(Arg(1), Arg(2)) : null));
 				continueTime = time + 1;
@@ -1006,6 +1021,12 @@ public sealed class ScenarioScript
 				break;
 			case "lockeditem":
 				Report(game.ScriptShownLockedItem(Arg(0)) == (args[1] == "empty" ? null : (uint)Arg(1)), $"lockeditem {Arg(0)} = {game.ScriptShownLockedItem(Arg(0))} (expected {args[1]})");
+				break;
+			case "setting":
+				Report(game.ScriptSettings == argument, $"setting = {game.ScriptSettings} (expected {argument})");
+				break;
+			case "settingsselect":
+				game.ScriptSelectSetting(Arg(0));
 				break;
 			case "cursor":
 			{

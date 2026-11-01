@@ -5,7 +5,7 @@ using Amberstar.GameData.Serialization;
 
 namespace Amberstar.GameData.Legacy;
 
-internal class PlaceLoader(Amber.Assets.Common.IAssetProvider assetProvider) : IPlaceLoader
+internal class PlaceLoader(AssetProvider assetProvider) : IPlaceLoader
 {
 	private readonly Dictionary<int, Place> places = [];
 	private readonly Dictionary<int, IItem?[]> wares = [];
@@ -24,6 +24,9 @@ internal class PlaceLoader(Amber.Assets.Common.IAssetProvider assetProvider) : I
 
 		return items;
 	}
+
+	public IEnumerable<IItem?[]> LoadAllMerchantWares() =>
+		assetProvider.GetAssetKeys(AssetType.Merchant).Select(LoadMerchantWares);
 
 	public IPlace LoadPlace(PlaceType placeType, int index)
 	{

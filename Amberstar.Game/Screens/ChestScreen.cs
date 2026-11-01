@@ -253,6 +253,8 @@ internal class ChestScreen : LockedScreen<ChestEvent>
                         // The chest is closed when it is empty.
                         if (chestGold == 0 && !chestHasItems)
                             Game.ScreenHandler.PopScreen();
+                        else
+                            ContinueItemTransfer();
                     }
                     else
                     {
@@ -320,6 +322,17 @@ internal class ChestScreen : LockedScreen<ChestEvent>
         Game.UntrapMouse();
         ItemContainer.AbortDrag(Game);
         Game.ResetStatusIcons();
+        ContinueItemTransfer();
+    }
+
+    /// <summary>
+    /// The next item can be chosen until the player leaves this mode with a right click
+    /// or the chest has no more items (Do_TIChest in the original).
+    /// </summary>
+    private void ContinueItemTransfer()
+    {
+        if (chestHasItems)
+            Game.ScreenHandler.PushScreen(ScreenType.ChestGiveItem);
     }
 
     private void AbortGoldDrag()

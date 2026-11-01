@@ -1,0 +1,29 @@
+# Items can be dropped one after another from a full backpack.
+waittext
+dismissall
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+count 111
+click 32 17 right
+waitscreen Inventory
+button 1
+slot 12
+waitscreen Confirmation
+yes
+count 111 -1
+wait 50
+screen Inventory
+button 1
+slot 11
+waitscreen Confirmation
+yes
+count 111 -1

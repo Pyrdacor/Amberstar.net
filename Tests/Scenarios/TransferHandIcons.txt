@@ -1,0 +1,57 @@
+# The hands at the portraits of a place show who can take something (Scan_4_transfer_victims and Scan_4_gold_victims in INVENT.ASM). Merchant in Twinlake (map 67, 21,20), item 111: clothes.
+waittext
+dismissall
+join 61
+partysize 2
+cheat gold 1000
+count 111
+setcondition 2 Dead 1
+teleport 67 21 20
+waitscreen Merchant
+button 6
+button 0
+slot 2
+waitscreen Confirmation
+yes
+# --- a dead party member can't take the item
+button 5
+slot 1
+statusicon 1 HandOpen 1
+statusicon 2 HandStop 1
+statusicon 2 HandOpen 0
+portrait 2
+count 111 +0
+# --- a dead party member can't take gold
+button 8
+waitscreen PlaceGiveGold
+amount 10
+statusicon 1 HandOpen 1
+statusicon 2 HandStop 1
+portrait 2
+placegold
+# --- a party member with a full backpack can't take the item
+setcondition 2 Dead 0
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+give 1 111
+count 111
+button 5
+slot 1
+statusicon 1 HandStop 1
+statusicon 1 HandOpen 0
+statusicon 2 HandOpen 1
+portrait 1
+count 111 +0
+# --- the item is still on the counter and the other party member can take it
+button 5
+slot 1
+portrait 2
+count 111 +1

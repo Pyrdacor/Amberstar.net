@@ -1,0 +1,17 @@
+# The map stays hidden while the text of a solved riddlemouth is shown, also if the answer changes a tile (map 101, 34,21, word 3169).
+waittext
+dismissall
+teleport 101 34 22
+dismissall
+waitidle
+mapshown 1
+trigger 34 21 Eye
+waitscreen Riddlemouth
+mapshown 0
+answer #3169
+screen Riddlemouth
+mapshown 0
+dismiss
+waitidle
+mapshown 1
+tile 33 22 4/74

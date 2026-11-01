@@ -1,0 +1,51 @@
+# The settings of the remake are chosen in a list which is opened from the options. The camp regeneration is 10% (like in the original) or 50%.
+waittext
+dismissall
+setting 1 Window 10
+click 230 170 right
+wait 200
+button 8
+waitscreen Options
+button 5
+waitscreen Settings
+# --- each click chooses the next value
+settingsselect 0
+setting 2 Window 10
+settingsselect 0
+settingsselect 0
+setting 1 Window 10
+settingsselect 1
+setting 1 BorderlessWindow 10
+# --- only windows have a resolution of their own
+settingsselect 0
+setting 1 BorderlessWindow 10
+settingsselect 1
+setting 1 Native 10
+settingsselect 1
+setting 1 Window 10
+# --- F11 chooses the next window mode
+key F11
+setting 1 BorderlessWindow 10
+key F11
+key F11
+setting 1 Window 10
+# --- 50% in the camp
+settingsselect 2
+setting 1 Window 50
+key Escape
+wait 300
+screen Options
+button 2
+wait 1500
+cheat food 5
+setvalue 1 maxhp 91
+setvalue 1 hp 6
+teleport 37 10 12
+dismissall
+waitidle
+button 5
+waitscreen Camp
+wait 500
+button 6
+wait 1500
+value 1 basehp 51

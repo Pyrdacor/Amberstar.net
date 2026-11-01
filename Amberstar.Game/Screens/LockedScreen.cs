@@ -166,6 +166,9 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         closeAfterClick = false;
         lockOpened = false;
 
+        // Some buttons depend on the active party member (Door_DisUpd in the original evaluates them all the time).
+        Game.State.ActivePartyMemberChanged += RequestButtonSetup;
+
         base.Open(closeAction);
 
         var palette = Game.PaletteIndexProvider.Get80x80ImagePaletteIndex(Image);
@@ -194,6 +197,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
 
     public override void Close()
     {
+        Game.State.ActivePartyMemberChanged -= RequestButtonSetup;
+
         HideMessage();
         CleanUpItems();
 

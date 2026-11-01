@@ -11,6 +11,10 @@ internal class Font(byte[] textConversionTable, byte[] runeConversionTable, Dict
 
 	public int LineHeight => 7;
 
+	const char SharpS = '\u009e';
+	// The rune font of the Amiga versions has no sharp s, but a text of Firlas uses it. This is the rune of the Atari ST versions.
+	static readonly IGraphic SharpSRune = Graphic.FromBitPlanes(8, 5, [0x18, 0x38, 0x58, 0x38, 0x18], 1);
+
 	public IGraphic? GetGlyph(char character, bool rune)
 	{
 		if (character <= 32)
@@ -28,6 +32,8 @@ internal class Font(byte[] textConversionTable, byte[] runeConversionTable, Dict
 		if (index < 0)
 			return null;
 
-		return glyphGraphics.GetValueOrDefault(index);
+		var glyph = glyphGraphics.GetValueOrDefault(index);
+
+		return glyph == null && rune && character == SharpS ? SharpSRune : glyph;
 	}
 }
