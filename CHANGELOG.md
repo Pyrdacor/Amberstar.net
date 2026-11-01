@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.4
 
 ### Added
 - A settings screen with its own button in the options: the resolution, window, fullscreen window or native fullscreen and the regeneration in the camp (10% like in the original or 50%). The settings are stored. In fullscreen the aspect ratio of the game is kept with black bars. F11 switches the window mode.
