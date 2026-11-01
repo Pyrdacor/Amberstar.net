@@ -22,6 +22,7 @@ public sealed record ScenarioResult(int Checks, int Failures, bool TimedOut, dou
 /// </summary>
 public sealed class HeadlessGame : IScenarioScriptHost, IDisposable
 {
+	readonly string temporarySavegameFolder = Path.Combine(Path.GetTempPath(), $"Amberstar.net-{Guid.NewGuid():N}");
 	public const double FrameTime = 1.0 / 60.0;
 	readonly HashSet<Key> heldKeys = [];
 	readonly HeadlessRenderer renderer = new(new Size(320, 200));
@@ -38,7 +39,7 @@ public sealed class HeadlessGame : IScenarioScriptHost, IDisposable
 			() => [.. heldKeys], _ => { });
 		Game.QuitRequested += () => ExitRequested = true;
 		// every headless game has its own savegames
-		Game.SavegamePath = Path.Combine(Path.GetTempPath(), $"Amberstar.net-{Guid.NewGuid():N}", "Savegame.sav");
+		Game.SavegamePath = Path.Combine(temporarySavegameFolder, "Savegame.sav");
 	}
 
 	public G Game { get; }
@@ -131,10 +132,9 @@ public sealed class HeadlessGame : IScenarioScriptHost, IDisposable
 	{
 		if (!disposed)
 		{
-			var savegameFolder = Path.GetDirectoryName(Game.SavegamePath);
-
-			if (savegameFolder != null && Directory.Exists(savegameFolder))
-				Directory.Delete(savegameFolder, true);
+			// Only the own folder is removed. A script may use a real folder with "savefolder".
+			if (Directory.Exists(temporarySavegameFolder))
+				Directory.Delete(temporarySavegameFolder, true);
 
 			Game.Dispose();
 			disposed = true;

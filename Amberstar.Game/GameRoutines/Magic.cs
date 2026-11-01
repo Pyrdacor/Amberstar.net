@@ -558,13 +558,25 @@ partial class Game
 	/// Turns dust to ashes, ashes to a corpse and a corpse to a living person (Resurrect, Change_ashes
 	/// and Change_dust in the original). If the spell fails, the next worse condition is added.
 	/// </summary>
+	string GetCorpseSpellHint(IPartyMember target)
+	{
+		bool english = HasEnglishTexts;
+
+		return UI.TextManager.ToGameCharacters(target.HasAnyConditionOf(Condition.Dust)
+				? english ? $"{target.Name} HAS CRUMBLED TO DUST." : $"{target.Name} IST ZU STAUB ZERFALLEN."
+			: target.HasAnyConditionOf(Condition.Ashes)
+				? english ? $"{target.Name} HAS BEEN BURNED TO ASHES." : $"{target.Name} IST ZU ASCHE VERBRANNT."
+			: english ? $"THE SPELL HAS NO EFFECT ON {target.Name}." : $"DER SPRUCH WIRKT BEI {target.Name} NICHT.");
+	}
+
 	void ConvertCorpseSpell(Message message, Condition condition, Condition? failCondition, Action finished)
 	{
 		SelectSpellTarget(message, finished, (_, target) =>
 		{
+			// Not part of the original: it silently does nothing, but dead, ashes and dust look the same.
 			if (!target.HasAnyConditionOf(condition))
 			{
-				finished();
+				ShowTextMessage(GetCorpseSpellHint(target), finished);
 				return;
 			}
 
@@ -586,10 +598,12 @@ partial class Game
 			ResetStatusIcons();
 			ShowMagicSparkle(target);
 
-			if (success)
-				finished();
-			else
+			if (!success)
 				ShowTextMessage(LoadMessageText(Message.SpellFails), finished);
+			else if (target.IsDead())
+				ShowTextMessage(GetCorpseSpellHint(target), finished); // e.g. ashes after an earlier failed spell
+			else
+				finished();
 		});
 	}
 

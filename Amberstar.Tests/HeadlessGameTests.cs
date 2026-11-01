@@ -322,4 +322,27 @@ public sealed class HeadlessGameTests
 		Assert.Null(game.Game.ScriptGiveItem(1, 1, 1));
 		Assert.Equal(before + 1, game.Game.ScriptCountItem(1));
 	}
+
+	[Fact]
+	public void AFolderOfAScriptIsNotDeleted()
+	{
+		var folder = Path.Combine(Path.GetTempPath(), $"Amberstar.net-Test-{Guid.NewGuid():N}");
+		Directory.CreateDirectory(folder);
+		var file = Path.Combine(folder, "Savegame_01.sav");
+		File.WriteAllText(file, "keep me");
+
+		try
+		{
+			var script = new ScenarioScript([$"savefolder {folder}", "exit"], _ => { });
+
+			using (var game = new HeadlessGame(TestData.GetDataPath(GameSetup.RepositoryDataFolders.First())))
+				game.RunScript(script, 60, _ => { });
+
+			Assert.True(File.Exists(file));
+		}
+		finally
+		{
+			Directory.Delete(folder, true);
+		}
+	}
 }

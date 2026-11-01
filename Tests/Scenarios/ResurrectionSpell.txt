@@ -33,3 +33,27 @@ wait 1500
 screen Map2D
 condition 1 Dead 0
 value 1 hp 1
+# --- ashes need another spell, this is told and costs no spell points
+wait 500
+screen Map2D
+setvalue 1 hp 0
+setcondition 1 Ashes 1
+value 2 sp
+cheat food 5
+click 230 170 right
+wait 200
+click 230 170 right
+wait 200
+button 5
+waitscreen Camp
+wait 800
+cleartexts
+button 0
+waitscreen SpellSelect
+spell White 7
+waitscreen SelectPartyMember
+portrait 1
+wait 500
+textshown ZU ASCHE VERBRANNT
+value 2 sp +0
+condition 1 Ashes 1

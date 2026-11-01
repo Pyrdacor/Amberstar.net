@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- The spells to resurrect a person show a text if the person is ashes or dust or if they have no effect. The original shows nothing, and dead, ashes and dust look the same.
+
 ### Fixed
 - Resting in the camp gives at least 1 hit point, like in the original.
 - Resting in the camp or an inn also restores the hit points and spell points of bonuses from items.
