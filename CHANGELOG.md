@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Fixed
+- On 3D maps figures with a blocking graphic block the party, like in the original. Before the party could walk through them.
+- On 3D maps the party can walk onto all tiles which are not blocked, like in the original. For example the skeletons in the tower of the white wizards can be touched now.
 - The experience, hit points and spell points of a person are no longer shown in conversations, like in the original. The texts of spell casters were outside of the box.
 
 ### Added

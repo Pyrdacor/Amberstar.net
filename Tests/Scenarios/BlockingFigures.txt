@@ -1,0 +1,10 @@
+# On 3D maps a figure with a blocking graphic blocks the party (Movement_check_3D in 3DMAP.ASM), for example in the temple of the Sansri (map 108, a figure at 17,16). The rat king has no blocking graphic, see RatKingWaits.
+waittext
+dismissall
+teleport 108 16 16 right
+dismissall
+waitidle
+characterat 17 16 1
+move right 1 optional
+wait 300
+pos 16 16

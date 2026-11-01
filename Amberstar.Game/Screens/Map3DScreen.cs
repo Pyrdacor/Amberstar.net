@@ -567,12 +567,18 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		if (x < 0 || y < 0 || x >= map!.Width || y >= map.Height)
 			return false;
 
+		var testPosition = new Position(x, y);
+
 		if (!player)
 		{
-			var testPosition = new Position(x, y);
-
 			if (PresentCharacters.Any(character => character.Position == testPosition))
 				return false;
+		}
+		else if (PresentCharacters.FirstOrDefault(character => character.Position == testPosition) is { Icon: not 0 } character &&
+			map.LabTiles[character.Icon - 1].Flags.HasFlag(LabTileFlags.BlockAllMovement))
+		{
+			// Figures with a blocking graphic also block the party (Movement_check_3D in the original).
+			return false;
 		}
 
 		var tileFlags = GetTileFlags(x, y);
@@ -580,7 +586,8 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		if (tileFlags.HasFlag(LabTileFlags.BlockAllMovement))
 			return false;
 
-		return tileFlags.HasFlag((LabTileFlags)(1 << (8 + collisionClass)));
+		// Only characters use the movement classes on 3D maps (Movement_check_3D and Character_movement_check in the original).
+		return player || tileFlags.HasFlag((LabTileFlags)(1 << (8 + collisionClass)));
 	}
 
 	/// <summary>

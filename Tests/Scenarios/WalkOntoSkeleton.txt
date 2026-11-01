@@ -1,0 +1,29 @@
+# On 3D maps only the "blocked" flag stops the party (Movement_check_3D in 3DMAP.ASM), so it can walk onto the skeletons in the tower of the white wizards. The event there shows the text and removes the skeleton.
+waittext
+dismissall
+teleport 134 17 26 right
+dismissall
+waitidle
+tile 18 26 17
+cleartexts
+move right 1
+wait 500
+pos 18 26
+screen TextBox
+textshown SKELETT
+dismissall
+wait 300
+tile 18 26 1
+# --- the other skeleton
+teleport 134 21 29 right
+dismissall
+waitidle
+cleartexts
+move right 1
+wait 500
+pos 22 29
+screen TextBox
+textshown SKELETT
+dismissall
+wait 300
+tile 22 29 1
