@@ -1,0 +1,21 @@
+# The items of the active party member are shown when an item is used on a locked chest (map 98, 11,14). Doors and chests share the screen to choose the item, so the check for its type failed for chests.
+waittext
+dismissall
+give 1 152
+itemslot 1 2 152
+teleport 98 12 14 left
+dismissall
+wait 300
+trigger 11 14 Eye
+waitscreen Chest
+wait 1000
+button 1
+wait 200
+screen LockedUseItem
+lockeditem 1 151
+lockeditem 2 152
+lockeditem 3 empty
+# --- the lockpick opens the chest and is gone
+slot 2
+wait 3000
+count 152 0

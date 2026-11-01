@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Fixed
+- Resting in the camp gives at least 1 hit point, like in the original.
+- Resting in the camp or an inn also restores the hit points and spell points of bonuses from items.
+- The items to choose from are shown again when an item is used on a locked chest.
 - Negative damage or protection, for example from cursed items, are shown as 000 instead of ***.
 - On 3D maps figures with a blocking graphic block the party, like in the original. Before the party could walk through them.
 - On 3D maps the party can walk onto all tiles which are not blocked, like in the original. For example the skeletons in the tower of the white wizards can be touched now.

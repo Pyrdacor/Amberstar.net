@@ -62,6 +62,9 @@ partial class Game
 
 	public uint? ScriptShownInventoryItem(int slot) => (ScreenHandler.FindScreen(ScreenType.Inventory) as InventoryScreen)?.ScriptShownItem(slot);
 
+	public uint? ScriptShownLockedItem(int slot) => ScreenHandler.FindScreen(ScreenType.Chest) is ChestScreen chestScreen ? chestScreen.ScriptShownItem(slot)
+		: (ScreenHandler.FindScreen(ScreenType.Door) as DoorScreen)?.ScriptShownItem(slot);
+
 	public bool ScriptHasStatusIcon(int slot, string icon) => playerStatusIconTypes[slot - 1].Contains(Enum.Parse<Amberstar.GameData.Serialization.StatusIcon>(icon, true));
 
 	public int ScriptConditionIcons => (ScreenHandler.ActiveScreen as CharacterStatsScreen)?.ScriptConditionIcons ?? -1;
@@ -881,6 +884,8 @@ partial class Game
 				return partyMember.Gold;
 			case "food":
 				return partyMember.Food;
+			case "basehp":
+				return partyMember.HitPoints.CurrentValue;
 			case "hp":
 				return partyMember.HitPoints.TotalCurrent;
 			case "maxhp":
@@ -940,6 +945,9 @@ partial class Game
 			case "food":
 				partyMember.TotalWeight = (uint)(partyMember.TotalWeight + (wordValue - (long)partyMember.Food) * FoodWeight);
 				partyMember.Food = wordValue;
+				break;
+			case "bonushp":
+				partyMember.HitPoints.BonusValue = wordValue;
 				break;
 			case "bonusdefense":
 				partyMember.BonusDefense = wordValue;

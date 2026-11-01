@@ -161,6 +161,7 @@ using G = Game.Game;
 ///   activemember [slot]     print or check the slot of the active party member
 ///   song [index]              print or check the song which the game plays (1-19, also while the music is off)
 ///   cursor [type]             print or check the type of the mouse cursor
+///   lockeditem &lt;slot&gt; &lt;item|empty&gt; check the item which a door or chest shows in a slot
 ///   shownprotection &lt;text&gt;    check the protection which the open inventory shows
 ///   conversationinfotexts [n] print or check the number of shown texts about the person in a conversation
 ///   shownitem &lt;slot&gt; &lt;item|empty&gt; check the item which the open inventory shows in a backpack slot
@@ -1002,6 +1003,9 @@ public sealed class ScenarioScript
 				break;
 			case "shownprotection":
 				Report(game.ScriptShownProtection?.Contains(args[0]) == true, $"shownprotection = {game.ScriptShownProtection} (expected {args[0]})");
+				break;
+			case "lockeditem":
+				Report(game.ScriptShownLockedItem(Arg(0)) == (args[1] == "empty" ? null : (uint)Arg(1)), $"lockeditem {Arg(0)} = {game.ScriptShownLockedItem(Arg(0))} (expected {args[1]})");
 				break;
 			case "cursor":
 			{

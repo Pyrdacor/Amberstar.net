@@ -176,6 +176,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         HideMessage();
     }
 
+    internal uint? ScriptShownItem(int slot) => inventoryItemSlots[slot - 1].Item?.Index;
+
     protected void CleanUpItems()
     {
         for (int i = 0; i < inventoryItemSlots.Length; i++)
@@ -217,7 +219,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
 
     public override void ScreenPushed(Screen screen)
     {
-        if (screen is UseItemScreen)
+        // Doors and chests share the same screen.
+        if (screen.Type == ScreenType.LockedUseItem)
             UpdateInventoryItems();
 
         base.ScreenPushed(screen);
