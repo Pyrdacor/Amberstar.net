@@ -14,6 +14,9 @@ partial class Game
 	// conditions of party members which are not affected (like $e400 in the original)
 	const Condition UnaffectedConditions = Condition.Dead | Condition.Ashes | Condition.Dust | Condition.Petrified;
 	const long TicksPerDamageSplash = TicksPerSecond;
+	// conditions of party members which can't become the active member ($e506 in Member_left in the original)
+	const Condition NoActiveMemberConditions = Condition.Dead | Condition.Ashes | Condition.Dust |
+		Condition.Petrified | Condition.Stunned | Condition.Mad | Condition.Sleeping;
 	readonly List<long> damageSplashActions = [];
 
 	void InitConditionEffects()
@@ -205,6 +208,8 @@ partial class Game
 		});
 		damageSplashActions.Add(actionKey);
 	}
+
+	internal bool CanBecomeActiveMember(int slot) => State.GetPartyMember(slot)?.HasAnyConditionOf(NoActiveMemberConditions) == false;
 
 	/// <summary>
 	/// Updates the portraits. If the active party member can't lead the party anymore,

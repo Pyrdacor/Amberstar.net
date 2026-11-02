@@ -250,7 +250,9 @@ internal abstract class Screen
 		// The digits of the keypad produce the same characters but are no selection keys.
 		if (AllowCharacterSelection && keyModifiers == KeyModifiers.None && ch >= '1' && ch <= '6' && Game.LastKeyDown == Key.Number0 + (ch - '0'))
 		{
-			Game.State.SetActivePartyMember(ch - '0');
+			if (Game.CanBecomeActiveMember(ch - '0'))
+				Game.State.SetActivePartyMember(ch - '0');
+
 			return true;
         }
 
@@ -277,7 +279,9 @@ internal abstract class Screen
 
             if (characterSlotIndex != null)
             {
-                Game.State.SetActivePartyMember(characterSlotIndex.Value);
+                if (Game.CanBecomeActiveMember(characterSlotIndex.Value))
+                    Game.State.SetActivePartyMember(characterSlotIndex.Value);
+
                 return true;
             }
         }

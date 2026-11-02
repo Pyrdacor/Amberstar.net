@@ -301,6 +301,25 @@ partial class Game
 	/// </summary>
 	internal void TalkToYourself() => ShowTextMessage(Message.TalkingToYourself);
 
+    /// <summary>
+    /// Hidden chests must be found and open chests must contain something (Item_found in the original).
+    /// </summary>
+    internal bool CanOpenChest(IChestEvent chestEvent)
+    {
+        if (chestEvent.Hidden && !Probe(State.ActivePartyMember!.Skills[Skill.Search].TotalCurrent))
+            return false;
+
+        // With the Amberstar every chest is open.
+        if (chestEvent.LockpickReduction != 0 && !IsCurrentEventSaved() && !State.SpecialItems.HasFlag(SpecialItems.Amberstar))
+            return true;
+
+        var chestSlotBits = State.GetChestSlotBits(chestEvent.ChestIndex);
+        var items = AssetProvider.ChestLoader.LoadChest(chestEvent.ChestIndex).Items;
+
+        return State.GetChestGold(chestEvent.ChestIndex) != 0 ||
+            Enumerable.Range(0, IChest.SlotCount).Any(i => items[i] != null && (chestSlotBits & (1 << i)) != 0);
+    }
+
     internal void ShowChest()
     {
         ScreenHandler.PushScreen(ScreenType.Chest);

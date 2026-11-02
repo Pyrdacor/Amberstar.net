@@ -210,6 +210,24 @@ internal class GameState(ISavegame savegame, IAssetProvider assetProvider)
     public int ActivePartyMemberIndex { get; private set; } = savegame.ActivePartyMember;
     public int[] PartyCharacterIndices { get; } = savegame.PartyCharacterIndices;
     public int[] CombatPositions { get; } = savegame.CombatPositions;
+
+    /// <summary>
+    /// Empty party slots also store a position, which can be taken by another party member.
+    /// So a party member who shares a position gets the first free one. This also repairs older savegames.
+    /// </summary>
+    public void FixCombatPositions()
+    {
+        var used = new HashSet<int>();
+
+        for (int i = 0; i < CombatPositions.Length; i++)
+        {
+            if (PartyCharacterIndices[i] != 0 && !used.Add(CombatPositions[i]))
+            {
+                CombatPositions[i] = Enumerable.Range(0, Game.MaxPartyMembers * 2).First(position => !used.Contains(position));
+                used.Add(CombatPositions[i]);
+            }
+        }
+    }
     public ActiveSpell[] ActiveSpells { get; } = savegame.ActiveSpells;
     public SpecialItems SpecialItems { get; set; } = savegame.SpecialItems;
     public TravelType TravelType { get; set; } = savegame.TravelType;
@@ -230,6 +248,7 @@ internal class GameState(ISavegame savegame, IAssetProvider assetProvider)
             if (PartyCharacterIndices[i] == 0)
             {
                 PartyCharacterIndices[i] = characterIndex;
+                FixCombatPositions();
                 PartySize++;
                 slotIndex = i;
                 dismissedCharacters.Remove(characterIndex);

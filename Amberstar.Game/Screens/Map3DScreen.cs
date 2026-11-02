@@ -528,7 +528,6 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			if (@event is IPlaceEvent ||
                 @event is IDoorEvent ||
                 @event is IDoorExitEvent ||
-                @event is IChestEvent ||
                 @event is ITeleportEvent)
 			{
 				Game.State.ResetPartyPosition();

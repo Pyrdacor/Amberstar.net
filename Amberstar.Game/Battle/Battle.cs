@@ -200,8 +200,8 @@ internal sealed class Battle
 	#region Party actions
 
 	/// <summary>
-	/// A ranged weapon in the right hand needs ammunition of the same type in the left hand.
-	/// Returns null without a ranged weapon.
+	/// A ranged weapon in the right hand needs ammunition of the same type in the left hand. Weapons
+	/// without an ammunition type return to the thrower (e.g. the sickle of return). Returns null without a ranged weapon.
 	/// </summary>
 	static bool? HasRangedWeaponWithAmmunition(IBattleCharacter character)
 	{
@@ -209,6 +209,9 @@ internal sealed class Battle
 
 		if (weapon.Count == 0 || weapon.Item?.Type != ItemType.LongRangedWeapon)
 			return null;
+
+		if (weapon.Item.UsedAmmoType == AmmoType.None)
+			return true;
 
 		var ammunition = character.Equipment[EquipmentSlot.LeftHand];
 
@@ -946,6 +949,9 @@ internal sealed class Battle
 		var weapon = character.Equipment[EquipmentSlot.RightHand].Item;
 		var ammunitionSlot = character.Equipment[EquipmentSlot.LeftHand];
 		var ammunition = ammunitionSlot.Item;
+
+		if (weapon?.UsedAmmoType == AmmoType.None)
+			return true;
 
 		if (weapon == null || ammunition == null || ammunitionSlot.Count == 0)
 			return false;

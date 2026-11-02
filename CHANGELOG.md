@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Empty chests and items on the floor no longer open a screen and the party can walk over them on 3D maps, like in the original. The party was set back to the previous tile.
+- Using the flute closes the inventory. The map was shown above it.
+- Ranged weapons without an ammunition type, the sickle of return and the returning dart, can attack without ammunition.
+- Party members who are stunned, asleep, mad, petrified or dead can no longer become the active member on the map, like in the original. In the camp this was already not possible.
+- Two party members could stand on the same position in battles if someone was moved to the position of an empty party slot before a new member joined, so one of them was not available. This also repairs older savegames.
+
 ## 0.3.4
 
 ### Added

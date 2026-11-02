@@ -1,0 +1,22 @@
+# The position of an empty party slot can be taken by another party member. A new member then gets a free position, so nobody shares one in battles.
+waittext
+dismissall
+click 230 170 right
+wait 200
+button 7
+waitscreen CombatPositions
+wait 1000
+# --- the hero moves to the position which Crag gets in the next party slot
+click 232 105
+wait 100
+click 248 105
+wait 100
+button 2
+wait 1000
+screen Map2D
+join 61
+partysize 2
+startbattle 1
+waitscreen Battle
+battlecell 2 3 THALION
+battlecell 0 3 CRAG

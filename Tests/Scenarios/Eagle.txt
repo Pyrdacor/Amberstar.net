@@ -20,11 +20,13 @@ click 32 17 right
 waitscreen Inventory
 button 3
 invslot 2
-screen Inventory
 travel Eagle
 itemslot 1 2 209
-key Escape
+# the inventory is closed and stays above the map until then
+mapshown 0
 waitidle
+mapshown 1
+screen Map2D
 travel Eagle
 # --- the eagle flies over events and lands where the party can walk
 click 230 170 right

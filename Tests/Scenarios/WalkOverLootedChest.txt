@@ -1,0 +1,22 @@
+# Nothing happens at an empty chest and the party can walk over it on 3D maps (Item_found in EVENTS.ASM). Map 93, chest 60 at 11,34.
+waittext
+dismissall
+teleport 93 11 33 down
+dismissall
+waitidle
+# --- the party stays in front of the chest while it is shown
+move down 1 optional
+waitscreen Chest
+wait 100
+pos 11 33
+textshown GERÜMPEL
+closeall
+waitidle
+# --- after looting the party walks over it and no screen opens
+emptychest 60
+cleartexts
+move down 1 optional
+wait 100
+pos 11 34
+# a monster near the chest can attack now
+notextshown GERÜMPEL

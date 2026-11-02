@@ -154,11 +154,8 @@ internal sealed class SageScreen : PlaceScreen
 		if (portraitSlot == null)
 			return false;
 
-		var partyMember = Game.State.GetPartyMember(portraitSlot.Value);
-
 		// Only members who are able to act can be selected.
-		if (partyMember != null && !partyMember.HasAnyConditionOf(Condition.Dead | Condition.Ashes | Condition.Dust |
-			Condition.Petrified | Condition.Stunned | Condition.Mad | Condition.Sleeping))
+		if (Game.CanBecomeActiveMember(portraitSlot.Value))
 		{
 			Game.State.SetActivePartyMember(portraitSlot.Value);
 			Game.UpdatePartyMembers();

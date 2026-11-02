@@ -326,6 +326,14 @@ partial class Game
 
 	public bool ScriptMapShown => ScreenHandler.FindMapScreen() is Map2DScreen { ScriptMapShown: true };
 
+	public void ScriptEmptyChest(int chestIndex)
+	{
+		State.SetChestGold(chestIndex, 0);
+
+		for (int i = 0; i < IChest.SlotCount; i++)
+			State.SetChestSlotBit(chestIndex, i, false);
+	}
+
 	public int ScriptDamageSplashes => damageSplashActions.Count;
 
 	public bool ScriptPlaceTransport(int mapIndex, int x, int y, string type) => State.TryAddTransport(Enum.Parse<TransportType>(type, true), x, y, mapIndex);

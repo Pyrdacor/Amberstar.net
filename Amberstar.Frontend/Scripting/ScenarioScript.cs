@@ -111,6 +111,7 @@ using G = Game.Game;
 ///   placefood [amount]        print the food of the shown food dealer, optionally check it
 ///   transport &lt;map&gt; &lt;x&gt; &lt;y&gt; [type]
 ///                             print the transport at a position (none, Horse, Raft or Ship), optionally check it
+///   emptychest &lt;chest&gt;         remove the gold and all items of a chest
 ///   mapshown &lt;0|1&gt;             check if the sprites of a 2D map are shown
 ///   damagesplashes &lt;count&gt;     check the amount of shown damage splashes at the portraits
 ///   placetransport &lt;map&gt; &lt;x&gt; &lt;y&gt; &lt;type&gt;
@@ -666,6 +667,9 @@ public sealed class ScenarioScript
 					Report(transport.Equals(args[3], StringComparison.OrdinalIgnoreCase), $"transport = {transport} (expected {args[3]})");
 				break;
 			}
+			case "emptychest":
+				game.ScriptEmptyChest(Arg(0));
+				break;
 			case "mapshown":
 				CheckBool("mapshown", game.ScriptMapShown, ParseBool(args[0]));
 				break;

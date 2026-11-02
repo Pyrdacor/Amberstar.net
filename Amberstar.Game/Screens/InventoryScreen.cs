@@ -740,7 +740,20 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             }
 
             var location = Game.ScreenHandler.FindScreen(ScreenType.Camp) != null ? SpellLocation.Camp : Game.GetMapSpellLocation();
-            Game.CastItemSpell(user, itemSlot, equipped, location, () => ItemActionDone(null));
+            var travelType = Game.State.TravelType;
+
+            void SpellFinished()
+            {
+                if (runningDestructions != 0)
+                    afterDestructions += SpellFinished;
+                // e.g. the flute calls the eagle, the party flies away like with the magic disc
+                else if (Game.State.TravelType != travelType)
+                    Game.ScreenHandler.PopScreen();
+                else
+                    ItemActionDone(null);
+            }
+
+            Game.CastItemSpell(user, itemSlot, equipped, location, SpellFinished);
             return;
         }
 

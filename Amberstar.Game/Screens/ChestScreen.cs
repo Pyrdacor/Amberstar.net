@@ -53,17 +53,6 @@ internal class ChestScreen : LockedScreen<ChestEvent>
     {
         var chestEvent = (Game.EventHandler.CurrentEvent as ChestEvent)!;
 
-        if (chestEvent.Hidden)
-        {
-            int searchSkill = Game.State.ActivePartyMember!.Skills[Skill.Search].TotalCurrent;
-
-            if (!Game.Probe(searchSkill))
-            {
-                Game.ScreenHandler.PopScreen();
-                return;
-            }
-        }
-        
         // With the Amberstar every chest is open.
         bool lockOpened = chestEvent.LockpickReduction == 0 || Game.IsCurrentEventSaved() ||
             Game.State.SpecialItems.HasFlag(SpecialItems.Amberstar);

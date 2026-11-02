@@ -382,11 +382,8 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 
 		if (buttons == MouseButtons.Left && Game.TestPartyPortraitHit(position) is int portraitSlot)
 		{
-			var partyMember = Game.State.GetPartyMember(portraitSlot);
-
 			// Only members who are able to act can be selected.
-			if (partyMember != null && !partyMember.HasAnyConditionOf(Condition.Dead | Condition.Ashes | Condition.Dust |
-				Condition.Petrified | Condition.Stunned | Condition.Mad | Condition.Sleeping))
+			if (Game.CanBecomeActiveMember(portraitSlot))
 			{
 				Game.State.SetActivePartyMember(portraitSlot);
 				Game.UpdatePartyMembers();

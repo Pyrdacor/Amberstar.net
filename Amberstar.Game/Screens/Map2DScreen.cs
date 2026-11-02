@@ -1811,7 +1811,11 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	{
 		Game.State.TravelType = TravelType.Eagle;
 		Game.Time.TravelTypeChanged();
-		UpdateMap();
+
+		// The inventory can cover the map. The map is updated when it is closed.
+		if (Game.ScreenHandler.ActiveScreen == this)
+			UpdateMap();
+
 		RequestButtonSetup();
 	}
 

@@ -25,6 +25,14 @@ namespace Amberstar.Game.Events
             if (trigger != EventTrigger.Move && trigger != EventTrigger.Eye)
                 return false;
 
+            // Nothing happens at empty chests and the party stands on them (Item_found in the original).
+            if (!game.CanOpenChest(this))
+                return false;
+
+            // The party can't stand on a chest which is shown in a 3D map.
+            if (trigger == EventTrigger.Move)
+                (game.ScreenHandler.FindMapScreen() as Screens.Map3DScreen)?.ResetPartyPosition();
+
             game.ShowChest();
 
             return true;

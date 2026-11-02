@@ -1,0 +1,29 @@
+# Ranged weapons without an ammunition type return to the thrower (item 268, sickle of return).
+waittext
+dismissall
+join 61
+partysize 2
+give 2 268
+setvalue 2 hp 300
+setvalue 2 attack 100
+activate 2
+click 80 17 right
+waitscreen Inventory
+invslot 4
+wait 100
+texts
+itemslot 2 RightHand 268
+key Escape
+waitidle
+startbattle 1
+waitscreen Battle
+wait 100
+cleartexts
+activemember 2
+battlecell 3 2 RIESENRATTE
+# --- the rat can be reached although it stands in another column and there is no ammunition
+buttonenabled 6 1
+battleaction attack 3 2
+battleround
+textshown TRIFFT RIESENRATTE
+itemslot 2 RightHand 268

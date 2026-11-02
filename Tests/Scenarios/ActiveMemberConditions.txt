@@ -1,0 +1,11 @@
+# Members who can't act can't become the active member, also on the map (Member_left in TEST.ASM).
+waittext
+dismissall
+join 61
+partysize 2
+setcondition 2 Stunned 1
+portrait 2
+activemember 1
+setcondition 2 Stunned 0
+portrait 2
+activemember 2

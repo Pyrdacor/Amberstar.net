@@ -132,6 +132,7 @@ partial class Game
 		partyAdvantage |= State.ActiveSpells[(int)ActiveSpellType.Invisibility].Duration != 0;
 		battleMapCharacter = mapCharacter;
 
+		State.FixCombatPositions();
 		CurrentBattle = new(AssetProvider, monsterGroup, partyMembers, State.CombatPositions, partyAdvantage, monsterAdvantage,
 			Probe, (min, max) => Random(min, max))
 		{
