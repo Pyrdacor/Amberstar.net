@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.5
 
 ### Fixed
 - Empty chests and items on the floor no longer open a screen and the party can walk over them on 3D maps, like in the original. The party was set back to the previous tile.
