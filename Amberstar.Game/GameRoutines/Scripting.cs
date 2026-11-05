@@ -1,4 +1,4 @@
-﻿using Amber.Common;
+using Amber.Common;
 using Amberstar.Game.Events;
 using Amberstar.Game.Screens;
 using Amberstar.GameData;
@@ -69,6 +69,9 @@ partial class Game
 	public uint? ScriptShownLockedItem(int slot) => ScreenHandler.FindScreen(ScreenType.Chest) is ChestScreen chestScreen ? chestScreen.ScriptShownItem(slot)
 		: (ScreenHandler.FindScreen(ScreenType.Door) as DoorScreen)?.ScriptShownItem(slot);
 
+	public string? ScriptShownLockedImage => ScreenHandler.FindScreen(ScreenType.Chest) is ChestScreen chestScreen ? chestScreen.ScriptShownImage
+		: (ScreenHandler.FindScreen(ScreenType.Door) as DoorScreen)?.ScriptShownImage;
+
 	public bool ScriptHasStatusIcon(int slot, string icon) => playerStatusIconTypes[slot - 1].Contains(Enum.Parse<Amberstar.GameData.Serialization.StatusIcon>(icon, true));
 
 	public int ScriptConditionIcons => (ScreenHandler.ActiveScreen as CharacterStatsScreen)?.ScriptConditionIcons ?? -1;
@@ -85,6 +88,12 @@ partial class Game
 	public bool ScriptItemNameShown => (ScreenHandler.ActiveScreen as ItemScreen)?.ScriptNameShown == true;
 
 	public int ScriptVisibleOptionsSlots => (ScreenHandler.ActiveScreen as OptionsScreen)?.ScriptVisibleSlots ?? 0;
+
+	/// <summary>
+	/// The shown lines of the spell selection and if they are all inside the list.
+	/// </summary>
+	public (string[] Lines, bool Inside)? ScriptSpellSelectLines => ScreenHandler.ActiveScreen is SpellSelectScreen screen
+		? ([.. screen.ScriptVisibleLines], screen.ScriptLinesInside) : null;
 
 	public bool? ScriptMapOverviewShown => ScreenHandler.FindScreen(ScreenType.Automap) is AutomapScreen automapScreen ? automapScreen.ScriptSpritesShown
 		: ScreenHandler.FindScreen(ScreenType.Minimap) is MinimapScreen minimapScreen ? minimapScreen.ScriptSpritesShown : null;

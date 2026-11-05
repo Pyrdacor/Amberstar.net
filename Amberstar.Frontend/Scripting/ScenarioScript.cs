@@ -1,4 +1,4 @@
-﻿using Amber.Common;
+using Amber.Common;
 using Amberstar.Game;
 using Amberstar.GameData;
 
@@ -169,6 +169,7 @@ using G = Game.Game;
 ///   setting &lt;res&gt; &lt;mode&gt; &lt;camp&gt; check the settings (index of the resolution, window mode, camp regeneration)
 ///   settingsselect &lt;entry&gt;     choose the next value of an entry of the settings screen
 ///   lockeditem &lt;slot&gt; &lt;item|empty&gt; check the item which a door or chest shows in a slot
+///   lockedimage [name]        print or check the shown picture of a door or chest (e.g. LockedChest, OpenChest)
 ///   shownprotection &lt;text&gt;    check the protection which the open inventory shows
 ///   conversationinfotexts [n] print or check the number of shown texts about the person in a conversation
 ///   shownitem &lt;slot&gt; &lt;item|empty&gt; check the item which the open inventory shows in a backpack slot
@@ -188,6 +189,8 @@ using G = Game.Game;
 ///   spellknown &lt;slot&gt; &lt;school&gt; &lt;spell&gt; [0|1]
 ///                             print if a party member knows a spell (school: White, Gray, Black or Special,
 ///                             spell: 1-based number), optionally check it
+///   spelllines [first] [last] print the shown lines of the spell selection, check that they are inside the list and
+///                             optionally the start of the first and last line (_ for spaces)
 ///   condition &lt;slot&gt; &lt;condition&gt; [0|1]
 ///                             print if a party member has a condition (e.g. Poisoned), optionally check it
 ///   setcondition &lt;slot&gt; &lt;condition&gt; &lt;0|1&gt;
@@ -503,6 +506,27 @@ public sealed class ScenarioScript
 			case "learnspell":
 				CheckResult(game.ScriptLearnSpell(Arg(0), args[1], Arg(2)));
 				break;
+			case "spelllines":
+			{
+				// spelllines [first line] [last line]: the shown lines must be inside the list
+				var lines = game.ScriptSpellSelectLines;
+
+				if (lines == null)
+				{
+					Report(false, $"no spell selection is shown but {game.ScriptActiveScreen}");
+					break;
+				}
+
+				var (shown, inside) = lines.Value;
+				output($"  spelllines = {string.Join(" | ", shown)}");
+				Report(inside, "spelllines are inside the list");
+
+				if (args.Length > 0)
+					Report(shown.FirstOrDefault()?.StartsWith(args[0].Replace('_', ' ')) == true, $"first spell line = {shown.FirstOrDefault()} (expected {args[0]})");
+				if (args.Length > 1)
+					Report(shown.LastOrDefault()?.StartsWith(args[1].Replace('_', ' ')) == true, $"last spell line = {shown.LastOrDefault()} (expected {args[1]})");
+				break;
+			}
 			case "spell":
 				CheckResult(game.ScriptSelectSpell(args[0], Arg(1)));
 				continueTime = time + 1;
@@ -1023,6 +1047,16 @@ public sealed class ScenarioScript
 			case "shownprotection":
 				Report(game.ScriptShownProtection?.Contains(args[0]) == true, $"shownprotection = {game.ScriptShownProtection} (expected {args[0]})");
 				break;
+			case "lockedimage":
+			{
+				var image = game.ScriptShownLockedImage ?? "wrong picture";
+
+				if (args.Length == 0)
+					output($"  lockedimage = {image}");
+				else
+					Report(image == args[0], $"lockedimage = {image} (expected {args[0]})");
+				break;
+			}
 			case "lockeditem":
 				Report(game.ScriptShownLockedItem(Arg(0)) == (args[1] == "empty" ? null : (uint)Arg(1)), $"lockeditem {Arg(0)} = {game.ScriptShownLockedItem(Arg(0))} (expected {args[1]})");
 				break;

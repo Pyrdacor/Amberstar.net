@@ -9,6 +9,9 @@
 - The buttons of the inventory no longer stop working after the rope (or another item with levitation) was used to climb through a trap door in the ceiling. Until the game was restarted the inventory could only be closed with Escape, also after loading a savegame.
 - The spell of a used item (e.g. the torch, the flute or the rope) follows after the item sparkled, like in the original. Before the spell happened at once.
 - Escape no longer closes the map, which left an empty screen.
+- The list of spells can no longer be scrolled outside of the window, and the last spells can be reached. A list started with the scroll position of the last time it was shown.
+- Locked doors and chests show the picture of their state. After an open chest the next locked chest showed an open chest too. Like in the original, a chest without a save index is locked again when it is opened another time.
+- A crash after a teleport (e.g. to the guild of the rangers) when hidden tiles of the last map were still animated with the tileset of the new map.
 
 ## 0.3.5
 

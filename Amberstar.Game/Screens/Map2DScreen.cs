@@ -1326,7 +1326,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 					CreateTileSprite(underlay, gridIndex, OffsetX + x * TileWidth, OffsetY + y * TileHeight, ShadowTileIndex);
 
 					if (overlay.TryGetValue(gridIndex, out var shadowedOverlaySprite))
-						shadowedOverlaySprite.Visible = false;
+						HideTileSprite(shadowedOverlaySprite);
 
 					continue;
 				}
@@ -1337,7 +1337,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 				}
 				else if (underlay.TryGetValue(gridIndex, out var underlaySprite))
 				{
-					underlaySprite.Visible = false;
+					HideTileSprite(underlaySprite);
 				}
 
 				if (tile.Overlay != 0)
@@ -1347,7 +1347,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 				}
 				else if (overlay.TryGetValue(gridIndex, out var overlaySprite))
 				{
-					overlaySprite.Visible = false;
+					HideTileSprite(overlaySprite);
 				}
 			}
 		}
@@ -1519,6 +1519,16 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		overlay.Values.ToList().ForEach(tile => tile.Visible = false);
 		overlay.Clear();
 		animatedTiles.Clear();
+	}
+
+	/// <summary>
+	/// A hidden tile is no longer animated. Otherwise its tile of the last map would be animated with the
+	/// graphic offset of the new map's tileset (a graphic which does not exist, e.g. after a teleport).
+	/// </summary>
+	private void HideTileSprite(IAnimatedSprite sprite)
+	{
+		sprite.Visible = false;
+		animatedTiles.Remove(sprite);
 	}
 
 	private IAnimatedSprite CreateTileSprite(Dictionary<int, IAnimatedSprite> mapLayer, int gridIndex, int x, int y, int index, int baseLineOffset = 0, int mapIndex = 0)
@@ -2000,6 +2010,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		PlayMapSong();
 
 		tileGraphicOffset = map.TilesetIndex == 1 ? 0 : tilesets![0].Graphics.Count + 1;
+		// the tiles of the last map must not be animated with the tileset of the new map
+		animatedTiles.Clear();
 		palette = Game.PaletteIndexProvider.GetTilesetPaletteIndex(map.TilesetIndex);
 
 		characters.Clear();

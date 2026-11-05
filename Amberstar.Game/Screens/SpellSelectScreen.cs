@@ -149,6 +149,10 @@ internal sealed class SpellSelectScreen() : WindowScreen(WindowX, WindowY, Windo
 		return Select(index) ? null : $"spell {spellNumber} of {school} can't be chosen";
 	}
 
+	internal IEnumerable<string> ScriptVisibleLines => list?.ScriptVisibleTexts ?? [];
+
+	internal bool ScriptLinesInside => list?.ScriptAllVisibleInside ?? true;
+
 	public override bool KeyDown(Key key, KeyModifiers keyModifiers)
 	{
 		switch (key)

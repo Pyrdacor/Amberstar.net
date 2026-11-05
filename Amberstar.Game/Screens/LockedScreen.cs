@@ -181,6 +181,12 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
 
     internal uint? ScriptShownItem(int slot) => inventoryItemSlots[slot - 1].Item?.Index;
 
+    /// <summary>
+    /// The picture which is actually shown (null if the shown graphic is not the picture of the current state).
+    /// </summary>
+    internal string? ScriptShownImage => image?.Visible == true && image.ScriptShowsTexture(Game.GraphicIndexProvider.Get80x80ImageIndex(image80x80))
+        ? image80x80.ToString() : null;
+
     protected void CleanUpItems()
     {
         for (int i = 0; i < inventoryItemSlots.Length; i++)
@@ -202,11 +208,8 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         HideMessage();
         CleanUpItems();
 
-        if (image != null)
-        {
-            image.Visible = false;
-            image = null;
-        }
+        // Note: The image is created once in Init as the screen is reused. It is shown again when the screen
+        // opens, so it must be kept to show the picture of the next door or chest (e.g. a locked chest).
 
         if (!lockOpened)
         {

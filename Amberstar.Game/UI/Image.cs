@@ -59,6 +59,11 @@ internal class Image : Control
         set => image.MaskColorIndex = value;
     }
 
+    /// <summary>
+    /// Checks if the image shows the given texture.
+    /// </summary>
+    internal bool ScriptShowsTexture(int textureIndex) => image.TextureOffset == image.Layer.Config.Texture!.GetOffset(textureIndex);
+
     public void SetTextureIndex(int textureIndex)
     {
         var textureAtlas = image.Layer.Config.Texture!;

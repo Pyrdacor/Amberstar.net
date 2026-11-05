@@ -1,0 +1,49 @@
+# The spell selection only shows the lines inside the list, the last spell can be reached by scrolling
+# and the list starts at the top again when it is opened another time (the screen is reused).
+waittext
+dismissall
+# Crag (white wizard) knows many spells
+join 61
+partysize 2
+learnspell 2 White 1
+learnspell 2 White 2
+learnspell 2 White 3
+learnspell 2 White 4
+learnspell 2 White 5
+learnspell 2 White 6
+learnspell 2 White 7
+learnspell 2 White 8
+learnspell 2 White 9
+learnspell 2 White 10
+learnspell 2 White 11
+learnspell 2 White 12
+learnspell 2 White 13
+learnspell 2 White 14
+learnspell 2 White 15
+learnspell 2 White 16
+learnspell 2 White 17
+learnspell 2 White 18
+activate 2
+click 230 170 right
+button 4
+waitscreen SpellSelect
+spelllines HEILUNG_1
+key Down
+key Down
+key Down
+key Down
+key Down
+key Down
+key Down
+key Down
+key Down
+key Down
+spelllines ALL_HEILUNG ESSEN_ERSCHAFFEN
+# --- scrolling up from the top stays at the top
+key Escape
+waitidle
+button 4
+waitscreen SpellSelect
+spelllines HEILUNG_1
+key Up
+spelllines HEILUNG_1

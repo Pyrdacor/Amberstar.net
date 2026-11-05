@@ -121,6 +121,9 @@ internal class List : Control
         labels.Clear();
         texts.Clear();
         currentLabelY = 0;
+        // the list is reused (e.g. by the spell selection), a new content starts at the top
+        scrollOffset = 0;
+        maxScrollOffset = 0;
     }
 
     public void SetItem(int index, string text, byte colorIndex = 15)
@@ -160,12 +163,22 @@ internal class List : Control
 
         var areaHeight = Area.Size.Height;
         label.Visible = visible && currentLabelY <= areaHeight;
-        maxScrollOffset = Math.Max(0, (currentLabelY - areaHeight) / LineHeight);
+        // only whole lines are shown, so the last line needs a full scroll step
+        maxScrollOffset = Math.Max(0, (currentLabelY - areaHeight + LineHeight - 1) / LineHeight);
 
         return label;
     }
 
     internal int ScriptVisibleItems => labels.Count(label => label.Visible);
+
+    /// <summary>
+    /// The shown lines from the top (only lines inside the area are shown).
+    /// </summary>
+    internal IEnumerable<string> ScriptVisibleTexts => labels.Select((label, index) => (label, index))
+        .Where(entry => entry.label.Visible).OrderBy(entry => entry.label.Position.Y).Select(entry => texts[entry.index].Trim());
+
+    internal bool ScriptAllVisibleInside => labels.Where(label => label.Visible)
+        .All(label => label.Position.Y >= Area.Top && label.Position.Y + LineHeight <= Area.Bottom);
 
     // Only the lines inside the area are shown, the others are reached by scrolling.
     private void UpdateLabelVisibility(Label label)
