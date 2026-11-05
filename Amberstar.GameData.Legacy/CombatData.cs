@@ -42,7 +42,9 @@ internal class CombatData : ICombatData
 
 	public static int DamageDigitDataSize => 10 * ICombatData.DamageDigitHeight;
 
-	public CombatData(byte[] data, byte[] paletteData, byte[] monsterGraphicData, byte[] spellAnimationData, byte[] damageDigitData)
+	/// <param name="backgroundPalettes">The palettes of the 14 combat backgrounds of the DOS version, which are stored with them.</param>
+	public CombatData(byte[] data, byte[] paletteData, byte[] monsterGraphicData, byte[] spellAnimationData, byte[] damageDigitData,
+		IGraphic[]? backgroundPalettes = null)
 		: this(data)
 	{
 		if (spellAnimationData.Length < SpellAnimationDataSize)
@@ -88,6 +90,12 @@ internal class CombatData : ICombatData
 
 		for (int background = 1; background <= ICombatData.CombatBackgroundCount; background++)
 		{
+			if (backgroundPalettes != null)
+			{
+				palettes[background] = backgroundPalettes[background - 1];
+				continue;
+			}
+
 			var palette = paletteData.Length == 0 ? new byte[PaletteSize] : paletteData[..PaletteSize];
 
 			if (paletteData.Length != 0)

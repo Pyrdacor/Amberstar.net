@@ -6,7 +6,7 @@ using Amberstar.GameData.Serialization;
 
 namespace Amberstar.GameData.Legacy
 {
-	internal class ProgramData
+	internal partial class ProgramData
 	{
 		public ProgramData(IDataReader dataReader, Func<EmbeddedDataOffset, IDataReader, bool> dataSeeker)
 		{

@@ -137,7 +137,7 @@ internal class GraphicLoader(AssetProvider assetProvider, byte[] loadingScreenDa
 		if (paletteAsset == null)
 			throw new AmberException(ExceptionScope.Data, $"Palette for 80x80 graphic {index} not found.");
 
-		var palette = PaletteLoader.LoadPalette(paletteAsset.GetReader());
+		var palette = PaletteLoader.LoadAnyPalette(paletteAsset.GetReader());
 
 		// Load graphic
 		graphic = PaletteGraphic.FromBitPlanes(80, 80, asset.GetReader().ReadToEnd(), 4, palette);
@@ -269,7 +269,7 @@ internal class GraphicLoader(AssetProvider assetProvider, byte[] loadingScreenDa
 			return null;
 
 		// The colors are faded to black evenly (finer than the 8 levels per color component of the Atari ST).
-		var palette = PaletteLoader.LoadPalette(new DataReader(loadingScreenPaletteData));
+		var palette = PaletteLoader.LoadAnyPalette(new DataReader(loadingScreenPaletteData));
 		var data = (byte[])palette.GetData().Clone();
 		int steps = IGraphicLoader.LoadingScreenFadeSteps;
 		fadeStep = Math.Clamp(fadeStep, 0, steps);

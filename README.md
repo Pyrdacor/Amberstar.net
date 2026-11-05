@@ -10,7 +10,7 @@ See the [changelog](CHANGELOG.md) for the changes of each version.
 
 ## Game versions
 
-The releases for Windows and Linux (x64) contain the English and German game data of the Amiga and Atari ST versions.
+The releases for Windows and Linux (x64) contain the English and German game data of the Amiga, Atari ST and DOS versions.
 They are packed into an archive which is appended to the executable, so the game runs without extra files. At the start
 a version can be chosen (each version has its own savegames).
 
@@ -55,7 +55,7 @@ dotnet run --project Amberstar.VersionPacker -- pack versions.dat
 dotnet run --project Amberstar.VersionPacker -- embed path/to/Amberstar.net.exe versions.dat
 ```
 
-Without more arguments `pack` uses the English and German Amiga and Atari ST data of the repository. The release workflow
+Without more arguments `pack` uses the English and German Amiga, Atari ST and DOS data of the repository. The release workflow
 ([.github/workflows/release.yml](.github/workflows/release.yml)) does this for a tag like `v0.1.0-alpha` (native AOT builds for Windows and Linux).
 
 ### Amberstar.Tests

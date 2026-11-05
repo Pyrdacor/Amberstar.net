@@ -344,6 +344,30 @@ public sealed class GameDataTests
 	}
 
 	[Theory]
+	[InlineData("German/AmberfilesDOS")]
+	[InlineData("English/AmberfilesDOS")]
+	public void DosLoadingScreenLoads(string folder)
+	{
+		var assetProvider = TestData.CreateAssetProvider(folder);
+		var atari = TestData.CreateAssetProvider(Path.Combine("English", "AmberfilesST")).GraphicLoader;
+
+		// LOADING.ICN has the dwarf and COL_PALL.108 the colors of the Atari palette (with 6 instead of 3 bits)
+		var loadingScreen = assetProvider.GraphicLoader.LoadLoadingScreen();
+		Assert.NotNull(loadingScreen);
+		Assert.Equal(IGraphicLoader.LoadingScreenWidth, loadingScreen.Width);
+		Assert.Equal(IGraphicLoader.LoadingScreenHeight, loadingScreen.Height);
+		Assert.Contains(loadingScreen.GetData(), color => color != 0);
+		var palette = assetProvider.GraphicLoader.LoadLoadingScreenPalette(0)!.GetData();
+		var atariPalette = atari.LoadLoadingScreenPalette(0)!.GetData();
+
+		for (int i = 0; i < 16 * 4; i++)
+		{
+			if (i % 4 != 3)
+				Assert.InRange(palette[i] - atariPalette[i], -24, 24);
+		}
+	}
+
+	[Theory]
 	[MemberData(nameof(TestData.DataFolders), MemberType = typeof(TestData))]
 	public void AltarPuzzleLoads(string folder)
 	{

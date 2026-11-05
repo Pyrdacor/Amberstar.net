@@ -6,8 +6,8 @@ using Amber.IO.Common.Serialization;
 using Amber.IO.FileFormats.Serialization;
 using Amber.Serialization;
 using Amberstar.GameData.Serialization;
+using Amberstar.GameData.Legacy.Dos;
 using Amiga.FileFormats.LHA;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -16,7 +16,7 @@ public enum LegacyPlatform
 	Source, // published source data files
 	Atari,
 	Amiga,
-	//Dos // TODO: unsupported for now
+	Dos,
 }
 
 public enum EmbeddedDataOffset
@@ -141,6 +141,7 @@ public class AssetProvider : IAssetProvider
 	};
 
 	readonly IReadOnlyFileSystem fileSystem;
+	readonly DosGameData? dosData;
 	readonly Dictionary<AssetType, Dictionary<int, Asset>> assets = [];
 	readonly Dictionary<AssetType, IFileContainer> assetContainers = [];
 	readonly Lazy<ProgramData> programData;
@@ -207,17 +208,27 @@ public class AssetProvider : IAssetProvider
 	{
 		this.fileSystem = fileSystem;
 
-        foreach (var platform in Enum.GetValues<LegacyPlatform>().Skip(1))
-        {
-			var programFile = fileSystem.GetFile(programFileNames[platform]);
-
-			if (programFile != null)
+		if (DosGameData.IsDosVersion(fileSystem))
+		{
+			var dos = new DosGameData(fileSystem);
+			dosData = dos;
+			programData = new(() => new ProgramData(dos));
+			Platform = LegacyPlatform.Dos;
+		}
+		else
+		{
+			foreach (var platform in programFileNames.Keys)
 			{
-				programData = new(() => programFileLoaders[platform](programFile));
-				Platform = platform;
-				break;
+				var programFile = fileSystem.GetFile(programFileNames[platform]);
+
+				if (programFile != null)
+				{
+					programData = new(() => programFileLoaders[platform](programFile));
+					Platform = platform;
+					break;
+				}
 			}
-        }
+		}
 
 		if (Platform == LegacyPlatform.Source)
 			programData = new(() => LoadProgramDataFromSource(fileSystem));
@@ -236,10 +247,10 @@ public class AssetProvider : IAssetProvider
 			Data.LayoutBottomCorners, Data.LayoutBottomCornerMasks, Data.PortraitArea));
 		uIGraphicLoader = new(() => new UIGraphicLoader(this, Data.LayoutBlocks[77])); // layout block 77 is the empty item slot
 		mapLoader = new(() => new MapLoader(this));		
-		paletteLoader = new(() => new PaletteLoader(this, builtinPalettes));
+		paletteLoader = new(() => new PaletteLoader(this, dosData == null ? builtinPalettes : LoadDosBuiltinPalettes(dosData)));
 		graphicLoader = new(() => new GraphicLoader(this, Data.LoadingScreenData, Data.LoadingScreenPaletteData));
 		tilesetLoader = new(() => new TilesetLoader(this));
-		fontLoader = new(() => new FontLoader(this));
+		fontLoader = new(() => dosData == null ? new FontLoader(this) : new DosFontLoader(dosData));
 		savegameLoader = new(() => new SavegameLoader(this));
 		labDataLoader = new(() => new LabDataLoader(this));
 		chestLoader = new(() => new ChestLoader(this));
@@ -254,7 +265,7 @@ public class AssetProvider : IAssetProvider
         altarPuzzle = new(() => Data.AltarPuzzleData.Length == 0 ? null : new AltarPuzzle(Data.AltarPuzzleData));
         monsterGroupLoader = new(() => new MonsterGroupLoader(this));
         combatData = new(() => new CombatData(Data.CombatData, Data.CombatPaletteData, Data.MonsterGraphicData,
-			Data.SpellAnimationData, Data.DamageDigitData));
+			Data.SpellAnimationData, Data.DamageDigitData, dosData == null ? null : LoadDosCombatPalettes(dosData)));
         songLoader = new(() => new SongLoader(this, Platform, Data.SongMusicIndices, Data.SongNames, LoadAmigaSamples()));
         outroData = new(LoadOutroData);
         introData = new(LoadIntroData);
@@ -550,8 +561,56 @@ public class AssetProvider : IAssetProvider
 		return assetList!.GetValueOrDefault(identifier.Index);
 	}
 
+	/// <summary>
+	/// The built-in palettes of the DOS version are stored in AMBEDATA.DAT with all 6 bits per color component.
+	/// </summary>
+	private static Dictionary<BuiltinPalette, IGraphic> LoadDosBuiltinPalettes(DosGameData dos)
+	{
+		IGraphic Load(int index) => Legacy.PaletteLoader.LoadWidePalette(new DataReader(
+			DosGraphics.VgaToWidePalette(dos.Read("AMBEDATA.DAT", $"COL_PALL.{index:000}"))));
+
+		return new()
+		{
+			{ BuiltinPalette.UI, Load(101) },
+			{ BuiltinPalette.Item, Load(106) },
+			{ BuiltinPalette.Automap, Load(107) },
+			{ BuiltinPalette.Puzzle, Load(110) },
+		};
+	}
+
+	/// <summary>
+	/// Each combat background of the DOS version has its own palette.
+	/// </summary>
+	private static IGraphic[] LoadDosCombatPalettes(DosGameData dos) => [.. Enumerable.Range(1, ICombatData.CombatBackgroundCount)
+		.Select(index => Legacy.PaletteLoader.LoadWidePalette(new DataReader(DosGraphics.VgaToWidePalette(dos.Read("COMBAT.VGA", $"COMBATBG.{index:00}")))))];
+
+	private Asset? GetDosAsset(AssetIdentifier identifier)
+	{
+		if (!assets.TryGetValue(identifier.Type, out var assetList))
+		{
+			assetList = [];
+			assets.Add(identifier.Type, assetList);
+		}
+
+		if (assetList.TryGetValue(identifier.Index, out var asset))
+			return asset;
+
+		var data = dosData!.GetAsset(identifier.Type, identifier.Index);
+
+		if (data == null)
+			return null;
+
+		asset = new Asset(identifier, new DataReader(data));
+		assetList.Add(identifier.Index, asset);
+
+		return asset;
+	}
+
 	public ICollection<int> GetAssetKeys(AssetType type)
 	{
+		if (dosData != null)
+			return dosData.HasAssetType(type) ? dosData.GetAssetKeys(type) : GetProgramDataAssetList(type).Keys;
+
 		if (assetContainers.TryGetValue(type, out var container))
 			return container.Files.Keys;
 
@@ -576,6 +635,9 @@ public class AssetProvider : IAssetProvider
 
 	public virtual IAsset? GetAsset(AssetIdentifier identifier)
 	{
+		if (dosData != null)
+			return dosData.HasAssetType(identifier.Type) ? GetDosAsset(identifier) : GetAssetFromProgramData(identifier);
+
 		bool hasAssetList = assets.TryGetValue(identifier.Type, out var assetList);
 
 		if (hasAssetList && assetList!.TryGetValue(identifier.Index, out var asset))

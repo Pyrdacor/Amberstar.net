@@ -1,4 +1,8 @@
-# Music (COSO modules by Jochen Hippel)
+# Music
+
+The Atari ST and Amiga versions use COSO modules by Jochen Hippel, the DOS version uses Ad Lib MDI files (see the end).
+
+## COSO modules
 
 The players were taken from the disassembled original programs. Both use the same engine: divisions (one row per
 pattern step of all voices), patterns (notes and sounds), sounds (a volume sequence with a header for the frequency
@@ -41,3 +45,13 @@ sequence and the vibrato) and frequency sequences. They differ in the module var
 - The first division has the settings of the mixer. The voices 1-3 use the sound chip, the voices 4-7 are mixed by
   software (volume tables, the sum is clipped) and played by the 4th voice. The mixer plays samples with up to 16 words
   as silence. The patterns of the mixed voices are read before their sequences, the others after them.
+
+## DOS (SOUND.MDI, `AdlibSong` and `Opl2`)
+- The game only supports the Ad Lib sound card (OPL2) and its compatibles. SOUND.MDI is an ICS/ARTS archive with the
+  19 songs in the order of the song names (DS:0664 of GAME.EXE). The play function replaces the songs 6 and 15 by 8 and 10.
+- The songs are MDI files of Ad Lib: standard MIDI files (format 0, 420 ticks per quarter note) with the meta event
+  FF 7F 00 00 3F and a word: 1 = the instrument of a channel (28 bytes like ADLIB.C: KSL, MULT, FB, AR, SL, EG, DR,
+  RR, TL, AM, VIB, KSR, FM of the modulator and the carrier and their waveforms), 2 = the mode (always melodic),
+  3 = the pitch bend range (always 1). The track length does not count the end of the track.
+- The MIDI channels 0-8 are the voices of the OPL2 (one note per voice). The velocity and the aftertouch change the
+  volume like ADLIB.C. ENDE.MDI (ENDGAME.VGA) is cut off by its 16 bit size in the archive.

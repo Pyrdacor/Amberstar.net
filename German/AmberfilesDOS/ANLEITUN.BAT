@@ -1,0 +1,2 @@
+showtext.exe anleitun.txt
+

@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Amberstar.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Amber.Assets.Common" Version="$(AmberVersion)" />
     <PackageReference Include="Amber.IO.FileFormats" Version="$(AmberVersion)" />
     <ProjectReference Include="..\Amberstar.GameData\Amberstar.GameData.csproj" />

@@ -1,0 +1,1056 @@
+                         Amberstar Handbuch IBM PC
+
+          Lizenzversion fr CompuTec Verlag GmbH & Co.KG, Nrnberg
+
+----------------------------------------------------------------------------
+
+                        PC-Installation auf Harddisk
+
+Die PC Version von AMBERSTAR kann nur auf einer Harddisk installiert werden.
+Auf der Partition auf der AMBERSTAR installiert werden soll, werden etwa 3,4
+MB freier Speicher ben”tigt.
+
+- Legen Sie die Disk A in Laufwerk A: oder B:
+
+- Starten Sie das Programm INSTALL und folgen Sie den Bildschirmanweisungen.
+
+ACHTUNG: Das CHARACTER MENU wird nur nach dem Install geladen, es gibt keine
+M”glichkeit, es separat aufzurufen!
+
+Deshalb: AMBERSTAR immer mit dem INSTALL-Programm auf die HARDDISK
+installieren, da man sonst den Standard-Charakter als Spielperson bekommt.
+
+Hardwareanforderungen PC
+
+Type: IBM AT - 286, 386, 486
+
+Speicher: Um AMBERSTAR zu starten, ben”tigen Sie 590848 Bytes/577 KB freien
+Hauptspeicher. Mit dem Kommando MEM oder CHKDSK k”nnen Sie berprfen,
+wieviel Speicher Ihnen zur Verfgung steht. Falls Ihnen weniger Speicher als
+gefordert zur Verfgung steht, mssen Sie speicherresidente Programme und
+Treiber aus Ihrer AUTOEXEC.BAT oder CONFIG.SYS Datei entfernen.
+
+Sie k”nnen auch eine BOOTDISK anlegen. Dazu formatieren Sie eine Diskette
+auf Ihrem Bootlaufwerk. Legen Sie eine Diskette, die Sie nicht mehr
+ben”tigen, in Ihr Bootlaufwerk und schreiben:
+FORMAT A: /S oder FORMAT B: /S
+
+Starten Sie danach Ihren Rechner mit eingelegter Bootdisk und laden dann
+AMBERSTAR.
+
+XMS/EMS: Falls Sie mehr als 640 KB Speicher haben und ein Speicherverwal-
+tungsprogramm wie QEMM installiert haben, so erkennt AMBERSTAR dies
+selbst„ndig, und nutzt diesen Speicher. Dadurch wird das Programm weniger
+nachladen mssen.
+DOS:     Ab MS-DOS 3.3, Empfohlen wird mindestens MS-DOS 5.0, da Sie unter 
+         diesen Versionen mehr Speicher frei haben.
+
+Maus:    Microsoft kompatibler Maustreiber. Die Maus kann auch durch
+         folgende Tasten emuliert werden. Allerdings wird empfohlen,
+         AMBERSTAR mit Maus zu spielen.
+
+ALT + Cursor Tasten   = schnelle Bewegung (16 Pixel)
+CTRL + Cursor Tasten  = langsame Bewegung (1 Pixel)
+SPACE                 = linke Maustaste
+RETURN                = rechte Maustaste
+
+Grafik:  VGA-Karte mit mindestens 256 KB Speicher
+Sound:   Untersttzt werden folgende Soundkarten: ADLIB, THUNDERBOARD und
+         alle SOUNDBLASTER-kompatiblen Karten.
+Tasten:  Die PC Version hat zwei spezielle Tasten.
+
+ALT + X  = Beendet das Spiel, nur in der 2D, 3D, Wildnis und im
+           Kampfbildschirm.
+           ACHTUNG: Falls Sie vorher nicht speichern, ist Ihr
+           Spielstand verloren.
+ALT + V  = Gibt die Version und andere Daten aus.
+DER CHARAKTER-EDITOR
+
+Jedes Mal, wenn Sie AMBERSTAR auf Festplatte oder Diskette installieren,
+erscheint zuerst der Charakter-Editor. Unter der Party-ID (Identifikation)
+finden Sie rechts den Steckbrief Ihres Helden, darunter das Icon-Feld und
+links davon ein Feld, in dem die Eigenschaften des Charakters angegeben
+werden. Diese Eigenschaften sowie einige Daten des Steckbriefs bestimmen Sie
+mit diesem Editor.
+
+Der Ziffernblock der Tastatur entspricht in der Anordnung den Tasten des
+Icon Feldes:
+
+1   Mit den Wrfeln werden die Eigenschaften per Zufall gesetzt. Sie k”nnen
+    dieses Icon beliebig oft anklicken.
+2   Setzt das Geschlecht des Charakters auf weiblich.
+3   Setzt das Geschlecht des Charakters auf m„nnlich.
+4   Geben Sie Ihrem Helden einen Namen der bis zu 15 Zeichen lang sein kann.
+7   W„hlen Sie ein Portrait fr Ihren Helden.
+9   Klicken Sie dieses Icon erst an, wenn alle Daten zu Ihrer Zufriedenheit
+    gesetzt sind.
+
+
+Wenn Sie den Charakter-Editor verlassen haben, k”nnen Sie ihn im gestarteten
+Spiel auch dann nicht wieder erreichen, wenn Sie das Programm nach dem
+Abspeichern eines Zwischenstandes erneut starten! Der Charakter-Editor wird
+immer nur nach dem ERSTEN Start einer neuen Installation ge”ffnet!
+
+DER BILDAUFBAU, DIE STEUERUNG
+
+Das Bild ist in fnf Bereiche unterteilt: die Party-ID ist am oberen Bild-
+rand, das Graphikfenster links darunter, die Anzeigefelder fr besondere
+Gegenst„nde und Zaubersprche sind auf der rechten Seite, und das Kontroll-
+feld ist rechts unten.
+
+Sie kontrollieren das Spiel mit der Maus oder dem Ziffernblock der Tastatur.
+Im folgenden Text werden die beiden Maus-Tasten mit LMT fr Linke-Maus-Taste
+und RMT fr Rechte-Maus-Taste abgekrzt. Die Zifferntaste 1 bis 9 entsprechen den Funktionen des Kontroll-Feldes, die auch mit der Maus
+gew„hlt werden k”nnen.
+
+DIE PARTY-ID:
+
+Fr jeden der sechs Charaktere Ihrer Party steht in der Party-ID ein Bild
+mit zwei Balken und einer Sonderanzeige rechts davon. Unter dem Bild steht
+der Name der Person. Wird der Name in heller Schrift dargestellt, ist diese
+Person aktiv. Der aktive Charakter fr alle Aktionen - wie zum Beispiel
+SPRECHEN, SUCHEN - aus. Der linke der beiden Balken gibt die Menge der
+verbliebenen Lebenspunkte an, der rechte die Spruchpunkte, also seine
+Leistungsf„higkeit als Magier. šber den beiden Balken werden besondere
+Zust„nde der Person angezeigt, wie zum Beispiel Krankheit, Wahnsinn oder
+Blindheit.
+
+Mit der LMT kann die aktive Person gewechselt werden. Ausgeschlossen sind
+alle Charaktere, deren Zustand ein aktives Handeln unm”glich macht. Klicken
+Sie das Bild des gewnschten Charakters an. Die Tasten 1 bis 6 des
+Tastenfeldes entsprechen dieser Funktion.
+
+Immer, wenn die Party-ID mit dem Maus-Zeiger erreichbar ist, kann mit der
+RMT die erste Status-Seite des Charakters aufgerufen werden. Die Funktions-
+Tasten F1 bis F6 rufen die zweite Seite der Inventur des zugeh”rigen
+Charakters auf.
+
+DIE ANZEIGENFELDER:
+
+Im oberen der beiden Anzeigenfelder werden Gegenst„nde dargestellt, die der
+Party hilfreiche Informationen geben, wie zum Beispiel ein Kompaá oder eine
+Uhr. Diese Gegenst„nde erwirbt oder findet die Party w„hrend des Abenteuers.
+Im Anzeigenfeld der magischen Sprche werden tempor„re Zaubersprche als
+Symbol dargestellt.
+
+
+DAS KONTROLLFELD
+
+Je nach Notwendigkeit wird hier der Icon-Satz fr Bewegungen im 2D- bzw. im
+3D-Bild angezeigt, oder nach Umschalten mit der RMT die Aktions-Icons. Mit
+der LMT w„hlen Sie eines der Icons. Die Tasten 1 bis 9 des Ziffernblocks
+entsprechen in ihrer Anordnung immer den neun Icons des Feldes.
+
+
+DIE BEWEGUNS-ICONS
+
+Abh„ngig von der Darstellung des Ortes, an dem sich die Party befindet,
+steht Ihnen entweder der 2D- oder der 3D-Icon-Satz zur Verfgung.
+
+
+
+
+
+
+Die m”glichen Richtungen des 2D-Satzes sind:
+
+Ziffernblock  Cursor-Block  Icon            Richtung
+
+    7                       (links oben)    Nord-West
+    8         (oben)        (oben)          Nord
+    9                       (rechts oben)   Nord-Ost
+    4         (links)       (links)         West
+    5                       zzz             Pause (5 Spielminuten)
+    6         (rechts)      (rechts)        Ost
+    1                       (links unten)   Sd-West
+    2         (unten)       (unten)         Sd
+    3                       (rechts unten)  Sd-Ost
+
+
+
+
+
+
+
+
+
+Die m”glichen Richtungen des 3D-Satzes sind:
+
+Ziffernblock  Cursor-Block  Icon            Richtung
+
+    7         Insert        (hoch links)    Linksdrehen 90 Grad
+    8         (oben)        (oben)          Geradeaus
+    9         CLR HOME      (rechts)        Rechtsdrehen 90 Grad
+    4         (links)       (links)         Ohne drehen links
+    5                       zzz             Pause (5 Spielminuten)
+    6         (rechts)      (rechts)        Ohne drehen rechts
+    1                       (links zurck)  Linksdrehen 180 Grad
+    2         (unten)       (unten)         Ohne drehen zurck
+    3                       (rechts zurck) Rechtsdrehen 180 Grad
+
+
+
+
+
+
+
+
+
+DIE AKTIONS-ICONS
+
+Drcken Sie im Kontrollfeld die RMT, erscheinen die neun Aktions-Icons. Alle
+Icons, deren Funktion in der aktuellen Situation nicht m”glich sind, oder
+deren Funktionen durch den aktiven Charakter nicht ausgefhrt werden kann,
+werden hell schraffiert dargestellt und k”nnen nicht gew„hlt werden. Die
+Funktionen gelten, soweit es sich nicht um allgemeine handelt, nur fr den
+aktiven Charakter. Die Tasten des Ziffernblocks entsprechen in ihrer
+Anordnung den neun Icons. Der Cursor nimmt im Bild immer die Form der
+gew„hlten Aktion an. Die Funktionen sind von links unten (Taste 1) nach
+rechts oben (Taste 9):
+
+- Kartenzeichner (1 - Karte), nur im 3D-Modus aktiv; zeichnet automatisch
+  eine Karte des Labyrinths mit, in dem sich die Party befindet.
+- Kampf-Formation bestimmen (2 - Figuren); erm”glicht Ihnen die Aufstellung
+  der Mitglieder Ihrer Party fr die n„chste Kampfrunde zu ver„ndern.
+- Optionen (3 - Diskette); Sonderfunktionen Spielstand sichern/laden, Musik
+  an/aus und Spiel beenden. šber die Funktion SICHERN k”nnen Sie auáerdem
+  Mitglieder aus Ihrer Party entlassen.
+- Transportmittel besteigen/verlassen (4 - Pferd); der aktive Charakter
+  besteigt bzw. verl„át ein Transportmittel, zum Beispiel ein Boot oder ein
+  Pferd.
+- Zaubern (5 - Sterne); wenn der aktive Charakter genug Spruchpunkte hat,
+  k”nnen Sie hiermit einen Zauberspruch zusammenstellen.
+- Kampieren (6 - Zelt), nur auáerhalb von Ortschaften; Ihre Party schl„gt
+  ein Nachtlager auf.
+- Lesen/ansehen/suchen (7 - Auge); der aktive Charakter liest ein Schild,
+  sieht sich etwas an oder sucht in etwas, wobei das Ergebnis von seinen
+  F„higkeiten abh„ngt. In der 3D-Darstellung arbeitet die Funktion immer in
+  Blickrichtung der Party. In der 2D-Darstellung kann der Cursor auf ein
+  Feld um die Spielfigur gesetzt werden. Die RMT bricht hierbei die Funktion
+  ab, die LMT fhrt sie aus.
+- Horchen (8 - Ohr); der aktive Charakter horcht, das Ergebnis ist wieder
+  abh„ngig von seinen F„higkeiten.
+- Ansprechen (9 - Mund); die aktive Figur spricht einen anderen Charakter
+  an. In der 3D-Darstellung wird die Figur im gleichen Feld angesprochen, in
+  der 2D-Darstellung kann der Cursor im Umkreis von 2 Feldern um die
+  Spielfigur gesetzt werden. Die RMT bricht die Funktion ab, die LMT fhrt
+  sie aus.
+
+DAS GRAPHIKFENSTER
+
+šber dem Graphikfenster wird der Name des Ortes angegeben, an dem sich die
+Party befindet. In einem Labyrinth wechselt die Darstellung von der
+zweidimensionalen Draufsicht in die dreidimensionale Sicht aus dem Blickwinkel der Party. Die Funktion, die aus dem Funktionsfeld gew„hlt
+wurde, wird mit dem Cursor im Graphikfenster dargestellt. Die Richtungen
+k”nnen grunds„tzlich direkt im Graphikfenster gew„hlt werden, auch wenn das
+Aktionsfeld aktiv ist. Der Cursor stellt auch hier die aktive Richtung dar,
+jedoch ohne daá die Funktion zuvor im Bewegungsfeld angeklickt werden muá.
+
+DIE AUSRšSTUNG
+
+Wenn Sie den Mauszeiger auf eines der Bilder der Mitglieder der Party in der
+Party-ID setzen und die RMT drcken, gelangen Sie in das erste Ausrstungs-
+bild. Unter der Party-ID sehen Sie rechts den Steckbrief des gew„hlten
+Charakters, darunter das Icon-Feld und links davon ein Feld, in dem die
+Eigenschaften der Figur angegeben werden.
+
+STECKBRIEF:
+Im Steckbrief werden die Rasse, das Geschlecht, das Alter, die Klasse und
+der Name der Figur angegeben sowie Daten ber die Zahl der Erfahrungs-,
+Lebens-, Spruch- und Spruchlernpunkte. Er wird durch die Angaben ber die
+Goldmenge, die Zahl der Rationen, den Kampfwert und die Leistungsf„higkeit
+bei der Verteidigung erg„nzt.
+
+
+EIGENSCHAFTEN:
+In diesem Feld werden die Attribute und die F„higkeiten der Figur angegeben.
+Der rechte Wert nennt immer den aktuellen Status des Charakters, der rechte
+den normalen, also nicht durch Magie untersttzten Maximalwert. In der
+rechten Spalte finden Sie Angaben ber die Sprachen, die der Charakter
+beherrscht, sowie einen Bericht ber seinen k”rperlichen und geistigen
+Zustand (Blindheit, Krankheit, etc.).
+
+Im Icon-Feld sind zwei Icons aktiv. Der Ziffernblock entspricht den neun
+Tasten des Icon-Feldes:
+
+7   Rucksack ”ffnen (zweite Seite der Ausrstung)
+9   Ausrstung verlassen
+
+Wenn Sie mit dem Icon 7 den Rucksack ”ffnen, gelangen Sie in die zweite
+Seite der Ausrstung. Unter der Party-ID finden Sie nun rechts den bereits
+bekannten Steckbrief und ein neues Icon-Feld und links davon ein Textfeld,
+in dem alle Aktionen, die Sie im Icon-Feld w„hlen, angegeben werden, Angaben
+ber die Ausrstung am K”rper (links) und ber den Inhalt des Rucksacks
+(Bild-Mitte). Unter der Anzeige fr die Ausrstung, die der Charakter direkt
+am K”rper tr„gt, wird angezeigt, wie schwer das Gep„ck der Figur ist und
+wieviel Gewicht sie maximal tragen kann.
+Die Tasten des Icon-Feldes entsprechen dem Ziffernblock der Tastatur. Alle
+Funktionen beziehen sich auf Gegenst„nde im Gep„ck der Figur oder auf
+Ausrstung, die er direkt am K”rper tr„gt:
+
+1   Abgeben an andere Figur der Party
+2   Gold an anderen Charakter der Party abgeben
+3   Ration an andere Person der Party abgeben
+4   Benutzen
+5   Gold von Party-Mitgliedern einsammeln
+6   Ansehen
+7   Erste Seite der Ausrstung ”ffnen
+8   Ablegen
+9   Ausrstung verlassen
+
+Wenn ein Gegenstand aus dem Rucksack auch am K”rper getragen werden kann,
+k”nnen Sie ihn durch Anklicken erst des Gegenstandes und dann des K”rper- teils anlegen lassen. Soll ein Gegenstand vom K”rper des Charakters in den Rucksack gelegt werden, klicken Sie einfach den Gegenstand am K”rperteil an.
+
+DER KARTENZEICHNER
+
+Immer, wenn sich die Party in einem 3D-Bereich bewegt, wird automatisch eine
+Karte von dem durchlaufenen Bereich mitgezeichnet, solange ausreichendes
+Licht vorhanden und der aktive Charakter nicht blind ist. Unter der Party-ID
+ist links ein Ausschnitt der Karte eingeblendet. Rechts davon finden Sie
+unter der Legende, die die Symbole der Karte erkl„rt, die neun Icons, mit
+denen Sie den Karten-Ausschnitt verschieben und die Karte wieder verlassen
+k”nnen. Die Tasten des Icon-Feldes entsprechen dem Ziffernblock.
+
+DIALOGE
+
+Wenn Ihre Party im selben Feld wie eine andere Person (3D) oder die
+Spielfigur direkt neben einer anderen Figur steht (2D), k”nnen Sie den
+Fremden befragen. W„hlen Sie hierzu das Dialog-Icon (Mund) und klicken Sie
+gegebenenfalls in der 2D-Darstellung die zu befragende Figur mit dem Mund-
+Cursor an.
+
+KURZDIALOG:
+Manche Personen lassen sich nicht auf ein l„ngeres Gespr„ch ein. Wenn Sie
+sie ansprechen, erscheint einfach nur ein Textfenster, in dem diese Personen
+ihre Informationen mitteilen. Ist der Text l„nger als ein Textfenster, wird
+der folgende Text durch Drcken der LMT ausgegeben. Solange Sie das
+Textfenster nicht mit der RMT geschlossen haben, k”nnen Sie den Text nach
+seiner vollst„ndigen Ausgabe mit der Maus durch hoch- und runterschieben
+scrollen.
+
+LANGDIALOG:
+Ist eine Figur an einem l„ngeren Gespr„ch interessiert, erscheint der
+Dialog-Bildschirm. Unter der Party-ID werden rechts der Steckbrief der
+angesprochenen Person, das Gold und die Rationen des aktiven Charakters und
+das Icon-Feld angezeigt. Links wird ein Textfenster eingeblendet und
+gegebenenfalls eine Liste von Gegenst„nden gezeigt, mit denen Aktionen
+ausgefhrt werden k”nnen.
+
+Die Icons des Aktions-Feldes entsprechen dem Ziffernblock. Alle Aktionen mit
+Gegenst„nden beziehen sich immer auf die angezeigt Liste von Gegenst„nden
+unter dem Textfenster und die angesprochene Person:
+
+1   Anbieten
+2   Gold abgeben
+3   Ration abgeben
+4   Zeigen
+5   Gespr„ch fhren
+6   Zum Beitritt zur Party auffordern
+7   Abgeben an Party-Mitglied
+8   Ablegen, ablehnen
+9   Dialog verlassen
+
+GESPRCHE FšHREN
+
+Wenn Sie Icon 5 gew„hlt haben, wird eine Liste von Begriffen eingeblendet.
+Die beiden Pfeile scrollen durch die Liste, falls sie l„nger als ein
+Textfenster ist. Sie w„hlen einen Begriff, indem Sie ihn mit der LMT
+anklicken. Ist der gewnschte Begriff in der List nicht vorhanden, klicken
+Sie das Mund-Icon an. Im dann ge”ffneten Textfeld k”nnen Sie jeweils einen
+Begriff mit bis zu 20 Buchstaben eingeben.
+
+Der angesprochene Charakter wird sich zum angew„hlten oder eingegebenen
+Begriff „uáern.
+
+Verlassen Sie sich nicht nur auf die vorhandene Liste von Begriffen;
+bestimmte Schlsselw”rter, die in der Antwort vorkommen, k”nnen der Person
+weitere Informationen entlocken.
+
+DAS LAGER
+
+An manchen orten k”nnen Sie ein Lager aufschlagen, in dem sich Ihre Party
+von den Strapazen des Abenteuers erholen kann und Zaubersprche erlernt und
+gebt werden k”nnen.
+
+Unter der Party-ID wird links in einem Bild das Lager dargestellt. Rechts
+daneben finden Sie ein Textfeld, in dem alle n”tigen Angaben erfolgen. Unten
+rechts auf dem Bildschirm steht der Icon-Satz des Lagers, und links davon
+sind Pl„tze fr verschiedene Gegenst„nde, vor allem Schriftrollen, aus denen
+neue Zaubersprche erlernt werden.
+
+Die Belegung des Ziffern-Blocks der Tastatur entspricht der Anordnung der
+Icons im Aktionsfeld:
+
+1   Schicken Sie Ihre Party acht (Spiel-)Stunden schlafen. Alle Mitglieder,
+    die Lebensmittelrationen im Gep„ck haben, regenerieren dabei etwa ein
+    Zehntel ihrer Spruch- und Lebenspunkte, jedoch h”chstens bis zum
+    H”chstwert der entsprechenden Figur.
+
+4   Mit dieser Funktion kann ein Charakter einen Zauberspruch von einer
+    Spruch-Rolle in einem der 12 Felder links neben dem Icon-Feld erlernen.
+
+7   Hier sind die Zaubersprche verfgbar, die im Lager angewendet werden
+    k”nnen.
+
+9   Mit diesem Icon brechen Sie das Lager wieder ab.
+
+ZAUBEREI
+
+Wir unterscheiden drei Gruppen von Zaubersprchen: die der weiáen Magie, die
+der grauen und die der schwarzen. Jedem Zauberspruch ist eine Zahl von
+Spruchpunkten und Spruchlernpunkten zugeordnet, die der Charakter, der den
+Spruch erlernen bzw. ausben soll, haben muá. Nicht alle Sprche k”nnen an
+jedem Ort benutzt werden. Jeder Spruch wirkt nur auf bestimmte Figuren/ Gegenst„nde. Wir haben die Sprche und ihre Wirkungen in Tabellen
+zusammengefaát. SP steht dabei fr die notwendige Zahl der Spruchpunkte um
+ihn zu benutzen, SL fr die n”tige Zahl der Spruchlernpunkte, um ihn zu
+erlernen.
+
+Der Ort, an dem er benutzt werden kann, ist mit
+
+    W = Wildnis           S = Stadt
+    H = H”hle             L = Lager
+    K = im Kampf angegeben.
+
+Das Ziel, auf das der Spruch wirkt, kann
+
+    C = ein Charakter der Party,
+    P = die Party,
+    M = ein Monster (w„hrend des Kampfes),
+    R = eine Rotte von Monstern (w„hrend des Kampfes),
+    A = alle Monster (w„hrend des Kampfes) oder
+    G = ein Gegenstand sein.
+
+    S steht fr Spezial-Spruch.
+    LP sind die Lebenspunkte eines Charakters.
+
+WEISSE MAGIE
+
+Name               SP  SL   Ort     Ziel Wirkung
+
+Heilung 1           2   1   WSHLK    C   plus 1 bis 5 LP
+Heilung 2           4   2   WSHLK    C   plus 2 bis 10 LP
+Heilung 3           6   3   WSHLK    C   plus 4 bis 20 LP
+Heilung 4           8   4   WSHLK    C   plus 8 bis 40 LP
+Heilung 5          10   5   WSHLK    C   plus 18 bis 80 LP
+Allheilung         20  15   WSHLK    P   LP-Normal auf LP-Maximum
+Wiederbelebung     30  20   L        C   Reinkarnation Leiche
+Asche wandeln      50  25   L        C   Reinkarnation Leiche verbrannt
+Staub wandeln      70  30   L        C   Reinkarnation Leiche zermalmt
+Gift neutral.      5   2    WSHLK    C   entgiften eines Charakters
+L„hmung heilen     10  4    WSHLK    C   L„hmung einer Figur beseitigen
+Krankheit heilen   15  6    WSHLK    C   Krankheit einer Figur beseitigen
+Alterung heilen    20  8    WSHLK    C   unnatrliche Alterung einer
+                                         Figur beseitigen
+Entsteinen         30  10   WSHLK    C   versteinerte Figur wiederbeleben
+Aufwecken           5  2    K        P   Party aus unnatrlichem Schlaf
+                                         wecken
+Panik beseitigen   10  4    K        C   Charakter beruhigen
+Irritation beseit. 15  6    K        C   Charakter anleiten
+Blindheit heilen   20  8    WSHLK    C   Charakter von Blindheit heilen
+Verrckth. heilen  30  10   WSHLK    C   Charakter von Verrckth. heilen
+L„hmen             15  3    K        M   Monster l„hmen
+Schlaf             10  3    K        R   Monster-Rotte einschl„fern
+Angst              15  6    K        M   Monster „ngstigen
+Irritieren         15  9    K        M   Monster verwirren
+Erblinden          20  12   K        M   Monster blind machen
+Untote vernichten  15  5    K        M   Untote beseitigen
+Heiliges Wort      30  10   K        R   Untoten-Rotte beseitigen
+Fluch aufheben     25  10   WSHL     G   Fluch von einem Gegenst. nehmen
+Essen erschaffen   20  15   WSHL     G   1 Essens-Ration je Party-Mitgl.
+
+
+
+GRAUE MAGIE
+
+Name               SP  SL   Ort     Ziel Wirkung
+
+Licht 1             5  1    WSHL     S   2 Stunden Licht
+Licht 2             8  3    WSHL     S   8 Stunden Licht
+Licht 3            12  5    WSHL     S   16 Stunden Licht
+Rstung Schutz 1   10  2    WSHLK    S   2 Stunden +5% Parade
+Rstung Schutz 2   20  6    WSHLK    S   8 Stunden +10% Parade
+Rstung Schutz 3   30  10   WSHLK    S   16 Stunden +15% Parade
+Waffen Macht 1     10  2    WSHLK    S   2 Stunden +5% Attacke
+Waffen Macht 2     20  6    WSHLK    S   8 Stunden +10% Attacke
+Waffen Macht 3     30  10   WSHLK    S   16 Stunden +15% Attacke
+Anti-Magie 1       15  4    WSHLK    S   2 Stunden +5% Schutz vor Magie
+Anti-Magie 2       30  8    WSHLK    S   8 Stunden +10% Schutz vor Magie
+Anti-Magie 3       45  12   WSHLK    S   16 Stunden +15% Schutz vor Magie
+Hellsicht 1        15  5    WSHL     S   2 Stunden Hellsichtigkeit
+Hellsicht 2        30  10   WSHL     S   8 Stunden Hellsichtigkeit
+Hellsicht 3        45  15   WSHL     S   16 Stunden Hellsichtigkeit
+Unsichtbarkeit 1   20  8    WSHL     S   2 Stunden Unsichtbarkeit
+Unsichtbarkeit 2   40  16   WSHL     S   8 Stunden Unsichtbarkeit
+Unsichtbarkeit 3   60  24   WSHL     S   16 Stunden Unsichtbarkeit
+Magische Sph„re    80  95   WSHL     S   Umfaát die 6 vohergehenden
+                                         Sprche, jeweils auf Stufe 3
+Magischer Kompaá   5   1    WSH      S   Richtung, in die Party blickt
+Identifikation     25  15   WSHL     G   alle Daten eines Gegenstandes
+Levitation         10  5    WSH      S   Party kann Falltr nach oben
+                                         bzw. unten benutzen
+Hast               15  8    K        C   Charakter verdoppelt Attacken,
+                                         erh”ht Alter um 1
+Massen-Hast        30  14   K        P   Party verdoppelt Attacken,
+                                         erh”ht Alter um 1
+Teleport           40  20   W        P   versetzt Party in gew„hlte
+                                         Richtung
+Durchblick         30  20   WSH      S   erlaubt, durch W„lder zu sehen
+
+SCHWARZE MAGIE
+
+Name              SP  SL  Ort    Ziel Wirkung
+
+Feuerstrahl       1   1   K       M   vermindert LP um 1 bis 2
+Feuerstoá         2   2   K       M   vermindert LP um 2 bis 4
+Feuerball         5   4   K       R   vermindert LP um 4 bis 8
+Feuersturm        15  8   K       R   vermindert LP um 8 bis 16
+Feuerwalze        25  16  K       A   vermindert LP um 16 bis 32
+Wasserloch        2   2   K       M   vermindert LP um 2 bis 4
+Wasserfall        4   4   K       M   vermindert LP um 4 bis 8
+Eisball           10  8   K       R   vermindert LP um 8 bis 16
+Eisschauer        30  16  K       R   vermindert LP um 16 bis 32
+Hagelschlag       50  30  K       A   vermindert LP um 32 bis 64
+Dreckschleuder    4   3   K       M   vermindert LP um 4 bis 8
+Steinschlag       8   6   K       M   vermindert LP um 8 bis 16
+Sumpffeld         15  12  K       R   vermindert LP um 16 bis 32
+Erdrutsch         45  15  K       R   vermindert LP um 32 bis 64
+Erdbeben          75  40  K       A   vermindert LP um 64 bis 128
+Windhauch         8   5   K       M   vermindert LP um 8 bis 16
+Windteufel        12  10  K       M   vermindert LP um 16 bis 32
+Windheuler        28  20  K       R   vermindert LP um 32 bis 64
+Donnerschlag      60  30  K       R   vermindert LP um 64 bis 128
+Wirbelsturm       100 50  K       A   vermindert LP um 128 bis 256
+Aufl”sung         100 35  K       M   t”tet ein Monster
+Magische Pfeile   8   15  K       R   vermindert LP um 8
+
+Die Tabellen der weiáe, grauen und schwarzen Magie geben Ihnen einen
+Eindruck von den M”glichkeiten eines kompetenten Magiers. Natrlich muá ein
+Magier die Sprche ben, bevor er sie sicher einsetzen kann. Aus der Tabelle
+entnehmen Sie, wieviele Spruchlernpunkte erforderlich sind. Beherrscht der
+Charakter einen Zauberspruch, kann er ihn unter Einsatz der angegebenen Zahl
+von Spruch-Punkten am entsprechenden Ort (zum Beispiel in der Wildnis oder
+in der Stadt) bzw. w„hrend eines Kampfes gezielt einsetzen. Zaubersprche
+richten sich immer auf bestimmte Personen, Gruppen oder Gegenst„nde. Ein
+Spruch, der fr Monster gedacht ist, kann nicht gegen ein Mitglied Ihrer
+Party benutzt werden.
+
+Soll ein Spruch auf einen Charakter Ihrer Party gerichtet werden, w„hlen Sie
+ihn mit der LMT aus. Die RMT bricht die Ausbung des Spruches ab.
+
+Aber auch Nicht-Magier k”nnen Zaubersprche benutzen, wenn sie einen
+Gegenstand verwenden, der mit magischer Energie geladen ist. Mit diesen
+Gegenst„nden muá auch nicht trainiert werden, denn der Spruch gelingt immer
+und kostet die ausbende Person keine Spruch-Punkte. Ist die magische
+Energie eines Gegenstandes ersch”pft, zerf„llt er.
+
+Wenn n”tig, wird w„hrend bzw. nach einem Zauberspruch ein Textfenster
+ge”ffnet, in dem die Ergebnisse ausgegeben werden.
+
+
+
+EREIGNISSE
+
+Ereignisse beziehen sich immer auf den aktiven Charakter. Er fhrt alle
+gezielten Aktionen aus und hat somit auch die eventuellen Folgen zu tragen.
+Ausnahmen sind hierbei natrlich die Ereignisse, die die ganze Party
+betreffen.
+
+Bei manchen Ereignissen sind verschiedene Aktionen m”glich. Im Steuerfenster
+werden dann die notwendigen Icons eingeblendet. Aktionen, die theoretisch
+m”glich w„ren, aber wegen des Fehlens bestimmter Bedingungen noch nicht
+ausgefhrt werden k”nnen, sind durch eine helle Schraffur kenntlich gemacht
+und nicht w„hlbar. Zum Beispiel ist es nicht m”glich, eine Falle zu
+entsch„rfen, bevor sie entdeckt wurde.
+
+TšREN
+
+Manche Tren k”nnen nur mit dem richtigen Gegenstand ge”ffnet werden.
+Miálingt der Versuch, kann eine Falle ausgel”st werden.
+
+- Ausgang: Sie treten von der Tr zurck
+- Schloá ”ffnen: Beim Versuch, das Schloá zu ”ffnen, kann eine Falle
+  ausgel”st werden.
+- Gegenstand benutzen: Sind Gegenst„nde im Rucksack des aktiven Charakters,
+  werden sie zur Anzeige gebracht. Die RMT bricht die Aktion ab, die LMT
+  w„hlt einen Gegenstand aus. Ist dieser Gegenstand nicht der richtige, um
+  die Tr zu ”ffnen, wird die Aktion abgebrochen. Wird ein Dietrich
+  eingesetzt, ”ffnet sich die Tr, und der Dietrich wird vernichtet.
+  Besonders peinlich ist es, wenn der Dietrich abbricht. Dann ist das Schloá
+  immer noch zu und der Dietrich obendrein unbrauchbar.
+- Falle erkennen: Untersucht ein Schloá auf versteckte Fallen.
+- Falle entsch„rfen: Versucht, eine entdeckte Falle zu entsch„rfen.
+
+GEGENSTNDE/SCHTZE FINDEN
+
+Bei der šberprfung einer geschlossenen Truhe kann es durchaus passieren,
+daá eine Falle ausgel”st wird. Schaffen Sie es, die Truhe zu k”nnen, ohne
+eine Falle auszul”sen, wird deren Inhalt in einem Fenster angezeigt. Die
+meisten Truhen k”nnen auch mit einem Dietrich ge”ffnet werden.
+
+- Ausgang: Sie treten von dem Gegenstand zurck.
+- Schloá ”ffnen: Beim Versuch, das Schloá zu ”ffnen, kann eine Falle
+  ausgel”st werden.
+- Gegenstand benutzen: Der aktive Charakter kann einen geeigneten Gegenstand
+  aus seinem Gep„ck benutzen, um Truhen zu ”ffnen.
+- Falle erkennen: Untersucht ein Schloá auf versteckte Fallen.
+- Falle entsch„rfen: Eine erkannte Falle kann entsch„rft, aber auch
+  ausgel”st werden, wenn der Versuch nicht erfolgreich verl„uft.
+- Gold bernehmen: Finden Sie in der Truhe Gold, wird es mit dieser Funktion
+  in das Gep„ck bernommen. Die šbernahme von Gold ist abh„ngig davon, ob
+  die Party-Mitglieder berhaupt noch in der Lage sind, weiteres Gep„ck
+  aufzunehmen. Mit der LMT w„hlen Sie den Charakter, der Goldstcke
+  aufnehmen soll, und geben an, wieviele Goldstcke in sein Gep„ck
+  bertragen werden. Die RMT bricht die Aktion ab.
+- Gold verteilen: Verteilt in einer Truhe gefundene Goldstcke soweit
+  m”glich auf das Gep„ck der verschiedenen Party-Mitglieder.
+- Gegenstand bernehmen: Mit der LMT kann ein Gegenstand aus einer Truhe ins
+  Gep„ck eines Party-Mitgliedes bertragen werden. Die RMT bricht die Aktion
+  ab. Der Vorgang setzt voraus, daá im Gep„ck des entsprechenden Charakters
+  noch Platz vorhanden ist, der Charakter das zus„tzliche Gewicht noch
+  tragen kann bzw. von seiner Verfassung her in der Lage ist, den Gegenstand
+  zu bernehmen.
+
+FALLTšREN
+
+Falltren k”nnen sich im Boden oder in der Decke eines Raumes befinden. Mit
+dem Zauberspruch "Levitation" kann die Party die Falltr durchschreiten,
+ohne Schaden zu nehmen. Falltren, die sich in der Decke eines Raumes oder
+Ganges befinden, k”nnen in der Regel nur mit Levitation bew„ltigt werden.
+
+FALLEN
+
+Fallen k”nnen alle Mitglieder der Party oder auch nur den aktiven Charakter
+betreffen. Der Umfang der Sch„digung ist variabel.
+
+Fallen kann es bei Truhen, Tren und Falltren geben. Es gibt sieben
+verschiedene Typen von Fallen:
+
+- Die einfache Falle        sch„digt die ganze Party
+- Die Giftnadeln            sch„digen den aktiven Charakter
+- Die Giftgas-Wolke         sch„digt die ganze Party
+- Der Blend-Blitz           sch„digt die ganze Party
+- Die L„hmgas-Wolke         sch„digt die ganze Party
+- Das Steingras             sch„digt den aktiven Charakter
+- Die Infektion             sch„digt den aktiven Charakter
+
+Eine Fall wird immer durch den aktiven Charakter ausgel”st.
+
+
+RTSELMšNDER
+
+Manche der R„tselmnder begráen die Party. Alle erwarten sie, die richtige
+Antwort auf ihre R„tsel zu h”ren.
+
+- Ausgang: Sie treten vom R„tselmund zurck.
+- Antworten: Wurde dem Frager noch nicht geantwortet, w„hlen Sie entweder
+  eines der W”rter aus der Liste, fragen nach neuen Begriffen, die noch
+  nicht in der Liste enthalten sind, oder k”nnen einen Begriff bis zu 20
+  Zeichen ber die Tastatur eingeben.
+- Frage: Der R„tselmund ist geduldig. Haben Sie das R„tsel nicht sofort
+  verstanden, wiederholt er seine Frage auf Wunsch.
+
+GILDEN UND HNDLER
+
+Manche H„ndler und Gilden haben rund um die Uhr ge”ffnet. Bei anderen
+bekommen Sie einen Hinweis, wann Ihnen der H„ndler bzw. die Gilde zur
+Verfgung steht. Die Gilden und H„ndler, an die sich Ihre Party wenden kann,
+sind:
+
+
+
+DIE GILDEN
+
+    Die Gilde der Krieger               Die Gilde der Diebe
+    Die Gilde der Paladine              Die Gilde der M”nche
+    Die Gilde der Ranger
+
+    Die Gilde der Weiáen Magier
+    Die Gilde der Grauen Magier
+    Die Gilde der Schwarzen Magier
+
+DIE HNDLER
+
+    Warenh„ndler                  Heiler
+    Lebensmittelh„ndler            Weise
+
+    Pferdeh„ndler
+    Floáh„ndler
+    Bootsh„ndler
+
+Ihre Party kann erst einkaufen, wenn sie entweder ihr Gold zusammengelegt
+hat, oder durch den Verkauf eines Gegenstandes Gold bereitgelegt ist.
+
+ALLGEMEINE FUNKTIONEN
+
+- Ausgang: Sie verlassen die Gilde bzw. den H„ndler
+- Gold zusammenlegen: Diese Funktion erm”glicht Ihnen, den gesamten
+  Goldvorrat der Party zu nutzen.
+- Gold verteilen: Das Gold der Party wird gleichm„áig auf alle Mitglieder
+  verteilt.
+- Gold bergeben: Die RMT bricht diese Aktion ab. Mit der LMT w„hlen Sie
+  einen Charakter, dem Sie weiteres Gold in das Gep„ck bergeben wollen.
+  Dabei ist die Leistungsf„higkeit des entsprechenden Charakters zu
+  beachten.
+
+GILDENSPEZIFISCHE FUNKTIONEN
+
+- Gilde beitreten: Der aktive Charakter kann der Gilde beitreten, wenn er
+  ihr noch nicht angeh”rt. Dazu muá er gengend Gold haben und ber
+  ausreichende Erfahrungen verfgen, um die erste Klasse der Gilde
+  absolvieren zu k”nnen. Auáerdem muá er einer Rasse angeh”ren, die der
+  Gilde beitreten darf und kann.
+- Aufsteigen: Um in die n„chste Klasse einer Gilde der er angeh”rt
+  aufzusteigen, muá der aktive Charakter wiederum die n”tige Menge an Gold
+  dabei haben und ber die entsprechende Zahl von Erfahrungspunkten
+  verfgen. W„hlen Sie die Eigenschaft, die Sie verbessern m”chten.
+
+Die verschiedenen Klassen erhalten unterschiedlich viele Punkte beim
+Aufstieg in eine neue Stufe, die sich auf die Eigenschaften verteilen
+lassen:
+
+    KLASSE           PUNKTE
+    Krieger          8
+    Paladin          10
+    Ranger           14
+    Dieb             16
+    M”nch            10
+    Magier           12
+
+Natrlich kann kein Merkmal ber den maximalen Wert hinaus erh”ht werden
+kann. Mit der LMT erh”hen Sie den Wert der Eigenschaft, mit der RMT senken
+Sie ihn, falls Sie einer Eigenschaft versehentlich zuviel neue Punkte
+zugewiesen haben.
+
+SPEZIELLE FUNKTIONEN BEI WARENHNDLERN
+
+- Gegenstand verkaufen: Der aktive Charakter kann einen Gegenstand aus
+  seinem Gep„ck verkaufen. W„hlen Sie mit der LMT einen Gegenstand aus, fr
+  den der H„ndler ein Gebot machen soll. Anschlieáend k”nnen Sie
+  entscheiden, ob Sie den Gegenstand verkaufen oder lieber doch behalten
+  wollen. Mit der RMT wird die Aktion abgebrochen.
+- Gegenstand kaufen: Bietet der H„ndler eine oder mehrere Waren an, k”nnen
+  Sie einkaufen. Bedingung ist natrlich, daá Ihre Party genug Gold hat. Mit
+  der LMT w„hlen Sie einen Gegenstand aus. Sie k”nnen bis zu 99 Einheiten
+  einer Ware kaufen, wenn der H„ndler genug Stcke einer Ware vorr„tig und
+  Ihre Party die entsprechende Menge Gold dabei hat. Der Preis und der Name
+  der Ware werden angezeigt. Die RMT bricht die Aktion ab.
+- Gegenstand aufnehmen: Die RMT bricht die Aktion ab. Abh„ngig vom Platz im
+  Gep„ck und der Leistungsf„higkeit des Charakters, der einen Gegenstand
+  bernehmen soll, k”nnen Sie einen Gegenstand vom Tresen in das Gep„ck
+  einer Figur bernehmen.
+
+SPEZIELLE FUNKTIONEN BEI LEBENSMITTELHNDLERN
+
+- Lebensmittel bernehmen: Mit der RMT wird die Aktion abgebrochen. Mit der
+  LMT wird der Charakter der Party gew„hlt, der Lebensmittel bernehmen
+  soll.
+- Lebensmittel verteilen: Die Lebensmittel der Party werden gleichm„áig auf
+  die Mitglieder der Party verteilt.
+SPEZIELLE FUNKTION DER PFERDEHNDLER
+
+- Pferde kaufen: Sie mssen immer so viele Pferde kaufen, wie Sie Mitglieder
+  in Ihrer Party haben. Der Preis wird angezeigt.
+
+SPEZIELLE FUNKTIONEN BEI HEILERN
+
+- Flche beseitigen: Mit dem n”tigen Gold kann sich der aktive Charakter von
+  verfluchten Gegenst„nden befreien. Der entsprechende Gegenstand wird aus
+  dem Gep„ck entfernt.
+- Heilung: K”rperliche oder geistige Sch„den des aktiven Charakters werden
+  beseitigt.
+
+SPEZIELLE FUNKTIONEN BEI WEISSEN
+
+- Gegenst„nde am K”rper zeigen: Die Gegenst„nde, die der aktive Charakter am
+  K”rper tr„gt, werden angezeigt.
+- Gegenst„nde im Rucksack zeigen: Die Gegenst„nde, die der aktive Charakter
+  im Rucksack mitfhrt, werden angezeigt.
+- Gegenstand prfen: Gegen ein gewisses Entgelt wird ein angezeigter
+  Gegenstand geprft.
+
+SPEZIELLE FUNKTION DES FLOSSHNDLERS
+
+- Floá kaufen: Sie kaufen ein Floá fr die Party.
+
+SPEZIELLE FUNKTION DES BOOTSHNDLERS
+
+- Boot kaufen: Die Party ersteht ein Boot.
+
+SPEZIELLE FUNKTION DES GASTHAUSES
+
+- Quartier suchen: Die Party kann sich in einem Gasthaus ein Zimmer fr die
+  šbernachtung mieten.
+
+KMPFE
+
+Trifft die Party auf ein oder mehrere Monster, wird in den Kampfmodus
+umgeschaltet. Sie k”nnen entscheiden, ob Sie k„mpfen oder flchten wollen.
+Eine Flucht ist nicht immer erfolgreich, und die Monster haben dann den
+Vorteil des ersten Schlages, ohne daá sich Ihre Party wehren kann.
+
+Ist Ihre Party unsichtbar, hat das Monster bzw. die Rotte von Monstern keine
+M”glichkeit, den ersten Schlag Ihrer Party abzuwehren. Eine unsichtbare
+Party kann natrlich ohne Behinderung fliehen.
+
+Ihrer Party stellen sich verschiedene Monster unterschiedlicher St„rke in
+den Weg.
+
+Im taktischen Teil des Kampfbildes werden die Monster immer im oberen Teil
+dargestellt, die Mitglieder der Party im unteren.
+
+Im Steuermen des Kampfbildschirmes gibt es zwei besondere Icons:
+
+    >   =   SLOW-Modus
+    >>  =   FAST-Modus
+
+Wenn der SLOW-Modus aktiviert ist, wird zwischen den einzelnen Kampfzgen
+eine Pause eingelegt. Erst wenn Sie die LMT drcken, erfolgt der n„chste
+Kampfzug.
+
+Im FAST-Modus l„uft der Kampf ohne Pause automatisch durch, sobald Sie das
+OK-Icon angeklickt haben.
+
+- Flucht: Ein einzelnes Mitglied der Party flieht. Es wird geprft, ob die
+  Flucht erfolgreich war. Der Charakter bekommt keine neuen Erfahrungs-
+  punkte. Nur eine Figur aus der hinteren Reihe der Kampfaufstellung kann
+  fliehen.
+
+- Bewegen: Wenn m”glich, kann ein Mitglied der Party seine Position
+  wechseln. Wird auch das letzte Mitglied der Party in die hintere Reihe der
+  Kampfaufstellung zurckgezogen, rckt die Reihe der Monster vor.
+
+- Angriff: Nahkampfwaffen k”nnen nur in der vorderen Kampfreihe eingesetzt
+  werden und nur gegen Monster, die sich direkt neben oder vor der gew„hlten
+  Figur befinden. Fr den Einsatz von Fernkampfwaffen muá der entsprechende
+  Charakter die richtige Munition mitfhren und bereithalten. Alle Monster
+  im Kampf k”nnen mit Fernwaffen attackiert werden. Mit der RMT wird die
+  Aktion abgebrochen. Mit der LMT w„hlen Sie einen Charakter und das
+  Monster, das angegriffen werden soll.
+
+- Parade: Der gew„hlte Charakter geht in Paradestellung und versucht, den
+  Angriff eines Monsters abzuwehren.
+
+- Zauberspruch einsetzen: Die RMT bricht die Aktion ab. Mit der LMT w„hlen
+  Sie einen Charakter Ihrer Party aus, der in der n„chsten Kampfrunde einen
+  Zauberspruch einsetzen so. Nachdem die Spruchklasse gew„hlt wurde,
+  erscheint ein Fenster, in dem die m”glichen Sprche dieser Klasse
+  angezeigt werden. Die Zahl hinter jedem Spruch gibt an, wie oft der
+  Charakter diesen Spruch hintereinander anwenden kann, bevor seine
+  Spruchpunkte ersch”pft sind. Der Wert errechnet sich fr jeden
+  aufgelisteten Spruch aus der Zahl der fr den einzelnen Spruch n”tigen
+  Spruchpunkte im Verh„ltnis zur Zahl der Spruchpunkte, die der aktive
+  Charakter noch zur Verfgung hat. Sie k”nnen nur unter Kampfsprchen
+  w„hlen, fr die der Charakter die notwendige Mindestanzahl von
+  Spruchpunkten erreicht hat.
+
+Nach der Wahl des Spruches geben Sie an, auf welches Mitglied der Party bzw.
+auf welches Monster - wenn nicht jeweils die ganze Gruppe vom Spruch
+beeinfluát wird - der Spruch gerichtet werden soll. Gegenst„nde, die einen
+Zauber enthalten, k”nnen von allen Party-Mitgliedern der zum Gegenstand
+geh”renden Klasse eingesetzt werden. Ein Schwert mit einem Feuerball-Spruch
+kann also nur von Kriegern, Paladinen oder anderen K„mpfern, die ein Schwert
+benutzen, eingesetzt werden. Es werden keine Spruchpunkte verbraucht. Ist
+der Zauber eines Gegenstandes ersch”pft, l”st sich der Gegenstand auf.
+
+Der Erfolg eines Zaubers h„ngt nicht nur von der Leistungsf„higkeit des
+ausbenden Charakters, sondern auch von der Widerstandskraft des Verteidigers ab.
+
+- OK: Die Einstellung wird bernommen, die n„chste Kampfrunde wird
+  ausgefhrt.
+
+Im Taktik-Feld kann die Figur, deren Werte ver„ndert werden sollen, direkt
+durch Anklicken gew„hlt werden.
+
+Monster, die mit ihren Waffen oder Zaubersprchen kein Mitglied Ihrer Party
+erreichen k”nnen, stehen immer in der Funktion "Parade".
+
+Monster-Gruppen haben eine Kampfmoral, d.h. die Verbliebenen einer Gruppe
+von vier Kobolden mit der Moral 50% versuchen zu fliehen, wenn zwei der
+Gruppe get”tet wurden.
+
+Nachdem die Aktionen fr alle Figuren im Kampf gesetzt sind, werden diese
+nacheinander ausgefhrt. Zu Anfang der Kampfrunde stehen alle Figuren in
+Paradestellung. Ist der Gegner einer Figur in der Zwischenzeit nicht mehr
+kampff„hig oder geflohen, wird die Aktion nicht ausgefhrt und statt dessen
+Paradestellung eingenommen.
+
+BEEINTRCHTIGUNGEN
+
+- L„hmung        Gel„hmte Figuren sind unbeweglich und k”nnen nur noch
+                 zaubern
+- Vergiftung     Vergiftungen haben keine Auswirkungen im Kampf
+- Versteinerung  Die betroffene Figur ist tot.
+- Krankheit      Die Wahrscheinlichkeit eines Kampferfolges nimmt um 50%
+                 ab.
+- Alterung       Schnell zunehmendes Alter hat keine Auswirkung auf den
+                 Kampf.
+- Tod            Der entsprechende Charakter nimmt nicht mehr am Kampf
+                 teil.
+- Irritation     Die betroffene Figur kann nicht mehr zaubern. Die
+                 Wahrscheinlichkeit eines Kampferfolges nimmt um 25% ab.
+                 Nach Beendigung der Kampfhandlung verschwindet die
+                 Irritation.
+- Verrcktheit   Der betroffene Charakter der Party kann von Ihnen nicht
+                 kontrolliert werden - er agiert selbst„ndig.
+- Schlaf         Schlafende Figuren k„mpfen nicht. Bei Sch„digung wird die
+                 entsprechende Figur wach. Die Beeintr„chtigung
+                 verschwindet nach Beendigung der Kampfhandlung.
+- Panik          Die betroffene Figur versucht zu fliehen. Die Panik legt
+                 sich, wenn der Kampf beendet ist.
+- Blindheit      Die Wahrscheinlichkeit eines Erfolges im Kampf nimmt um
+                 75% ab.
+
+Ein Kampf ist beendet, wenn
+
+- alle Mitglieder einer Gruppe tot sind,
+- alle Mitglieder einer Gruppe erfolgreich geflohen sind,
+- alle Monster get”tet oder geflchtet sind.
+
+Haben Mitglieder Ihrer Party berlebt, k”nnen sie die Gegenst„nde der
+get”teten Monster einsammeln.
+
+- Ausgang: Sie verlassen den Kampfmodus, ohne weitere Gegenst„nde
+  eingesammelt zu haben.
+- Gegenstand nehmen: Abh„ngig vom Platz im Rucksack und der Leistungs-
+  f„higkeit des gew„hlten Charakters kann ein Gegenstand mitgenommen werden.
+- N„chstes Bild: Ist die Liste l„nger als ein Bildschirm, wird hiermit die
+  n„chste Seite ausgegeben.
+- Vorige Bild: Hiermit bl„ttern Sie gegebenenfalls eine Bildschirmseite
+  zurck.
+- Gold nehmen: Abh„ngig vom Platz im Rucksack und der Leistungsf„higkeit des
+  gew„hlten Charakters k”nnen Sie Goldstcke mitnehmen.
+- Gold verteilen: Das Gold wird gleichm„áig auf die Mitglieder Ihrer Party
+  verteilt.
+- Lebensmittel nehmen: Abh„ngig vom Platz im Rucksack und der Leistungs-
+  f„higkeit des gew„hlten Charakters k”nnen Lebensmittel mitgenommen werden.
+- Lebensmittel verteilen: Die Lebensmittel werden gleichm„áig auf alle
+  Mitglieder der Party verteilt.
+
+TABELLEN
+
+DIE RASSEN
+
+Jede Rasse hat individuelle St„rken und Schw„chen. Die Eigenschaften sind
+STrke, INTelligenz, GESchicklichkeit, SCHnelligkeit, KONstitution,
+CHArisma, GLšck, MAGie-Resistenz und ALTer. Die angegebenen Werte sind
+H”chstwerte.
+
+Rasse            ST INT GES SCH KON CHA GLš MAG ALT
+
+Mensch           60  60  60  60  60  60  100 0   80
+Elf              30  100 70  80  30  90  100 20  950
+Zwerg            90  30  20  30  100 40  100 100 600
+Gnom             40  70  80  50  40  80  100 80  350
+Helbling         20  40  100 100 20  130 100 20  250
+Helb-Elf         45  80  65  70  30  30  100 10  200
+Halb-Ork         80  20  50  40  80  20  100 0   50
+Die Rassen k”nnen folgenden Klassen beitreten:
+
+    Mensch       allen
+    Elf          Krieger, Ranger, Weiá-, Grau- und Schwarz-Magier
+    Zwerg        Krieger und M”nch
+    Gnom         Dieb, M”nch, Weiá-, Grau- und Schwarz-Magier
+    Halbling     Dieb und M”nch
+    Halb-Elf     Dieb, Weiá-, Grau- und Schwarz-Magier
+    Halb-Ork     Krieger und Dieb
+
+DIE KLASSEN
+
+Die Klassentabelle beschreibt die F„higkeiten der Klassen in den einzelnen
+Disziplinen. Die F„higkeiten sind ATTacke, PARade, SCHwimmen, HORchen,
+Fallen-Finden, Fallen-Entsch„rfen, Schl”sser-™ffnen, SUChen, Magische-
+Spruchrollen-Lernen und Magie-Benutzen. Die Angaben sind in Prozent.
+
+Klasse           ATT PAR SCH HOR F-F F-E S-™ SUC MSL M-B
+
+Krieger          95  80  95  50  20  10  15  20  0   0
+Paladin          80  95  95  50  30  10  0   10  70  50
+Ranger           70  70  95  80  40  40  40  30  30  30
+Dieb             50  50  95  95  95  95  95  95  0   0
+M”nch            60  60  95  60  40  30  35  70  50  60
+Weiá-Magier      20  20  95  20  15  15  0   50  95  95
+Grau-Magier      30  30  95  20  10  10  0   50  95  95
+Schwarz-Magier   40  40  95  20  0   0   0   50  95  95
+
+Die Klassen k”nnen Zaubersprche der folgenden Kategorien entsprechend ihren
+F„higkeiten erlernen:
+
+    Krieger          keine
+    Paladine         weiáe
+    Ranger           weiáe und graue
+    Diebe            keine
+    M”nche           graue
+    Weiá-Magier      weiáe
+    Grau-Magier      graue
+    Schwarz-Magier   schwarze
+
+DIE STUFEN
+
+Je nach Klasse gelangt ein Party-Mitglied bei unterschiedlichen Erfahrungs-
+punkten auf die n„chste Stufe:
+Stufe    Krieger  Paladin  Ranger   Dieb    M”nch    Magier     Magier
+                                                  (weiá/grau)  (schwarz)
+1        30       50       90       40      80       70         75
+2        90       150      270      120     240      210        225
+3        180      300      540      240     480      420        450
+4        300      500      900      400     800      700        750
+5        450      750      1350     600     1200     1050       1125
+6        630      1050     1890     840     1680     1470       1575
+7        840      1400     2520     1120    2240     1960       2100
+8        1080     1800     3240     1440    3880     2520       2700
+9        1350     2250     4050     1800    3600     3150       3375
+10       1650     2750     4950     2200    4400     3850       4125
+11       1980     3300     5940     2640    5280     4620       4950
+12       2340     3900     7020     3120    6240     5460       5850
+13       2730     4550     8190     3640    7280     6370       6825
+14       3150     5250     9450     4200    8400     7350       7875
+15       3600     6000     10800    4800    9600     8400       9000
+16       4080     6800     12240    5440    10880    9520       10200
+17       4590     7650     13770    6120    12240    10710      11475
+18       5130     8550     15390    6840    13680    11970      12825
+19       5700     9500     17100    7600    15200    13300      14250
+20       6300     10500    18900    8400    16800    14700      15750
+Die h”chste zu erreichende Stufe ist Stufe 50. Die zum Aufstieg erforder-
+lichen Erfahrungspunkte errechnen sich wie folgt:
+
+N„chste Stufe mal EP der ersten Stufe plus erreichte Stufe
+
+Beispiel am Aufstieg von Stufe 20 in Stufe 21 fr einen Krieger:
+
+21 mal 30 plus 6300 = 6930
+
+Das heiát, bei 6930 Punkten erreicht der Krieger Stufe 21 !
+
+DIE TASTATURBELEGUNG
+
+Die neun Ziffern des Ziffernblocks der Tastatur entsprechen ihrer Funktion
+und Anordnung den neun Icons des Bewegungs- bzw. Aktions-Feldes.
+
+Die Tasten 1 bis 6 des Tastenfeldes bestimmen den aktiven Charakter
+entsprechend der Anordnung in der Party-ID.
+
+Die Funktions-Tasten F1 bis F6 k”nnen die zweite Seite der Ausrstung des
+zugeh”rigen Charakters entsprechend der Anordnung in der Party-ID.
+
+Der Cursor-Block hat in der 2D-Darstellung die Funktionen:
+
+    oben         gehe nach Norden
+    links        gehe nach Westen
+    unten        gehe nach Sden
+    rechts       gehe nach Osten
+
+Der Cursor-Block hat in der 3D-Darstellung die Funktionen:
+
+    Insert       um 90 Grad nach links drehen
+    oben         geradeaus gehen
+    Clr Home     um 90 Grad nach rechts drehen
+    links        ohne Drehung nach links gehen
+    unten        ohne Drehung zurcktreten
+    rechts       ohne Drehung nach rechts gehen
+
+
+
+
+
+
++++ Ende der Anleitung +++

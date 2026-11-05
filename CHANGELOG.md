@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- The English and German game data of the DOS version (1.40) are supported and included. The music is played by an emulation of the Ad Lib sound card. The intro and the outro of the DOS version are not shown yet.
+
 ## 0.3.5
 
 ### Fixed

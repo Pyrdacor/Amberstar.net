@@ -15,14 +15,22 @@ internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, D
 	// Also palettes store alpha as 0 while the color is still opaque.
 	// Amiga seems to also use the same palette format.
 
+	// The palettes of the DOS version have 6 bits per color component. They are marked by the high bit of the size.
+	const int VgaPaletteFlag = 0x8000;
+
 	public static IGraphic LoadWidePalette(IDataReader dataReader)
 	{
 		int size = dataReader.ReadWord();
+		bool vga = (size & VgaPaletteFlag) != 0;
+		size &= ~VgaPaletteFlag;
 		var data = dataReader.ReadBytes(size * 4);
 		int index = 0;
 
 		byte ConvertColorComponent(byte c)
 		{
+			if (vga)
+				return (byte)((c << 2) | (c >> 4));
+
 			c *= 32;
 
 			/*if (c == 224)
@@ -58,6 +66,12 @@ internal class PaletteLoader(Amber.Assets.Common.IAssetProvider assetProvider, D
 
 		return data;
 	}
+
+	/// <summary>
+	/// Loads a compact palette of the Atari ST (16 colors with 2 bytes) or a wide palette of the DOS version.
+	/// </summary>
+	public static IGraphic LoadAnyPalette(IDataReader dataReader) =>
+		(dataReader.PeekWord() & VgaPaletteFlag) != 0 ? LoadWidePalette(dataReader) : LoadPalette(dataReader);
 
 	public static IGraphic LoadPalette(IDataReader dataReader)
 	{

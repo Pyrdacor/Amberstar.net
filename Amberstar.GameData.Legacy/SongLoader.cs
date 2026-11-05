@@ -27,6 +27,9 @@ internal class SongLoader(Amber.Assets.Common.IAssetProvider assetProvider, Lega
         reader.Position = 0;
         var module = reader.ReadBytes(reader.Size);
 
+        if (platform == LegacyPlatform.Dos)
+            return new Dos.AdlibSong(module);
+
         if (platform != LegacyPlatform.Amiga)
             return new HippelCosoYmSong(module, songIndex + 1);
 

@@ -9,6 +9,8 @@ using Amberstar.Frontend;
 	("English-AtariST", "English", "Atari ST", Path.Combine("English", "AmberfilesST")),
 	("German-Amiga", "Deutsch", "Amiga", Path.Combine("German", "AmberfilesAmiga")),
 	("German-AtariST", "Deutsch", "Atari ST", Path.Combine("German", "AmberfilesST")),
+	("English-DOS", "English", "DOS", Path.Combine("English", "AmberfilesDOS")),
+	("German-DOS", "Deutsch", "DOS", Path.Combine("German", "AmberfilesDOS")),
 ];
 
 try
