@@ -20,6 +20,9 @@ click 32 17 right
 waitscreen Inventory
 button 3
 invslot 2
+# the eagle is called after the flute sparkled
+travel Walk
+wait 1000
 travel Eagle
 itemslot 1 2 209
 # the inventory is closed and stays above the map until then

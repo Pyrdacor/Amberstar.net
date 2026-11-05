@@ -267,6 +267,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
     public override ScreenType Type { get; } = ScreenType.Map2D;
     public override ScreenFadeType FadeType { get; } = ScreenFadeType.None;
+    // the map is the lowest screen, nothing would be shown without it
+    public override bool CloseOnEscape { get; } = false;
     public IMap2D Map => map!;
 
     internal override byte ButtonGridPaletteIndex => palette;

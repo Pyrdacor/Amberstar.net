@@ -1,0 +1,11 @@
+# Escape does not close the map (before nothing was shown afterwards).
+waittext
+dismissall
+key Escape
+wait 500
+screen Map2D
+teleport 83 15 8 right
+waitidle
+key Escape
+wait 500
+screen Map3D

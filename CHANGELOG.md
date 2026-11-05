@@ -5,6 +5,11 @@
 ### Added
 - The English and German game data of the DOS version (1.40) are supported and included. The music is played by an emulation of the Ad Lib sound card. The intro and the outro of the DOS version are not shown yet.
 
+### Fixed
+- The buttons of the inventory no longer stop working after the rope (or another item with levitation) was used to climb through a trap door in the ceiling. Until the game was restarted the inventory could only be closed with Escape, also after loading a savegame.
+- The spell of a used item (e.g. the torch, the flute or the rope) follows after the item sparkled, like in the original. Before the spell happened at once.
+- Escape no longer closes the map, which left an empty screen.
+
 ## 0.3.5
 
 ### Fixed

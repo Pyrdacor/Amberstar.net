@@ -1,0 +1,25 @@
+# The rope (levitation) climbs through the trap door in the ceiling of the old dwarf mine (map 147) to map 146.
+# The teleport follows after the rope sparkled. Before it removed the end of the sparkle animation, so the
+# reused inventory ignored all buttons.
+waittext
+dismissall
+teleport 147 16 22 down
+give 1 195 3
+click 32 17 right
+waitscreen Inventory
+wait 500
+shownitem 2 195
+button 3
+wait 200
+invslot 2
+waitidle
+map 146
+pos 16 21
+count 195 2
+# --- the inventory works again
+click 32 17 right
+waitscreen Inventory
+wait 500
+button 2
+wait 500
+screen Map3D

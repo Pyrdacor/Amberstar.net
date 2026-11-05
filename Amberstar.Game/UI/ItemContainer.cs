@@ -334,7 +334,7 @@ internal class ItemContainer : Control
 
     /// <summary>
     /// The item sparkles (8 frames of 3 vertical blanks, L1212a in the original), e.g. when it is used.
-    /// The original waits for it, here the spell goes on meanwhile (so the input is not blocked).
+    /// Like in the original the spell of a used item follows afterwards (the input is not blocked meanwhile).
     /// </summary>
     public void ShowSparkle(Action? finished = null)
     {

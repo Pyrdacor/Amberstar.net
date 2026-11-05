@@ -135,6 +135,8 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 	public override ScreenType Type { get; } = ScreenType.Map3D;
     public override ScreenFadeType FadeType { get; } = ScreenFadeType.None;
+	// the map is the lowest screen, nothing would be shown without it
+	public override bool CloseOnEscape { get; } = false;
     public IMap3D Map => map!;
 
 	internal byte Palette => palette;

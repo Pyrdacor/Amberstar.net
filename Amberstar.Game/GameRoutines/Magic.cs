@@ -258,63 +258,84 @@ partial class Game
 
 	/// <summary>
 	/// Uses the spell points or the magic item and checks if the spell succeeds (Handle_spell in the original).
-	/// If the spell fails, a message is shown and false is returned.
+	/// If the spell fails, a message is shown and <paramref name="finished"/> follows, otherwise
+	/// <paramref name="succeeded"/> (after the sparkle of a magic item).
 	/// </summary>
-	bool TrySpell(Action finished)
+	void TrySpell(Action finished, Action succeeded)
 	{
-		if (SpellSucceeds())
-			return true;
-
-		ShowTextMessage(LoadMessageText(Message.SpellFails), finished);
-
-		return false;
+		UseSpell(success =>
+		{
+			if (success)
+				succeeded();
+			else
+				ShowTextMessage(LoadMessageText(Message.SpellFails), finished);
+		});
 	}
 
 	/// <summary>
-	/// Uses the spell points or the magic item. Spells of items always succeed,
-	/// otherwise the skill to use magic is probed.
+	/// Uses the spell points or the magic item. Spells of items always succeed, otherwise the skill to use
+	/// magic is probed. Like in the original the spell of an item follows after the item sparkled.
 	/// </summary>
-	bool SpellSucceeds()
+	void UseSpell(Action<bool> result)
 	{
 		if (magicItem != null)
 		{
-			UseMagicItemCharge(magicItem);
-			return true;
+			UseMagicItemCharge(magicItem, () => result(true));
+			return;
 		}
 
 		var caster = SpellCaster!;
 		caster.SpellPoints.CurrentValue = (word)Math.Max(0, caster.SpellPoints.CurrentValue - currentSpellData!.SpellPointCost);
 
-		return Probe(caster.Skills[Skill.UseMagic].TotalCurrent);
+		result(Probe(caster.Skills[Skill.UseMagic].TotalCurrent));
 	}
 
 	/// <summary>
 	/// Removes a charge of a magic item or the item itself (Remove_used_magic_item in the original).
 	/// Stackable items and items without charges left are removed. 255 charges are infinite.
+	/// The given action follows after the item sparkled.
 	/// </summary>
-	void UseMagicItemCharge(MagicItem magicItem)
+	void UseMagicItemCharge(MagicItem magicItem, Action? then = null)
 	{
 		var (owner, itemSlot, equipped) = magicItem;
 		var item = itemSlot.Item!;
+		bool chargeUsed = false;
+		bool sparkleEnded = false;
 
 		// The used item sparkles (L12042 in the original), an empty slot is cleared afterwards.
-		ShowItemSparkle(owner, itemSlot);
-
-		if (!item.IsStackable() && item.SpellCharges != byte.MaxValue)
+		// Without a shown inventory the sparkle ends at once, the charge is still used first.
+		ShowItemSparkle(owner, itemSlot, () =>
 		{
-			if (item.SpellCharges > 1)
+			sparkleEnded = true;
+
+			if (chargeUsed)
+				then?.Invoke();
+		});
+
+		UseCharge();
+		chargeUsed = true;
+
+		if (sparkleEnded)
+			then?.Invoke();
+
+		void UseCharge()
+		{
+			if (!item.IsStackable() && item.SpellCharges != byte.MaxValue)
 			{
-				var newItem = AssetProvider.ItemFactory.Create(item, new ItemSlotData((byte)(item.SpellCharges - 1), item.SlotFlags));
-				itemSlot.SetItem(newItem, itemSlot.Count);
+				if (item.SpellCharges > 1)
+				{
+					var newItem = AssetProvider.ItemFactory.Create(item, new ItemSlotData((byte)(item.SpellCharges - 1), item.SlotFlags));
+					itemSlot.SetItem(newItem, itemSlot.Count);
+					return;
+				}
+			}
+			else if (item.SpellCharges == byte.MaxValue)
+			{
 				return;
 			}
-		}
-		else if (item.SpellCharges == byte.MaxValue)
-		{
-			return;
-		}
 
-		DestroyUsedItem(owner, itemSlot, equipped);
+			DestroyUsedItem(owner, itemSlot, equipped);
+		}
 	}
 
 	/// <summary>
@@ -416,7 +437,7 @@ partial class Game
 				HealSpell(16, 64, finished);
 				break;
 			case WhiteSpell.Salvation:
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					ForeachPartyMember(partyMember =>
 					{
@@ -427,7 +448,7 @@ partial class Game
 						}
 					}, NotAliveConditions);
 					finished();
-				}
+				});
 				break;
 			case WhiteSpell.Reincarnation:
 				ConvertCorpseSpell(Message.WhoToResurrect, Condition.Dead, Condition.Ashes, finished);
@@ -455,7 +476,7 @@ partial class Game
 				break;
 			case WhiteSpell.WakeUp:
 				// Note: The original code uses the wrong pointer here and doesn't work.
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					ForeachPartyMember(partyMember =>
 					{
@@ -464,7 +485,7 @@ partial class Game
 					}, NotAliveConditions);
 					ResetStatusIcons();
 					finished();
-				}
+				});
 				break;
 			case WhiteSpell.CalmPanic:
 				HealConditionSpell(Message.WhosePanicToRemove, Condition.Panicked, finished);
@@ -479,7 +500,7 @@ partial class Game
 				HealConditionSpell(Message.WhoseMadnessToCure, Condition.Mad, finished);
 				break;
 			case WhiteSpell.ProvideFood:
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					ForeachPartyMember(partyMember =>
 					{
@@ -487,19 +508,19 @@ partial class Game
 						partyMember.TotalWeight += FoodWeight;
 					}, NotAliveConditions);
 					finished();
-				}
+				});
 				break;
 			case WhiteSpell.RemoveCurse:
 				// Remove_curse destroys a cursed equipped item.
 				SelectSpellItem(Message.WhoseCursedItemToDestroy, Message.WhichCurseToRemove, true, item => item.Flags.HasFlag(ItemFlags.Cursed),
 					finished, (target, itemSlot, _, done) =>
 				{
-					if (TrySpell(done))
+					TrySpell(done, () =>
 					{
 						// Note: The original doesn't remove the mali of the item.
 						DestroyUsedItem(target, itemSlot, true, itemSlot.Count);
 						done();
-					}
+					});
 				});
 				break;
 			default:
@@ -520,8 +541,12 @@ partial class Game
 		SelectSpellTarget(Message.WhoToHeal, finished, (_, target) =>
 		{
 			if (target.HasAnyConditionOf(NotAliveConditions))
+			{
 				finished();
-			else if (TrySpell(finished))
+				return;
+			}
+
+			TrySpell(finished, () =>
 			{
 				// Increase_LP
 				if (target.HitPoints.CurrentValue < target.HitPoints.TotalMax)
@@ -531,7 +556,7 @@ partial class Game
 				}
 
 				finished();
-			}
+			});
 		});
 	}
 
@@ -543,14 +568,18 @@ partial class Game
 		SelectSpellTarget(message, finished, (_, target) =>
 		{
 			if (!target.HasAnyConditionOf(condition))
+			{
 				finished();
-			else if (TrySpell(finished))
+				return;
+			}
+
+			TrySpell(finished, () =>
 			{
 				target.RemoveCondition(condition);
 				ResetStatusIcons();
 				ShowMagicSparkle(target);
 				finished();
-			}
+			});
 		});
 	}
 
@@ -580,30 +609,31 @@ partial class Game
 				return;
 			}
 
-			bool success = SpellSucceeds();
-
-			if (success)
+			UseSpell(success =>
 			{
-				target.RemoveCondition(condition);
+				if (success)
+				{
+					target.RemoveCondition(condition);
 
-				// Resurrection gives one hit point.
-				if (!target.IsDead())
-					target.HitPoints.CurrentValue = 1;
-			}
-			else if (failCondition != null)
-			{
-				target.AddCondition(failCondition.Value);
-			}
+					// Resurrection gives one hit point.
+					if (!target.IsDead())
+						target.HitPoints.CurrentValue = 1;
+				}
+				else if (failCondition != null)
+				{
+					target.AddCondition(failCondition.Value);
+				}
 
-			ResetStatusIcons();
-			ShowMagicSparkle(target);
+				ResetStatusIcons();
+				ShowMagicSparkle(target);
 
-			if (!success)
-				ShowTextMessage(LoadMessageText(Message.SpellFails), finished);
-			else if (target.IsDead())
-				ShowTextMessage(GetCorpseSpellHint(target), finished); // e.g. ashes after an earlier failed spell
-			else
-				finished();
+				if (!success)
+					ShowTextMessage(LoadMessageText(Message.SpellFails), finished);
+				else if (target.IsDead())
+					ShowTextMessage(GetCorpseSpellHint(target), finished); // e.g. ashes after an earlier failed spell
+				else
+					finished();
+			});
 		});
 	}
 
@@ -649,7 +679,7 @@ partial class Game
 		// spells have 3 levels with a duration of 24, 96 or 192 steps.
 		if (spell >= GraySpell.Light1 && spell <= GraySpell.Invisibility3)
 		{
-			if (TrySpell(finished))
+			TrySpell(finished, () =>
 			{
 				int index = spell - GraySpell.Light1;
 				int level = index % 3;
@@ -664,7 +694,7 @@ partial class Game
 
 				ActivateSpell(type, value, duration);
 				finished();
-			}
+			});
 
 			return;
 		}
@@ -672,7 +702,7 @@ partial class Game
 		switch (spell)
 		{
 			case GraySpell.MagicSphere:
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					ActivateSpell(ActiveSpellType.Light, 6, 192);
 					ActivateSpell(ActiveSpellType.ArmorProtection, 15, 192);
@@ -681,17 +711,20 @@ partial class Game
 					ActivateSpell(ActiveSpellType.Clairvoyance, 6, 192);
 					ActivateSpell(ActiveSpellType.Invisibility, 0, 192);
 					finished();
-				}
+				});
 				break;
 			case GraySpell.Haste:
 				SelectSpellTarget(Message.WhoToHaste, finished, (_, target) =>
 				{
 					if (hastedPartyMembers.Contains(target))
 						finished();
-					else if (TrySpell(finished))
+					else
 					{
-						Haste(target);
-						finished();
+						TrySpell(finished, () =>
+						{
+							Haste(target);
+							finished();
+						});
 					}
 				});
 				break;
@@ -705,28 +738,27 @@ partial class Game
 					break;
 				}
 
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					notHasted.ForEach(Haste);
 					finished();
-				}
+				});
 				break;
 			}
 			case GraySpell.MagicCompass:
-				if (TrySpell(finished))
-					ScreenHandler.PushScreen(ScreenType.MagicCompass, () => AfterScreenClosed(finished));
+				TrySpell(finished, () => ScreenHandler.PushScreen(ScreenType.MagicCompass, () => AfterScreenClosed(finished)));
 				break;
 			case GraySpell.Identification:
 				SelectSpellItem(Message.WhoseItemToExamine, Message.WhichItem, false, item => !item.SlotFlags.HasFlag(ItemSlotFlags.Identified),
 					finished, (owner, itemSlot, _, done) =>
 				{
-					if (TrySpell(done))
+					TrySpell(done, () =>
 					{
 						IdentifyItem(itemSlot);
 						CurrentItem = itemSlot.Item;
 						// the item sparkles before it is shown ($143fc in the original)
 						ShowItemSparkle(owner, itemSlot, () => ScreenHandler.PushScreen(ScreenType.ItemView, done));
-					}
+					});
 				});
 				break;
 			case GraySpell.Levitation:
@@ -736,18 +768,21 @@ partial class Game
 			case GraySpell.Teleport:
 				if (ScreenHandler.FindMapScreen() is not Map2DScreen mapScreen || mapScreen.FindTeleportTarget() is not Position target)
 					ShowTextMessage(LoadMessageText(Message.SpellDoesNotWorkHere), finished);
-				else if (TrySpell(finished))
+				else
 				{
-					finished();
-					mapScreen.TeleportParty(target);
+					TrySpell(finished, () =>
+					{
+						finished();
+						mapScreen.TeleportParty(target);
+					});
 				}
 				break;
 			case GraySpell.XRayVision:
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					XRayVisionStepsLeft = XRayVisionSteps;
 					finished();
-				}
+				});
 				break;
 			default:
 				ShowNotImplementedMessage($"The spell {spell}", finished);
@@ -781,19 +816,20 @@ partial class Game
 				trapDoor = null;
 		}
 
-		if (trapDoor == null || !TrySpell(finished))
+		if (trapDoor == null)
 		{
-			if (trapDoor == null)
-				finished();
-
+			finished();
 			return;
 		}
 
-		if (trapDoor.SaveIndex != 0)
-			State.SetEventBit(State.GetIndexOfMapWithPlayer(), trapDoor.SaveIndex, true);
+		TrySpell(finished, () =>
+		{
+			if (trapDoor.SaveIndex != 0)
+				State.SetEventBit(State.GetIndexOfMapWithPlayer(), trapDoor.SaveIndex, true);
 
-		finished();
-		Teleport(trapDoor.X, trapDoor.Y, Direction.Keep, trapDoor.MapIndex, true);
+			finished();
+			Teleport(trapDoor.X, trapDoor.Y, Direction.Keep, trapDoor.MapIndex, true);
+		});
 	}
 
 	/// <summary>
@@ -817,18 +853,18 @@ partial class Game
 			case SpecialSpell.SpellPoints1:
 				SelectSpellTarget(Message.WhoseSpellPointsToRestore, finished, (_, target) =>
 				{
-					if (TrySpell(finished))
+					TrySpell(finished, () =>
 					{
 						target.HealSpellPoints((word)Random(1, 25));
 						ShowMagicSparkle(target);
 						finished();
-					}
+					});
 				});
 				break;
 			case SpecialSpell.SpellPoints2:
 				SelectSpellTarget(Message.WhoseSpellPointsToRestore, finished, (_, target) =>
 				{
-					if (TrySpell(finished))
+					TrySpell(finished, () =>
 					{
 						if (target.SpellPoints.CurrentValue < target.SpellPoints.TotalMax)
 						{
@@ -837,13 +873,13 @@ partial class Game
 						}
 
 						finished();
-					}
+					});
 				});
 				break;
 			case SpecialSpell.Youth:
 				SelectSpellTarget(Message.WhoToRejuvenate, finished, (_, target) =>
 				{
-					if (TrySpell(finished))
+					TrySpell(finished, () =>
 					{
 						int age = target.Age.CurrentValue - Random(1, 10);
 
@@ -855,25 +891,25 @@ partial class Game
 						}
 
 						finished();
-					}
+					});
 				});
 				break;
 			case SpecialSpell.Mapshow:
 				// Map_view (the spell points are used even if the map can't be shown)
-				if (TrySpell(finished))
+				TrySpell(finished, () =>
 				{
 					if (ShownMap?.Flags.HasFlag(MapFlags.CanUseMapViewSpell) == true)
 						ScreenHandler.PushScreen(ScreenType.Minimap, () => AfterScreenClosed(finished));
 					else
 						ShowTextMessage(LoadMessageText(Message.CrystalBallBlockedByMagic), finished);
-				}
+				});
 				break;
 			case SpecialSpell.WeaponBalm:
 				// Weapon_gunk increases the damage of a weapon.
 				SelectSpellItem(Message.ApplyPotionToWhoseWeapon, Message.ApplyBalmToWhat, false,
 					item => item.Type is ItemType.CloseRangedWeapon or ItemType.LongRangedWeapon, finished, (target, itemSlot, equipped, done) =>
 				{
-					if (TrySpell(done))
+					TrySpell(done, () =>
 					{
 						var item = itemSlot.Item!;
 						var newItem = item.WithDamage((byte)Math.Min(127, item.Damage + Random(1, 4)));
@@ -889,7 +925,7 @@ partial class Game
 
 						// the weapon sparkles ($14ef8 in the original)
 						ShowItemSparkle(target, itemSlot, done);
-					}
+					});
 				});
 				break;
 			case >= SpecialSpell.Stun and <= SpecialSpell.FleshToStone2:
@@ -900,10 +936,13 @@ partial class Game
 			case SpecialSpell.EagleCall:
 				if (ScreenHandler.FindMapScreen() is not Map2DScreen mapScreen || !mapScreen.CanCallEagle())
 					ShowTextMessage(LoadMessageText(Message.SpellDoesNotWorkHere), finished);
-				else if (TrySpell(finished))
+				else
 				{
-					mapScreen.CallEagle();
-					finished();
+					TrySpell(finished, () =>
+					{
+						mapScreen.CallEagle();
+						finished();
+					});
 				}
 				break;
 			case SpecialSpell.PickLock:
@@ -912,8 +951,7 @@ partial class Game
 				break;
 			case SpecialSpell.Music:
 				// A song can be chosen (the spell routine at $152fe in the program, not part of the released source code).
-				if (TrySpell(finished))
-					ScreenHandler.PushScreen(ScreenType.Jukebox, () => AfterScreenClosed(finished));
+				TrySpell(finished, () => ScreenHandler.PushScreen(ScreenType.Jukebox, () => AfterScreenClosed(finished)));
 				break;
 			default:
 				ShowNotImplementedMessage($"The spell {spell}", finished);

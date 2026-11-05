@@ -11,6 +11,7 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     // the slots are refreshed after the destructions of used up items
     int runningDestructions = 0;
     Action? afterDestructions;
+    int itemAnimationGeneration = 0;
     bool itemDragged = false;
     bool waitForClick = false;
     bool closeAfterClick = false;
@@ -204,6 +205,10 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
         Game.Cursor.CursorType = CursorType.Sword;
 
         HideMessage();
+
+        // The screen is reused. Animations of the last time it was shown may not have ended, for example if a
+        // teleport removed their delayed actions (like the rope which climbs through a trap door).
+        ResetItemAnimations();
 
         SwitchToPartyMember(Game.State.CurrentInventoryIndex!.Value, true);
         SetupEventHandlers();
@@ -558,6 +563,13 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     internal bool ShowItemSparkle(ItemSlot itemSlot, Action? finished = null) =>
         RunItemAnimation(itemSlot, (container, done) => container.ShowSparkle(done), finished);
 
+    void ResetItemAnimations()
+    {
+        itemAnimationGeneration++;
+        runningDestructions = 0;
+        afterDestructions = null;
+    }
+
     bool RunItemAnimation(ItemSlot itemSlot, Action<ItemContainer, Action> animation, Action? finished)
     {
         ItemContainer? container = null;
@@ -577,9 +589,14 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
         if (container?.Item == null)
             return false;
 
+        int generation = itemAnimationGeneration;
         runningDestructions++;
         animation(container, () =>
         {
+            // the animation belongs to an earlier opening of the screen
+            if (generation != itemAnimationGeneration)
+                return;
+
             if (--runningDestructions == 0)
             {
                 var action = afterDestructions;

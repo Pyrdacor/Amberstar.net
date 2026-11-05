@@ -92,5 +92,8 @@ waitscreen Inventory
 itemslot 1 2 1:2
 button 3
 invslot 2
+# the spell follows after the torch sparkled
+activespell Light 95:4
+wait 1000
 activespell Light 24:2
 itemslot 1 2 1:1
