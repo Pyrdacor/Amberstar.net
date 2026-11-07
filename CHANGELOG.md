@@ -1,21 +1,24 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 ### Added
 - The English and German game data of the DOS version (1.40) are supported and included. The music is played by an emulation of the Ad Lib sound card. The intro and the outro of the DOS version are not shown yet.
 
-### Fixed
-- The buttons of the inventory no longer stop working after the rope (or another item with levitation) was used to climb through a trap door in the ceiling. Until the game was restarted the inventory could only be closed with Escape, also after loading a savegame.
-- The spell of a used item (e.g. the torch, the flute or the rope) follows after the item sparkled, like in the original. Before the spell happened at once.
-- Escape no longer closes the map, which left an empty screen.
-- The list of spells can no longer be scrolled outside of the window, and the last spells can be reached. A list started with the scroll position of the last time it was shown.
-- Locked doors and chests show the picture of their state. After an open chest the next locked chest showed an open chest too. Like in the original, a chest without a save index is locked again when it is opened another time.
+### Changed
 - Ranged weapons which need ammunition always need one hand. The LANGBOGEN DES SOBEK of the German data needs two hands by mistake, so its arrows couldn't be equipped (the English data has one hand).
 - The known words of a conversation are sorted alphabetically. They were in the order of the dictionary.
+
+### Fixed
+- The walls at the entrance of the temple of the Sansri open at 23:50. Persons with a path now take the positions of their path without a check of the tile, like in the original. The walls were stuck because their next position was blocked.
+- The camp plays the lullaby like in the original, and the song of the map plays again when the camp is left.
+- The spell of a used item (e.g. the torch, the flute or the rope) follows after the item sparkled, like in the original. Before the spell happened at once.
+- The buttons of the inventory no longer stop working after the rope (or another item with levitation) was used to climb through a trap door in the ceiling. Until the game was restarted the inventory could only be closed with Escape, also after loading a savegame.
 - Party members who would carry too much (or who can't take items for another reason) can no longer take an item from a chest or a person by a click on their portrait. Their portrait showed no hand, but the item was given anyway.
-- Persons with a path take the positions of their path without a check of the tile, like in the original. For example the walls at the entrance of the temple of the Sansri now open at 23:50. They were stuck because the next position was blocked.
+- Locked doors and chests show the picture of their state. After an open chest the next locked chest showed an open chest too. Like in the original, a chest without a save index is locked again when it is opened another time.
+- The list of spells can no longer be scrolled outside of the window, and the last spells can be reached. A list started with the scroll position of the last time it was shown.
 - Objects at the sides of the 3D view are cut at its border. Before they were drawn over the screen next to it, e.g. the walls of the temple of the Sansri.
+- Escape no longer closes the map, which left an empty screen.
 - A crash after a teleport (e.g. to the guild of the rangers) when hidden tiles of the last map were still animated with the tileset of the new map.
 
 ## 0.3.5
