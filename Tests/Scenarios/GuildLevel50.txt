@@ -1,0 +1,29 @@
+# The guilds train up to level 50 like the programs of the game (the released source code has 20).
+waittext
+dismissall
+cheat gold 5000
+setclass 1 Warrior
+setvalue 1 level 20
+setvalue 1 attack 10
+setvalue 1 parry 10
+setvalue 1 exp 99999999
+teleport 67 28 18
+waitscreen Guild
+button 6
+buttonenabled 3 1
+button 3
+waitscreen SkillTraining
+trainskill Attack 5
+trainskill Parry 5
+finishtraining
+value 1 level 21
+dismiss
+button 7
+button 2
+waitidle
+# --- level 50 is the last one
+setvalue 1 level 50
+teleport 67 28 18
+waitscreen Guild
+button 6
+buttonenabled 3 0

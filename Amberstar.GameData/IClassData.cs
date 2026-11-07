@@ -5,7 +5,11 @@ namespace Amberstar.GameData;
 /// </summary>
 public interface IClassData
 {
-	public const int MaxLevel = 20;
+	/// <summary>
+	/// The released source code has 20 (MaxLevel in PLACES.ASM), the programs of the game allow 50
+	/// (cmpi.b #50,Level_nr at $b044 in the German Atari ST program). The class data has the experience of 90 levels.
+	/// </summary>
+	public const int MaxLevel = 50;
 
 	Class Class { get; }
 

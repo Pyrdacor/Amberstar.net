@@ -216,6 +216,14 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 			return;
 		}
 
+		// A known spell ends the selection without a message, the scroll and the points are kept
+		// ($ff7c in the German Atari ST program, not part of the released source code).
+		if (Game.HasLearnedSpell(partyMember, item.SpellSchool, item.SpellIndex))
+		{
+			EndLearnSpellMode();
+			return;
+		}
+
 		var spellData = Game.AssetProvider.SpellDataLoader.LoadSpellData(item.SpellSchool, item.SpellIndex);
 
 		if (spellData.SpellLearningPointCost > partyMember.SpellLearningPoints)
