@@ -72,11 +72,18 @@ internal sealed class SelectWordScreen() : WindowScreen(WindowX, WindowY, Window
             }
         }
 
-        foreach (var knownWord in knownWords.OrderBy(word => word.ToString()))
+        // alphabetical, the umlauts are sorted with their base letters (IText has no ToString)
+        var comparer = StringComparer.Create(System.Globalization.CultureInfo.InvariantCulture, true);
+
+        foreach (var knownWord in knownWords.OrderBy(word => word.GetString(), comparer))
         {
             list.AddItem(knownWord);
         }
     }
+
+    internal IEnumerable<string> ScriptVisibleLines => list?.ScriptVisibleTexts ?? [];
+
+    internal bool ScriptLinesInside => list?.ScriptAllVisibleInside ?? true;
 
     public override void ScreenPopped(Screen screen)
     {

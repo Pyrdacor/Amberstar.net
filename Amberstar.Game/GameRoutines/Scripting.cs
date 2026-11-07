@@ -92,8 +92,12 @@ partial class Game
 	/// <summary>
 	/// The shown lines of the spell selection and if they are all inside the list.
 	/// </summary>
-	public (string[] Lines, bool Inside)? ScriptSpellSelectLines => ScreenHandler.ActiveScreen is SpellSelectScreen screen
-		? ([.. screen.ScriptVisibleLines], screen.ScriptLinesInside) : null;
+	public (string[] Lines, bool Inside)? ScriptSpellSelectLines => ScreenHandler.ActiveScreen switch
+	{
+		SpellSelectScreen screen => ([.. screen.ScriptVisibleLines], screen.ScriptLinesInside),
+		SelectWordScreen screen => ([.. screen.ScriptVisibleLines], screen.ScriptLinesInside),
+		_ => null
+	};
 
 	public bool? ScriptMapOverviewShown => ScreenHandler.FindScreen(ScreenType.Automap) is AutomapScreen automapScreen ? automapScreen.ScriptSpritesShown
 		: ScreenHandler.FindScreen(ScreenType.Minimap) is MinimapScreen minimapScreen ? minimapScreen.ScriptSpritesShown : null;
@@ -830,6 +834,8 @@ partial class Game
 	public bool ScriptIsMapCharacterActive(int mapIndex, int characterIndex) => State.IsMapCharacterActive(mapIndex, characterIndex);
 
 	public bool ScriptIsWordKnown(int wordIndex) => State.IsWordKnown(wordIndex);
+
+	public void ScriptLearnWord(int wordIndex) => State.LearnWord(wordIndex);
 
 	/// <summary>
 	/// Lets time pass in steps of 5 minutes like walking (all time effects happen).

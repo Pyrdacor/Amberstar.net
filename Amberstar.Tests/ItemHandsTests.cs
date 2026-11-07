@@ -21,6 +21,23 @@ public sealed class ItemHandsTests
 	}
 
 	[Theory]
+	[InlineData("German/AmberfilesAmiga")]
+	[InlineData("German/AmberfilesST")]
+	[InlineData("German/AmberfilesDOS")]
+	[InlineData("English/AmberfilesAmiga")]
+	public void RangedWeaponsWithAmmunitionNeedOneHand(string folder)
+	{
+		using var game = new HeadlessGame(TestData.GetDataPath(folder));
+
+		// The LANGBOGEN DES SOBEK (193) needs two hands in the German data, so its arrows couldn't be equipped.
+		var items = game.Game.AssetProvider.ItemLoader.LoadAllItems()
+			.Where(item => item.Type == ItemType.LongRangedWeapon && item.UsedAmmoType != AmmoType.None).ToList();
+
+		Assert.Contains(items, item => item.Index == 193);
+		Assert.All(items, item => Assert.Equal(1, item.Hands));
+	}
+
+	[Theory]
 	[InlineData("German/AmberfilesAmiga", "GOLDRING")]
 	[InlineData("German/AmberfilesST", "GOLDRING")]
 	[InlineData("English/AmberfilesAmiga", "GOLD RING")]

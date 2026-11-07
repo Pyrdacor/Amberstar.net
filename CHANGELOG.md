@@ -11,6 +11,11 @@
 - Escape no longer closes the map, which left an empty screen.
 - The list of spells can no longer be scrolled outside of the window, and the last spells can be reached. A list started with the scroll position of the last time it was shown.
 - Locked doors and chests show the picture of their state. After an open chest the next locked chest showed an open chest too. Like in the original, a chest without a save index is locked again when it is opened another time.
+- Ranged weapons which need ammunition always need one hand. The LANGBOGEN DES SOBEK of the German data needs two hands by mistake, so its arrows couldn't be equipped (the English data has one hand).
+- The known words of a conversation are sorted alphabetically. They were in the order of the dictionary.
+- Party members who would carry too much (or who can't take items for another reason) can no longer take an item from a chest or a person by a click on their portrait. Their portrait showed no hand, but the item was given anyway.
+- Persons with a path take the positions of their path without a check of the tile, like in the original. For example the walls at the entrance of the temple of the Sansri now open at 23:50. They were stuck because the next position was blocked.
+- Objects at the sides of the 3D view are cut at its border. Before they were drawn over the screen next to it, e.g. the walls of the temple of the Sansri.
 - A crash after a teleport (e.g. to the guild of the rangers) when hidden tiles of the last map were still animated with the tileset of the new map.
 
 ## 0.3.5

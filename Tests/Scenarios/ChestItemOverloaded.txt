@@ -1,0 +1,19 @@
+# A party member who would carry too much can't take an item from a chest (Scan_4_transfer_victims checks the weight).
+# Before the item was given on a click on the portrait, although the portrait showed no hand.
+waittext
+dismissall
+# Crag can take the item, the hero is overloaded
+join 61
+partysize 2
+setvalue 1 strength 1
+value 1 weight
+teleport 69 22 23
+waitscreen Chest
+wait 100
+button 5
+wait 100
+click 24 153
+wait 100
+click 30 20
+wait 100
+value 1 weight +0

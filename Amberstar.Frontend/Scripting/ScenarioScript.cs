@@ -49,6 +49,7 @@ using G = Game.Game;
 ///   loot [gold food items]    print or check the gold, food and item count of the shown loot
 ///   lootgive &lt;slot&gt;           give the item chosen with the give button of the loot to a party member
 ///   word &lt;index&gt; [text]       print a dictionary word, optionally check it
+///   learnword &lt;index&gt;       the party learns a dictionary word (for the word selection of conversations)
 ///   altarselect &lt;name&gt;        select the remaining Amberstar piece with the given name at the altar
 ///   altar [laid] [name]       print or check the number of laid Amberstar pieces and the selected piece
 ///   tile &lt;x&gt; &lt;y&gt; [tile]       print a tile of the shown map (3D: lab tile, 2D: underlay/overlay like 12/0),
@@ -189,7 +190,7 @@ using G = Game.Game;
 ///   spellknown &lt;slot&gt; &lt;school&gt; &lt;spell&gt; [0|1]
 ///                             print if a party member knows a spell (school: White, Gray, Black or Special,
 ///                             spell: 1-based number), optionally check it
-///   spelllines [first] [last] print the shown lines of the spell selection, check that they are inside the list and
+///   spelllines [first] [last] print the shown lines of the spell selection (listlines: also of the word selection), check that they are inside the list and
 ///                             optionally the start of the first and last line (_ for spaces)
 ///   condition &lt;slot&gt; &lt;condition&gt; [0|1]
 ///                             print if a party member has a condition (e.g. Poisoned), optionally check it
@@ -507,6 +508,7 @@ public sealed class ScenarioScript
 				CheckResult(game.ScriptLearnSpell(Arg(0), args[1], Arg(2)));
 				break;
 			case "spelllines":
+			case "listlines":
 			{
 				// spelllines [first line] [last line]: the shown lines must be inside the list
 				var lines = game.ScriptSpellSelectLines;
@@ -841,6 +843,9 @@ public sealed class ScenarioScript
 					Report(word.Equals(args[1], StringComparison.OrdinalIgnoreCase), $"word {Arg(0)} = {word} (expected {args[1]})");
 				break;
 			}
+			case "learnword":
+				game.ScriptLearnWord(Arg(0));
+				break;
 			case "tile":
 			{
 				var tile = game.ScriptGetTile(Arg(0), Arg(1));

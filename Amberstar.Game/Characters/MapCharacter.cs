@@ -69,12 +69,6 @@ internal class MapCharacter
 
     private void UpdatePosition(GameState GameState)
     {
-        void TryWalkTo(Position position)
-        {
-            if (canMoveChecker(position.X - 1, position.Y - 1, data.TravelType))
-                this.position = position;
-        }
-
         switch (data.WalkType)
         {
             case MapCharacterWalkType.Stationary:
@@ -83,12 +77,13 @@ internal class MapCharacter
             case MapCharacterWalkType.Path:
             {
                 int totalSteps = GameState.Hour * 12 + GameState.Minute / 5;
+                var pathPosition = positions[totalSteps];
 
-                // The first time the character is always placed, otherwise it would have no valid position.
-                if (position == new Position())
-                    position = positions[totalSteps];
-                else
-                    TryWalkTo(positions[totalSteps]);
+                // Like in the original the position of the path is taken without checking the tile
+                // (e.g. the walls of the temple of the Sansri which move aside at 23:50).
+                // Note: The original doesn't show persons at the path position 6,6 ("Show at all ?"), but
+                // Shandra stands there in her house for 8 hours, so this is not done here.
+                position = pathPosition;
                 break;
             }
             case MapCharacterWalkType.Chase:

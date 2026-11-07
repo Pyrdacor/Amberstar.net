@@ -1,0 +1,20 @@
+# The known words of a conversation are sorted alphabetically (before they were in the order of the dictionary).
+waittext
+dismissall
+learnword 3169
+learnword 2000
+learnword 1615
+word 3169 MALTOR
+word 2000 NUTZEN
+word 1615 JONATHAN
+teleport 70 7 6 left
+wait 2
+trigger 6 6 Mouth
+waitscreen Conversation
+wait 1000
+dismisstext
+wait 500
+button 4
+waitscreen SelectWord
+wait 300
+listlines HALLO NUTZEN

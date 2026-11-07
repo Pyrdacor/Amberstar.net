@@ -229,7 +229,10 @@ internal class ChestScreen : LockedScreen<ChestEvent>
                 if (characterSlotIndex != null)
                 {
                     // Note: Each chest slot contains a single item.
-                    if (Game.TryAddItem(characterSlotIndex.Value, Game.CurrentItem!))
+                    // Only party members with a hand can take it (e.g. not if they would carry too much).
+                    if (Game.State.GetPartyMember(characterSlotIndex.Value) is { } receiver &&
+                        Game.CanReceiveItems(receiver, Game.CurrentItem!, 1) &&
+                        Game.TryAddItem(characterSlotIndex.Value, Game.CurrentItem!))
                     {
                         Game.State.SetChestSlotBit(LockedEvent.ChestIndex, currentChestSlot!.Value, false);
                         ItemContainer.ConsumeDragged(Game);

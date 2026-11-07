@@ -88,6 +88,21 @@ namespace Amberstar.GameData.Legacy
             var index = reader.ReadWord();
             var nameIndex = reader.ReadWord();
 
+            byte GetHands()
+            {
+                // Ranged weapons with ammunition always need one hand, as the ammunition needs the other one.
+                // Not part of the original: the LANGBOGEN DES SOBEK of the German data needs two hands by mistake,
+                // so its arrows can't be equipped (the English data has one hand).
+                if (itemType == ItemType.LongRangedWeapon && usedAmmoType != AmmoType.None)
+                    return 1;
+
+                // Some items of the data need no hand by mistake (e.g. the PARADESCHILD).
+                if (numHands == 0 && itemType is ItemType.CloseRangedWeapon or ItemType.LongRangedWeapon or ItemType.Shield or ItemType.Ammunition)
+                    return 1;
+
+                return numHands;
+            }
+
             return new Item()
             {
                 Index = index,
@@ -95,8 +110,7 @@ namespace Amberstar.GameData.Legacy
                 GraphicIndex = graphicIndex,
                 UsedAmmoType = usedAmmoType,
                 Genders = genders,
-                // Some items of the data need no hand by mistake (e.g. the PARADESCHILD).
-                Hands = numHands == 0 && itemType is ItemType.CloseRangedWeapon or ItemType.LongRangedWeapon or ItemType.Shield or ItemType.Ammunition ? (byte)1 : numHands,
+                Hands = GetHands(),
                 Fingers = numFingers,
                 HitPoints = hitPoints,
                 SpellPoints = spellPoints,

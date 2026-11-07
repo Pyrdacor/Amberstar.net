@@ -655,7 +655,10 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
                 if (characterSlotIndex != null)
                 {
                     // Note: Stacked items are picked up one by one.
-                    if (Game.TryAddItem(characterSlotIndex.Value, Game.CurrentItem!))
+                    // Only party members with a hand can take it (e.g. not if they would carry too much).
+                    if (Game.State.GetPartyMember(characterSlotIndex.Value) is { } receiver &&
+                        Game.CanReceiveItems(receiver, Game.CurrentItem!, 1) &&
+                        Game.TryAddItem(characterSlotIndex.Value, Game.CurrentItem!))
                     {
                         var sourceSlot = receivedItems[dragSourceItemSlot!.Value];
                         if (sourceSlot.Count == 1)

@@ -1,4 +1,4 @@
-﻿using Amber.Assets.Common;
+using Amber.Assets.Common;
 using Amber.Common;
 using Amber.Renderer;
 using Amber.Renderer.Common;
@@ -1101,6 +1101,38 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		}
 	}
 
+	/// <summary>
+	/// Graphics are cut at the border of the view, e.g. objects at the sides (Blit_left and Blit_right in the
+	/// original). Only graphics with one frame can be cut, as the frames follow each other in the texture.
+	/// </summary>
+	private static void ClipToView(IAnimatedSprite sprite)
+	{
+		if (sprite.FrameCount > 1)
+			return;
+
+		int left = sprite.Position.X;
+		int top = sprite.Position.Y;
+		int right = left + sprite.Size.Width;
+		int bottom = top + sprite.Size.Height;
+		int clippedLeft = Math.Max(left, OffsetX);
+		int clippedTop = Math.Max(top, OffsetY);
+		int clippedRight = Math.Min(right, OffsetX + ViewWidth);
+		int clippedBottom = Math.Min(bottom, OffsetY + ViewHeight);
+
+		if (clippedLeft == left && clippedTop == top && clippedRight == right && clippedBottom == bottom)
+			return;
+
+		if (clippedRight <= clippedLeft || clippedBottom <= clippedTop)
+		{
+			sprite.Visible = false;
+			return;
+		}
+
+		sprite.TextureOffset = new(sprite.TextureOffset.X + clippedLeft - left, sprite.TextureOffset.Y + clippedTop - top);
+		sprite.Position = new(clippedLeft, clippedTop);
+		sprite.Size = new(clippedRight - clippedLeft, clippedBottom - clippedTop);
+	}
+
 	private void UpdateView()
 	{
 		var playerPosition = Game.State.PartyPosition;
@@ -1218,6 +1250,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 						blockSprite.TextureOffset = textureOffset;
 						blockSprite.Position = new(OffsetX + perspective.RenderPosition.X, OffsetY + perspective.RenderPosition.Y);
 						blockSprite.Visible = true;
+						ClipToView(blockSprite);
 
 						images.Add(blockSprite);
 
@@ -1231,6 +1264,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 						blockSprite.TextureOffset = new(textureOffset.X + perspective.Frames[0].Width, textureOffset.Y);
 						blockSprite.Position = new(OffsetX + perspective.SpecialRenderPosition.Value.X, OffsetY + perspective.SpecialRenderPosition.Value.Y);
 						blockSprite.Visible = true;
+						ClipToView(blockSprite);
 
 						images.Add(blockSprite);
 					}
@@ -1244,6 +1278,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 						blockSprite.TextureOffset = textureAtlas.GetOffset(Game.GraphicIndexProvider.GetLabBlockGraphicIndex(labBlock.Index, perspectiveLocation, facing));
 						blockSprite.Position = new(customRenderX ?? (OffsetX + perspective.RenderPosition.X), OffsetY + perspective.RenderPosition.Y);
 						blockSprite.Visible = true;
+						ClipToView(blockSprite);
 
 						images.Add(blockSprite);
 					}

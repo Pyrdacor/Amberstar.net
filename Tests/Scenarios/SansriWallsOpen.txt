@@ -1,0 +1,14 @@
+# The walls at the entrance of the temple of the Sansri (map 105) are persons with a path. At 23:50 the first one
+# moves aside into the wall (17,28). Like in the original the positions of a path are taken without a check of the tile.
+waittext
+dismissall
+teleport 105 16 29 up
+waitidle
+settime 23 40
+passtime 5
+wait 500
+characterat 16 28 1
+characterat 17 28 0
+passtime 5
+wait 500
+characterat 17 28 1
