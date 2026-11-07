@@ -18,6 +18,10 @@ sequence and the vibrato) and frequency sequences. They differ in the module var
 - MMME modules (the game's music) use another vibrato and portamento than TFMX modules.
 - 50 ticks per second, the speed counter advances the patterns. The YM periods: 2 MHz / (16 * period).
 - The songs 1-19 of the game map to 17 modules by a table ($316dc, see `ProgramData.FindSongTable`).
+- The routine at $f12 (German program) plays the song in d0 (0 stops the music, 20 and more are ignored, the current
+  song is at $5bee2). The initialization of the camp module calls it with song 17 (LULLABY, $fd3e), leaving the camp
+  calls $2754 (Set_map_music: on the world map the song of the travel type, otherwise the song of the map). None of
+  this is part of the released source code.
 
 ## Amiga (the music player of EXTRO.68K, `HippelPaulaSong`)
 - The outro emulates the 4 sample voices of the Amiga by software (it mixes them for the DMA sound of the STE).

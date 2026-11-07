@@ -22,6 +22,9 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 	const int SlotCount = 12;
 	const int HoursOfRest = 8;
 	const int TicksPerHour = 12;
+	// LULLABY: played by the initialization of the camp module ($fd3e in the German Atari ST program,
+	// not part of the released source code). Leaving the camp plays the song of the map again ($2754).
+	const int CampSong = 17;
 	static readonly Rect messageArea = new(112, 49, 192, 48);
 	readonly ItemContainer[] itemContainers = new ItemContainer[SlotCount];
 	Label? message;
@@ -65,6 +68,7 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 
 		base.Open(closeAction);
 
+		Game.PlaySong(CampSong);
 		message!.Visible = false;
 		Game.SetLayout(Layout.Place, ButtonGridPaletteIndex);
 		Game.Cursor.CursorType = CursorType.Sword;
@@ -81,6 +85,8 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 		Game.UntrapMouse();
 
 		base.Close();
+
+		Game.ScreenHandler.FindMapScreen()?.RestartMusic();
 
 		// The camp closes during a fade. The party can only be moved when the map is shown again.
 		if (leftInn is IInnData innData)

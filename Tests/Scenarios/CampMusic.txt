@@ -1,0 +1,14 @@
+# The camp plays the lullaby (song 17, the initialization of the camp module in the program) and leaving it
+# plays the song of the map again (on the world map the song of the travel type, on foot song 5).
+waittext
+dismissall
+teleport 37 10 12
+waitidle
+song 5
+click 230 170 right
+button 5
+waitscreen Camp
+song 17
+button 2
+waitidle
+song 5
