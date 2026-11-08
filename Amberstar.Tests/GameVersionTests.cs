@@ -12,6 +12,7 @@ public class GameVersionTests
 	[
 		("English-Amiga", "English", "Amiga", Path.Combine("English", "AmberfilesAmiga"), LegacyPlatform.Amiga),
 		("German-AtariST", "Deutsch", "Atari ST", Path.Combine("German", "AmberfilesST"), LegacyPlatform.Atari),
+		("German-DOS", "Deutsch", "DOS", Path.Combine("German", "AmberfilesDOS"), LegacyPlatform.Dos),
 	];
 
 	static byte[] PackVersions()
@@ -27,7 +28,7 @@ public class GameVersionTests
 		var versions = GameVersionArchive.Load(PackVersions());
 
 		Assert.Equal(Versions.Select(version => version.Id), versions.Select(version => version.Id));
-		Assert.Equal(["English (Amiga)", "Deutsch (Atari ST)"], versions.Select(version => version.Name));
+		Assert.Equal(["English (Amiga)", "Deutsch (Atari ST)", "Deutsch (DOS)"], versions.Select(version => version.Name));
 
 		for (int i = 0; i < versions.Count; i++)
 		{
@@ -36,9 +37,9 @@ public class GameVersionTests
 			Assert.Equal(Versions[i].LegacyPlatform, assetProvider.Platform);
 			Assert.NotNull(assetProvider.SavegameLoader.LoadSavegame());
 			// the same as with the data folder
-			int folderMapCount = TestData.CreateAssetProvider(Versions[i].Folder).MapLoader.LoadAllMaps().Count;
-			Assert.Equal(folderMapCount, assetProvider.MapLoader.LoadAllMaps().Count);
-			Assert.NotNull(assetProvider.OutroData);
+			var folderAssetProvider = TestData.CreateAssetProvider(Versions[i].Folder);
+			Assert.Equal(folderAssetProvider.MapLoader.LoadAllMaps().Count, assetProvider.MapLoader.LoadAllMaps().Count);
+			Assert.Equal(folderAssetProvider.OutroData != null, assetProvider.OutroData != null);
 		}
 	}
 
@@ -63,7 +64,7 @@ public class GameVersionTests
 
 			Assert.Equal(size, new FileInfo(executable).Length);
 			Assert.Equal(executableData, File.ReadAllBytes(executable)[..executableData.Length]);
-			Assert.Equal(2, GameVersionArchive.LoadEmbedded(executable).Count);
+			Assert.Equal(Versions.Length, GameVersionArchive.LoadEmbedded(executable).Count);
 		}
 		finally
 		{

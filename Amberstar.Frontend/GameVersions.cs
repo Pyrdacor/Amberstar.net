@@ -41,6 +41,23 @@ public static class GameVersionArchive
 	static readonly string[] DataFileExtensions = [".AMB", ".ICN", ".UDO", ".68K", ".SAV", ".IMG", ".TXT"];
 
 	/// <summary>
+	/// The files of the DOS version which the game reads (the other programs and pictures are not needed).
+	/// </summary>
+	static readonly string[] DosDataFiles =
+	[
+		"GAME.EXE", "AMBEDATA.DAT", "BACKGRND.VGA", "CHARDATA.VGA", "CHESTDAT.ALL", "CODEDATA.CHA", "CODEDATA.MAP",
+		"COMBAT.VGA", "DICTIONA.ENG", "DICTIONA.GER", "ICN_DATA.VGA", "ICON_DAT.VGA", "LABBLOCK.VGA", "MAP_DATA.ALL",
+		"PICTURES.VGA", "SOUND.MDI", "WARESDAT.ALL",
+	];
+
+	static bool IsDataFile(string path)
+	{
+		string name = Path.GetFileName(path).ToUpperInvariant();
+
+		return DataFileExtensions.Contains(Path.GetExtension(name)) || DosDataFiles.Contains(name);
+	}
+
+	/// <summary>
 	/// Returns the versions appended to the executable or the ones of the file versions.dat
 	/// next to it. The list is empty if there are none.
 	/// </summary>
@@ -127,7 +144,7 @@ public static class GameVersionArchive
 			manifest.AppendLine($"{id};{language};{platform}");
 
 			var files = Directory.GetFiles(folder)
-				.Where(file => DataFileExtensions.Contains(Path.GetExtension(file).ToUpperInvariant()))
+				.Where(IsDataFile)
 				.Order(StringComparer.Ordinal);
 
 			foreach (var file in files)
