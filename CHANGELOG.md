@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.4.1
 
 ### Fixed
+- The DOS versions of the release crashed at the start. The game data archive of the executable only had the files of the Amiga and Atari ST versions, now it also has the files of the DOS versions.
 - A spell scroll of a known spell can no longer be learned, like in the original. The selection ends without a message, the scroll and the spell learning points are kept. Before the spell learning points were used and the scroll crumbled to dust.
 - The guilds train up to level 50 like the original game. The limit was 20 like in the released source code.
 
