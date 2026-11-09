@@ -1,0 +1,20 @@
+# The icons of the active spells are shown below the special items (Show_spells in the original).
+waittext
+dismissall
+specialdisplay none
+# --- light and armour protection are active
+setactivespell Light 20 4
+setactivespell ArmorProtection 20 10
+passtime 5
+specialdisplay Spell Light
+specialdisplay Spell ArmorProtection
+# --- also on 3D maps
+teleport 67 7 15 down
+dismissall
+specialdisplay Spell Light
+specialdisplay Spell ArmorProtection
+# --- the icons are gone with the spells
+setactivespell Light 0
+setactivespell ArmorProtection 0
+passtime 5
+specialdisplay none

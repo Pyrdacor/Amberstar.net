@@ -7,6 +7,7 @@ namespace Amberstar.Game.UI;
 /// <summary>
 /// Shows the used special items right of the map view (Show_special_items in the original):
 /// compass, Amberstar, day/night display (magical picture), wind chain, coordinates (map locator) and time (clock).
+/// Below them the icons of the active spells are shown (Show_spells in the original).
 /// Like in the original the graphics are drawn with the palette of the map.
 /// </summary>
 internal sealed class SpecialItemDisplay(Game game)
@@ -57,7 +58,8 @@ internal sealed class SpecialItemDisplay(Game game)
 	{
 		var specialItems = game.State.SpecialItems;
 		int hour = game.State.Hour;
-		string state = $"{paletteIndex} {specialItems} {compassDirection} {coordinates} {hour} {game.State.Minute}";
+		var activeSpells = game.State.ActiveSpells.Select(spell => spell.Duration != 0).ToArray();
+		string state = $"{paletteIndex} {specialItems} {compassDirection} {coordinates} {hour} {game.State.Minute} {string.Concat(activeSpells.Select(active => active ? '1' : '0'))}";
 
 		if (covered || state == shownState)
 			return;
@@ -119,6 +121,17 @@ internal sealed class SpecialItemDisplay(Game game)
 		{
 			AddImage(208 + 64, 49, 32, 16, graphicIndexProvider.GetButtonIndex(ButtonType.EmptyArea));
 			AddText(208 + 65, 49 + 5, $"{hour:00}:{game.State.Minute:00}");
+		}
+
+		// the icons of the active spells below the special items (Show_spells in the original)
+		for (int i = 0; i < activeSpells.Length; i++)
+		{
+			if (!activeSpells[i])
+				continue;
+
+			var graphic = (UIGraphic)((int)UIGraphic.Light + i);
+			AddImage(208 + i * 16, 49 + 64, 16, 16, graphicIndexProvider.GetUIGraphicIndex(graphic));
+			shownItems.Add($"Spell {(Game.ActiveSpellType)i}");
 		}
 
 		ShownItems = shownItems;

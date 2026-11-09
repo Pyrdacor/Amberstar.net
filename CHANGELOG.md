@@ -6,6 +6,7 @@
 - The whirlpool to the realm of Vielauge (world map part 3 at 46,11) can be entered with the ship. Map exits are only blocked for horses, rafts and ships where the party could get off, the deep water around the whirlpool only allows the ship. Like in the original the party continues on foot and the ship is lost.
 - Encounter events (e.g. the final battle in the ritual room of Godsbane) start the battle at once and the monsters are only gone after the party won, like in the original program. After fleeing the party is back at its previous position and the monsters are still there. Before Amberstar.net asked to fight or flee and the monsters were gone after the party fled or avoided the battle, so the final battle could be skipped. The released source code works like that, but the shipped original program was changed.
 - Shandra's rescue after a lost battle shows the picture of the magic prison and the game over shows the picture of the dead people next to the text, like in the original. Before only the text was shown.
+- The icons of the active spells (light, armour protection, weapon power, anti-magic, clairvoyance and invisibility) are shown below the special items next to the map, like in the original. Before the area stayed empty.
 
 ## 0.4.1
 
