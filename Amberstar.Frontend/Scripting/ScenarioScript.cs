@@ -599,6 +599,12 @@ public sealed class ScenarioScript
 				else
 					Report(string.Equals(game.ScriptLayout, args[0], StringComparison.OrdinalIgnoreCase), $"layout = {game.ScriptLayout} (expected {args[0]})");
 				break;
+			case "buttonlayout":
+				if (args.Length == 0)
+					output($"  buttonlayout = {game.ScriptButtonLayout}");
+				else
+					Report(string.Equals(game.ScriptButtonLayout, args[0], StringComparison.OrdinalIgnoreCase), $"buttonlayout = {game.ScriptButtonLayout} (expected {args[0]})");
+				break;
 			case "blinkinglabels":
 			{
 				int count = game.ScriptBlinkingLabelCount;

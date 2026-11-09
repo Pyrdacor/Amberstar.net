@@ -1,0 +1,21 @@
+# Enter switches between the movement and the action buttons on maps like the right click on the buttons.
+waittext
+dismissall
+buttonlayout Movement
+key Enter
+buttonlayout Actions
+key Enter
+buttonlayout Movement
+# --- the right click still works
+click 230 170 right
+buttonlayout Actions
+click 230 170 right
+buttonlayout Movement
+# --- also on 3D maps
+teleport 67 7 15 down
+dismissall
+buttonlayout Movement
+key Enter
+buttonlayout Actions
+key Enter
+buttonlayout Movement

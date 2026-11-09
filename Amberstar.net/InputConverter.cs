@@ -34,6 +34,8 @@ namespace Amberstar
 				return key - Silk.NET.Input.Key.A + Key.LetterA;
 			else if (key >= Silk.NET.Input.Key.Number0 && key <= Silk.NET.Input.Key.Number9)
 				return key - Silk.NET.Input.Key.Number0 + Key.Number0;
+			else if (key == Silk.NET.Input.Key.KeypadEnter)
+				return Key.Enter; // the keypad also clicks the buttons
 			else
 				return keyMap.GetValueOrDefault(key, Key.Invalid);
 		}

@@ -1007,6 +1007,15 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		if (base.KeyDown(key, keyModifiers))
 			return true;
 
+		// like the right click on the buttons (not while an action like eye or ear waits for a target)
+		if (key == Key.Enter && keyModifiers == KeyModifiers.None)
+		{
+			if (!Game.Cursor.CursorType.ForcesMouseTrap())
+				ToggleButtonLayout();
+
+			return true;
+		}
+
 		if (Game.Cursor.CursorType < CursorType.Eye || Game.Cursor.CursorType > CursorType.Ear)
 			UpdateMovement();
 
@@ -1154,8 +1163,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
             }
             else if (ButtonGrid.Area.Contains(position))
 			{
-				Game.ButtonLayout = (ButtonLayout)(1 - (int)Game.ButtonLayout); // toggle
-				RequestButtonSetup();
+				ToggleButtonLayout();
                 return true;
             }
 			else

@@ -101,6 +101,15 @@ internal abstract class ButtonGridScreen : Screen
         base.ScreenPopped(screen);
     }
 
+	/// <summary>
+	/// Switches between the movement and the action buttons on maps (right click on the buttons or enter).
+	/// </summary>
+	protected void ToggleButtonLayout()
+	{
+		Game.ButtonLayout = (ButtonLayout)(1 - (int)Game.ButtonLayout);
+		RequestButtonSetup();
+	}
+
 	public override bool KeyUp(Key key, KeyModifiers keyModifiers)
 	{
 		if (keyModifiers == KeyModifiers.None && key >= Key.Keypad1 && key <= Key.Keypad9)

@@ -54,6 +54,11 @@ partial class Game
 
 	public string ScriptLayout => CurrentLayout.ToString();
 
+	/// <summary>
+	/// The buttons on maps: Movement or Actions.
+	/// </summary>
+	public string ScriptButtonLayout => ButtonLayout.ToString();
+
 	public string ScriptCursor => Cursor.CursorType.ToString();
 
 	public string ScriptSettings => $"{Configuration.Resolution} {Configuration.WindowMode} {Configuration.CampRegeneration}";

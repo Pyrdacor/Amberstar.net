@@ -798,6 +798,12 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		if (base.KeyDown(key, keyModifiers))
 			return true;
 
+		if (key == Key.Enter && keyModifiers == KeyModifiers.None)
+		{
+			ToggleButtonLayout();
+			return true;
+		}
+
         CheckMove();
 
 		return true;
@@ -809,8 +815,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		{
 			if (ButtonGrid.Area.Contains(position))
 			{
-				Game.ButtonLayout = (ButtonLayout)(1 - (int)Game.ButtonLayout); // toggle
-				RequestButtonSetup();
+				ToggleButtonLayout();
 				return true;
 			}
             else

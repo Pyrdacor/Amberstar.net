@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+- Enter (also on the numeric keypad) switches between the movement and the action buttons on maps like the right click on the buttons.
+
 ### Fixed
 - The whirlpool to the realm of Vielauge (world map part 3 at 46,11) can be entered with the ship. Map exits are only blocked for horses, rafts and ships where the party could get off, the deep water around the whirlpool only allows the ship. Like in the original the party continues on foot and the ship is lost.
 - Encounter events (e.g. the final battle in the ritual room of Godsbane) start the battle at once and the monsters are only gone after the party won, like in the original program. After fleeing the party is back at its previous position and the monsters are still there. Before Amberstar.net asked to fight or flee and the monsters were gone after the party fled or avoided the battle, so the final battle could be skipped. The released source code works like that, but the shipped original program was changed.
