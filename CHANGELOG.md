@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.2
 
 ### Added
 - Enter switches between the movement and the action buttons on maps like the right click on the buttons. The original does this with Enter on the numeric keypad, which works too now.
