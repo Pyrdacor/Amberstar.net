@@ -57,6 +57,19 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 			var (slotX, slotY) = GetSlotPosition(i);
 			itemContainers[i] = AddItem(slotX, slotY, item: null, count: 0, displayLayer: 10);
 		}
+
+		// the scrolls to learn spells from (LearnSpell_Mod in the original)
+		ItemNameDisplay = new(Game, this, ItemNameDisplay.DefaultArea);
+	}
+
+	public override void MouseMove(Position position, MouseButtons buttons)
+	{
+		base.MouseMove(position, buttons);
+
+		if (waitForClick)
+			ItemNameDisplay?.Hide();
+		else
+			ItemNameDisplay?.Update(itemContainers, position, ButtonGridPaletteIndex);
 	}
 
 	public override void Open(Action? closeAction)
@@ -180,6 +193,7 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 	{
 		learnSpellMode = false;
 		message!.Visible = false;
+		ItemNameDisplay?.Hide();
 		ShowItems();
 	}
 
@@ -325,6 +339,9 @@ internal sealed class CampScreen : ButtonGridScreen, IWaitForClickScreen
 
 		this.waitForClick = waitForClick;
 		this.afterClickAction = afterClickAction;
+
+		if (waitForClick)
+			ItemNameDisplay?.Hide();
 
 		if (waitForClick)
 		{

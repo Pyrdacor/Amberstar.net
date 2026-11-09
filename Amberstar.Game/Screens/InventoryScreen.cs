@@ -27,6 +27,7 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     readonly static Rect itemArea = new(16, 81, 176, 112);
     PersonInfoView? personInfoView;
     Label? message;
+    bool messageShown = false;
     Label? weightText;
     bool ignoreItemChangeEvents = false;
     Action<int>? amountEntered;
@@ -193,6 +194,9 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
 
         var (x, y, width, height) = messageDisplayArea;
         message = AddLabel(x, y, "", width, height, displayLayer: 20);
+
+        // the inventory also shows the names of monster items (the check was removed in the original)
+        ItemNameDisplay = new(Game, this, itemTooltipArea, showMonsterItems: true, displayLayer: 20);
     }
 
     public override void Open(Action? closeAction)
@@ -245,6 +249,7 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     public override void Close()
     {
         HideMessage();
+        HideItemName();
 
         CleanUpEventHandlers();
 
@@ -365,6 +370,7 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
         base.MouseMove(position, buttons);
 
         ItemContainer.UpdateDragPosition(Game, position);
+        UpdateItemName(position);
     }
 
     public void SwitchToPartyMember(int index, bool force)
@@ -373,6 +379,7 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
             return;
 
         CleanUpItems();
+        HideItemName();
 
         Game.State.SetCurrentInventory(index);
         partyMember = Game.State.CurrentInventory!;
@@ -641,8 +648,10 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     {
         var messageText = Game.AssetProvider.TextLoader.LoadText(new AssetIdentifier(AssetType.Message, (int)messageIndex));
         Game.ScriptTextShown(messageText);
+        HideItemName();
         message!.SetText(messageText);
         message.Visible = true;
+        messageShown = true;
 
         if (waitForClick)
             textScrollHandler.Attach(message);
@@ -660,7 +669,21 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
     internal override void HideMessage()
     {
         message!.Visible = false;
+        messageShown = false;
     }
+
+    /// <summary>
+    /// The name of the item under the mouse is shown above the items (Show_object_name in the original).
+    /// </summary>
+    private void UpdateItemName(Position position)
+    {
+        if (messageShown || itemDragged || waitForClick)
+            HideItemName();
+        else
+            ItemNameDisplay?.Update(ItemContainers, position, ButtonGridPaletteIndex);
+    }
+
+    private void HideItemName() => ItemNameDisplay?.Hide();
 
     internal override void PickItem(ScreenType sourceScreen, int? index)
     {
@@ -924,6 +947,8 @@ internal class InventoryScreen : ItemGridScreen, IWaitForClickScreen
         public override Rect ItemTooltipArea { get; } = itemTooltipArea;
 
         public override bool HideItemsAfterPicking { get; } = false;
+
+        public override bool ShowMonsterItemNames => true;
     }
 
     internal class DropItemScreen : InventoryItemPickerScreen

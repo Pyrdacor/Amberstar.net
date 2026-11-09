@@ -109,6 +109,13 @@ internal abstract class Screen
 
     public virtual bool Transparent { get; } = false;
 
+    /// <summary>
+    /// Shows the name of the item under the mouse, if the screen shows items.
+    /// </summary>
+    private protected ItemNameDisplay? ItemNameDisplay { get; set; }
+
+    internal bool ScriptItemNameShown => ItemNameDisplay?.Visible == true;
+
     public Game Game => game!;
 
     public virtual bool AllowCharacterSelection { get; } = true;
@@ -180,6 +187,9 @@ internal abstract class Screen
 
 	public virtual void ScreenPushed(Screen screen)
 	{
+        // e.g. item pickers show the item names themselves
+        ItemNameDisplay?.Hide();
+
         if (!screen.Transparent)
         {
             createdControlsInInitVisibility.Clear();

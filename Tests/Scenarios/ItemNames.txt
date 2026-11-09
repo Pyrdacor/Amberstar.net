@@ -1,0 +1,52 @@
+# The name of the item under the mouse is shown (Show_object_name and Show2_object_name in the original): inventory, merchant and camp.
+waittext
+dismissall
+give 1 104
+itemslot 1 2 104
+click 32 17 right
+waitscreen Inventory
+itemnameshown 0
+# --- over the item in the second backpack slot
+hover 150 90
+itemnameshown 1
+# --- over an empty backpack slot the name is gone
+hover 182 90
+itemnameshown 0
+# --- the item picker (use item) shows the name itself, afterwards the inventory shows it again
+button 3
+waitscreen InventoryUseItem
+itemnameshown 0
+key Escape
+waitscreen Inventory
+hover 150 90
+itemnameshown 1
+key Escape
+waitidle
+# --- the wares of a merchant (Twinlake, map 67, 21,20: torches in the first slot)
+cheat gold 1000
+teleport 67 21 20
+waitscreen Merchant
+button 6
+button 0
+hover 20 150
+itemnameshown 1
+hover 250 150
+itemnameshown 0
+key Escape
+# take the gold back before leaving
+button 7
+button 2
+waitidle
+# --- the scrolls in the camp to learn spells from (map 37, 10,12, the first slot holds an item)
+setvalue 1 spellschools 2
+give 1 2
+teleport 37 10 12
+waitidle
+click 230 170 right
+button 5
+waitscreen Camp
+hover 20 150
+itemnameshown 0
+button 3
+hover 20 150
+itemnameshown 1

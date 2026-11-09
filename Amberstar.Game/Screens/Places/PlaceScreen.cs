@@ -75,6 +75,11 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 
 	public bool WaitingForClick => waitForClick;
 
+	/// <summary>
+	/// The items whose names are shown under the mouse (e.g. the wares of merchants).
+	/// </summary>
+	protected virtual ItemContainer[] ItemContainers => [];
+
 	public override void Init()
 	{
 		base.Init();
@@ -94,6 +99,18 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 		goldDisplay = AddLabel(x, y + 8, "00000", width, 7);
 		goldDisplay.Alignment = TextAlignment.Center;
 		goldDisplay.PaletteIndex = ButtonGridPaletteIndex;
+
+		ItemNameDisplay = new(Game, this, ItemNameDisplay.DefaultArea);
+	}
+
+	public override void MouseMove(Position position, MouseButtons buttons)
+	{
+		base.MouseMove(position, buttons);
+
+		if (waitForClick || transfer != TransferType.None)
+			ItemNameDisplay?.Hide();
+		else
+			ItemNameDisplay?.Update(ItemContainers, position, ButtonGridPaletteIndex);
 	}
 
 	public override void Open(Action? closeAction)
@@ -235,6 +252,9 @@ internal abstract class PlaceScreen : ButtonGridScreen, IWaitForClickScreen
 
 		this.waitForClick = waitForClick;
 		this.afterClickAction = afterClickAction;
+
+		if (waitForClick)
+			ItemNameDisplay?.Hide();
 
 		if (waitForClick)
 		{

@@ -51,6 +51,8 @@ internal sealed class MerchantScreen : PlaceScreen
 
 	internal string ScriptMode => mode.ToString();
 
+	protected override ItemContainer[] ItemContainers => itemContainers;
+
 	static Position GetSlotPosition(int slot) => new(16 + (slot % 6) * 32, 37 + 108 + (slot / 6) * 32);
 
 	public override void Init()

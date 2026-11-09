@@ -1,4 +1,4 @@
-using Amber.Common;
+﻿using Amber.Common;
 using Amberstar.Game.Events;
 using Amberstar.Game.Screens;
 using Amberstar.GameData;
@@ -85,7 +85,12 @@ partial class Game
 
 	public int ScriptBattleTextsDuringAnimation => (ScreenHandler.ActiveScreen as BattleScreen)?.ScriptTextsDuringAnimation ?? 0;
 
-	public bool ScriptItemNameShown => (ScreenHandler.ActiveScreen as ItemScreen)?.ScriptNameShown == true;
+	public bool ScriptItemNameShown => ScreenHandler.ActiveScreen switch
+	{
+		ItemScreen itemScreen => itemScreen.ScriptNameShown,
+		Screen screen => screen.ScriptItemNameShown,
+		_ => false
+	};
 
 	public int ScriptVisibleOptionsSlots => (ScreenHandler.ActiveScreen as OptionsScreen)?.ScriptVisibleSlots ?? 0;
 

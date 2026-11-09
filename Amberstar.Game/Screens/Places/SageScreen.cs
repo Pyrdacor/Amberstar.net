@@ -16,6 +16,8 @@ internal sealed class SageScreen : PlaceScreen
 	const int ShowInventoryButtonIndex = 3;
 	const int SlotCount = 12;
 	readonly ItemContainer[] itemContainers = new ItemContainer[SlotCount];
+
+	protected override ItemContainer[] ItemContainers => itemContainers;
 	readonly ItemSlot?[] shownSlots = new ItemSlot?[SlotCount];
 	bool showInventory = false;
 

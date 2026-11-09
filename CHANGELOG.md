@@ -7,6 +7,7 @@
 - Encounter events (e.g. the final battle in the ritual room of Godsbane) start the battle at once and the monsters are only gone after the party won, like in the original program. After fleeing the party is back at its previous position and the monsters are still there. Before Amberstar.net asked to fight or flee and the monsters were gone after the party fled or avoided the battle, so the final battle could be skipped. The released source code works like that, but the shipped original program was changed.
 - Shandra's rescue after a lost battle shows the picture of the magic prison and the game over shows the picture of the dead people next to the text, like in the original. Before only the text was shown.
 - The icons of the active spells (light, armour protection, weapon power, anti-magic, clairvoyance and invisibility) are shown below the special items next to the map, like in the original. Before the area stayed empty.
+- The name of the item under the mouse is shown in the inventory, opened chests, the loot after battles, conversations, at merchants and sages and in the camp while learning spells, like in the original. Before the name was only shown while choosing an item (e.g. to use or drop it). Like in the original the names of monster items are only shown in the inventory, and the name is shown right of the picture in chests and when items are used on locks.
 
 ## 0.4.1
 

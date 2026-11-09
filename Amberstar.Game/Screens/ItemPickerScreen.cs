@@ -9,7 +9,6 @@ internal abstract class ItemPickerScreen : Screen
     ItemGridScreen? parentScreen;
     List<ItemContainer> items = [];
     int? pickedItem = null;
-    Label? itemNameTooltip;
 
     public override bool Transparent => true;
 
@@ -22,6 +21,11 @@ internal abstract class ItemPickerScreen : Screen
     public virtual CursorType HoverCursorType { get; } = CursorType.Sword;
 
     public virtual bool HideItemsAfterPicking { get; } = true;
+
+    /// <summary>
+    /// Only the inventory shows the names of monster items.
+    /// </summary>
+    public virtual bool ShowMonsterItemNames => false;
 
     /// <summary>
     /// If set, only items of the backpack can be picked.
@@ -41,9 +45,7 @@ internal abstract class ItemPickerScreen : Screen
         parentScreen = Game.ScreenHandler.LastScreen as ItemGridScreen;
 
         // Note: Controls which are added in Open are destroyed when the screen is closed.
-        var (x, y, width, height) = ItemTooltipArea;
-        itemNameTooltip = AddLabel(x, y, width, height, displayLayer: 100);
-        itemNameTooltip.Alignment = TextAlignment.Center;
+        ItemNameDisplay = new(Game, this, ItemTooltipArea, ShowMonsterItemNames);
 
         // The screen is reused, so the items are determined every time.
         var itemContainers = BackpackOnly ? parentScreen?.BackpackItemContainers
@@ -114,18 +116,6 @@ internal abstract class ItemPickerScreen : Screen
     {
         base.MouseMove(position, buttons);
 
-        for (int i = 0; i < items.Count; i++)
-        {
-            var item = items[i];
-
-            if (!item.Empty && !item.TwoHandedSecondSlot && item.Contains(position))
-            {
-                itemNameTooltip!.SetText(item.Item!.GetName(Game.AssetProvider.TextLoader), 320 - itemNameTooltip!.Position.X, 15, 0, parentScreen!.ButtonGridPaletteIndex);
-                itemNameTooltip.Visible = true;
-                return;
-            }
-        }
-
-        itemNameTooltip!.Visible = false;
+        ItemNameDisplay?.Update(items, position, parentScreen?.ButtonGridPaletteIndex ?? 0);
     }
 }

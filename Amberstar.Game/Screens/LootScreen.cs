@@ -63,6 +63,18 @@ internal sealed class LootScreen : ItemGridScreen, IWaitForClickScreen
 
 		var (x, y, width, height) = messageDisplayArea;
 		message = AddLabel(x, y, width, height, 20);
+
+		ItemNameDisplay = new(Game, this, ItemNameDisplay.DefaultArea);
+	}
+
+	public override void MouseMove(Position position, MouseButtons buttons)
+	{
+		base.MouseMove(position, buttons);
+
+		if (message!.Visible)
+			ItemNameDisplay?.Hide();
+		else
+			ItemNameDisplay?.Update(itemSlots, position, ButtonGridPaletteIndex);
 	}
 
 	public override void Open(Action? closeAction)
@@ -279,6 +291,7 @@ internal sealed class LootScreen : ItemGridScreen, IWaitForClickScreen
 	{
 		var text = Game.LoadMessageText(messageIndex);
 		Game.ScriptTextShown(text);
+		ItemNameDisplay?.Hide();
 		message!.SetText(text, messageDisplayArea.Size.Width, 15, TextManager.TransparentPaper, ButtonGridPaletteIndex);
 		message.Visible = true;
 		this.waitForClick = waitForClick;

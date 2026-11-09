@@ -49,7 +49,7 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
         var lastSlot = inventorySlotPositions[^1];
 
         itemArea = new(firstSlot.X, firstSlot.Y, lastSlot.X + 16 - firstSlot.X, lastSlot.Y + 16 - firstSlot.Y);
-        itemTooltipArea = new(messageDisplayArea.Position.X, messageDisplayArea.Position.Y + 7, messageDisplayArea.Size.Width, 7);
+        itemTooltipArea = ItemNameDisplay.DefaultArea;
     }
 
     protected TEvent LockedEvent => lockedEvent!;
@@ -153,6 +153,19 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
 
         var (x, y, width, height) = messageDisplayArea;
         message = AddLabel(x, y, width, height, 20);
+
+        // e.g. the items of an opened chest (OpenedChest_Mod in the original)
+        ItemNameDisplay = new(Game, this, itemTooltipArea);
+    }
+
+    public override void MouseMove(Position position, MouseButtons buttons)
+    {
+        base.MouseMove(position, buttons);
+
+        if (message!.Visible || ItemContainer.IsDragging)
+            ItemNameDisplay?.Hide();
+        else
+            ItemNameDisplay?.Update(ItemContainers, position, ButtonGridPaletteIndex);
     }
 
     public override void Open(Action? closeAction)
@@ -377,6 +390,7 @@ internal abstract class LockedScreen<TEvent> : ItemGridScreen, IWaitForClickScre
     protected void ShowText(IText text, bool waitForClick = true, bool closeAfterClick = false)
     {
         Game.ScriptTextShown(text);
+        ItemNameDisplay?.Hide();
         message!.SetText(text, messageDisplayArea.Size.Width, 15, TextManager.TransparentPaper, ButtonGridPaletteIndex);
         message.Visible = true;
 

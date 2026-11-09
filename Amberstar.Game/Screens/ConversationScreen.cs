@@ -107,6 +107,9 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
         conversationText = AddLabel(x, y, width, height);
         textScrollHandler.ScrollEnded += EndClickWait;
 
+        // the dialogue shows the name above the items (Dialogue_Mod in the original)
+        ItemNameDisplay = new(Game, this, itemTooltipArea);
+
         for (int i = 0; i < items.Length; i++)
         {
             var (slotX, slotY) = itemSlotPositions[i];
@@ -493,6 +496,7 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
         conversationText!.Position = new(textDisplayArea.Left, y);
         conversationText.Alignment = center ? TextAlignment.Center : TextAlignment.Left;
 
+        ItemNameDisplay?.Hide();
         conversationText!.SetText(text);
         Game.ScriptTextShown(text);
         conversationText.Visible = true;
@@ -703,6 +707,11 @@ internal sealed class ConversationScreen : ItemGridScreen, IWaitForClickScreen
         ItemContainer.UpdateDragPosition(position);
 
         base.MouseMove(position, buttons);
+
+        if (conversationText!.Visible || ItemContainer.IsDragging)
+            ItemNameDisplay?.Hide();
+        else
+            ItemNameDisplay?.Update(items, position, ButtonGridPaletteIndex);
     }
 
     private void AbortItemDrag()
