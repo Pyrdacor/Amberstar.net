@@ -12,6 +12,8 @@ battleresult PartyDefeated
 animationshown attack
 waittext
 textshown GÖTTIN BALA
+# --- with the picture of the dead people like the original (Game_over_sequence)
+screen PictureText
 # --- the death song is played
 song 19
 dismissall

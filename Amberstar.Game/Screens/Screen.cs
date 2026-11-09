@@ -824,17 +824,19 @@ internal class ScreenHandler(Game Game) : IDisposable
 
 		void Push()
 		{
+			// another screen may have been pushed during the fade (e.g. a text box while the game over picture fades in)
+			var coveredScreen = ActiveScreen;
 			ScreenIsOpening = false;
 			screens.Push(screen!);
 
-			if (currentScreen != null && !screen!.Transparent)
-				coveredLayouts[currentScreen] = (Game.CurrentLayout, Game.CurrentLayoutPaletteIndex);
+			if (coveredScreen != null && !screen!.Transparent)
+				coveredLayouts[coveredScreen] = (Game.CurrentLayout, Game.CurrentLayoutPaletteIndex);
 
-			currentScreen?.ScreenPushed(screen!);
+			coveredScreen?.ScreenPushed(screen!);
             screen!.PreOpen();
             screen.Open(followAction);
 
-			ScreenChanged?.Invoke(screen, currentScreen);
+			ScreenChanged?.Invoke(screen, coveredScreen);
         }
 
         bool transparent = currentScreen?.Transparent == true || screen.Transparent;

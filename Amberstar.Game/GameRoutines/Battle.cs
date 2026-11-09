@@ -3,6 +3,7 @@ using Amberstar.Game.Battle;
 using MapCharacter = Amberstar.Game.Characters.MapCharacter;
 using Amberstar.Game.Screens;
 using Amberstar.GameData;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game;
 
@@ -357,7 +358,8 @@ partial class Game
 		UpdatePartyMembers();
 		ResetStatusIcons();
 		ScreenHandler.ClearAllScreens();
-		ShowTextMessage(LoadMessageText(Message.ShandraRescue), () => AfterScreenClosed(() =>
+		// the picture of the magic prison with the text (Resurrection_sequence in the program)
+		ShowPictureWithText(Image80x80.MagicPrison, LoadMessageText(Message.ShandraRescue), () => AfterScreenClosed(() =>
 			Teleport(ResurrectionPosition.X, ResurrectionPosition.Y, Direction.Up, ResurrectionMap, true)));
 	}
 
@@ -369,7 +371,8 @@ partial class Game
 	{
 		PlaySong(DeathSong);
 		ScreenHandler.ClearAllScreens();
-		ShowTextMessage(LoadMessageText(Message.PartyDeath), () => AfterScreenClosed(RestartGame));
+		// the picture of the dead people with the text (Game_over_sequence in the program)
+		ShowPictureWithText(Image80x80.DeadPeople, LoadMessageText(Message.PartyDeath), () => AfterScreenClosed(RestartGame));
 	}
 
 	/// <summary>

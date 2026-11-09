@@ -1,0 +1,18 @@
+# With Shandra's help (quest bit 6) and enough luck a lost battle doesn't end the game. Shandra rescues the party with the picture of the magic prison like the original (Resurrection_sequence) and the party wakes up at her place.
+waittext
+dismissall
+setquestbit 6 1
+setvalue 1 luck 100
+startbattle 35
+waitscreen Battle
+cleartexts
+battleaction parry
+battleround
+battleresult PartyDefeated
+waittext
+textshown SHANDRA
+screen PictureText
+dismissall
+waitidle
+map 70
+pos 16 13

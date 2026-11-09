@@ -33,8 +33,22 @@ internal class PictureTextScreen : Screen
 
 		Game.Cursor.CursorType = CursorType.Zzz;
 
-        var @event = (Game.EventHandler.CurrentEvent as IShowPictureTextEvent)!;
-        var imageType = (Image80x80)@event.Picture;
+        Image80x80 imageType;
+        IText text;
+
+        if (Game.CurrentPictureText is var (picture, pictureText))
+        {
+            imageType = picture;
+            text = pictureText;
+        }
+        else
+        {
+            var @event = (Game.EventHandler.CurrentEvent as IShowPictureTextEvent)!;
+            imageType = (Image80x80)@event.Picture;
+            int mapIndex = Game.EventHandler.CurrentEventMapIndex;
+            text = Game.AssetProvider.TextLoader.LoadText(new(AssetType.MapText, mapIndex)).GetTextBlock(@event.TextIndex);
+        }
+
         var palette = Game.PaletteIndexProvider.Get80x80ImagePaletteIndex(imageType);
         
 		image = AddImage(16, 81, 80, 80, Game.GraphicIndexProvider.Get80x80ImageIndex(imageType), ControlDisplayLayer, true);
@@ -42,11 +56,6 @@ internal class PictureTextScreen : Screen
 		image.Visible = true;
 
         Game.SetLayout(Layout.PictureText, palette);
-
-        int mapIndex = Game.EventHandler.CurrentEventMapIndex;
-        var text = Game.AssetProvider.TextLoader.LoadText(new(AssetType.MapText, mapIndex));
-
-		text = text.GetTextBlock(@event.TextIndex);
 		Game.ScriptTextShown(text);
 
 		displayText = AddLabel(TextX, TextY, text, TextWidth, TextHeight, ControlDisplayLayer);

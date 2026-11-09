@@ -3,6 +3,7 @@ using Amberstar.Game.Events;
 using Amberstar.Game.Screens;
 using Amberstar.GameData;
 using Amberstar.GameData.Events;
+using Amberstar.GameData.Serialization;
 
 namespace Amberstar.Game;
 
@@ -205,6 +206,25 @@ partial class Game
 	internal void ShowPictureWithText()
 	{
 		ScreenHandler.PushScreen(ScreenType.PictureText);
+	}
+
+	/// <summary>
+	/// The picture and the text which the picture text screen shows instead of the ones of the current event.
+	/// </summary>
+	internal (Image80x80 Picture, IText Text)? CurrentPictureText { get; private set; }
+
+	/// <summary>
+	/// Shows a picture with a text which doesn't belong to a map event (e.g. Shandra's rescue).
+	/// </summary>
+	internal void ShowPictureWithText(Image80x80 picture, IText text, Action? closeAction = null)
+	{
+		CurrentPictureText = (picture, text);
+		EventHandler.CurrentEvent = null;
+		ScreenHandler.PushScreen(ScreenType.PictureText, () =>
+		{
+			CurrentPictureText = null;
+			closeAction?.Invoke();
+		});
 	}
 
 	internal void OpenPlace(PlaceEvent placeEvent)
