@@ -16,6 +16,11 @@ internal sealed class HoldRepeater
 	/// </summary>
 	public bool Repeated => repeats != 0;
 
+	/// <summary>
+	/// It is held long enough to repeat the action (a short click only executes it once).
+	/// </summary>
+	public bool LongHeld => heldTicks >= FirstRepeatTicks;
+
 	public void Reset()
 	{
 		heldTicks = 0;

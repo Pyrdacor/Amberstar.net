@@ -7,6 +7,7 @@
 
 ### Fixed
 - Holding the mouse button on Zzz (the middle movement button or the party on the map) or key 5 of the numeric keypad lets the time pass until it is released, like in the original. Before every step needed a click.
+- Holding the mouse button on an arrow button moves the party like holding the key at the same place of the numeric keypad, like in the original. A click is still one step. Before every step needed a click.
 - The whirlpool to the realm of Vielauge (world map part 3 at 46,11) can be entered with the ship. Map exits are only blocked for horses, rafts and ships where the party could get off, the deep water around the whirlpool only allows the ship. Like in the original the party continues on foot and the ship is lost.
 - Encounter events (e.g. the final battle in the ritual room of Godsbane) start the battle at once and the monsters are only gone after the party won, like in the original program. After fleeing the party is back at its previous position and the monsters are still there. Before Amberstar.net asked to fight or flee and the monsters were gone after the party fled or avoided the battle, so the final battle could be skipped. The released source code works like that, but the shipped original program was changed.
 - Shandra's rescue after a lost battle shows the picture of the magic prison and the game over shows the picture of the dead people next to the text, like in the original. Before only the text was shown.

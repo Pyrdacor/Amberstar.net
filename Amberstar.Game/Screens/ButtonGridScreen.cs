@@ -22,6 +22,18 @@ internal abstract class ButtonGridScreen : Screen
 	/// The button is clicked repeatedly while the mouse button or its key on the numeric keypad is held.
 	/// </summary>
 	protected virtual bool RepeatsWhileHeld(int index) => false;
+	/// <summary>
+	/// Called when the mouse button is held long enough on a button or released (e.g. to move while an arrow button is held).
+	/// </summary>
+	protected virtual void HeldButtonChanged() { }
+	/// <summary>
+	/// The given key of the numeric keypad is held or the mouse button is held on the button at the same place.
+	/// </summary>
+	protected bool IsKeypadKeyDown(Key key) => Game.IsKeyDown(key) || (HeldButtonIndex != null && HeldButtonIndex == GetKeypadButtonIndex(key));
+	/// <summary>
+	/// The button on which the mouse button is held long enough (a short click only clicks the button).
+	/// </summary>
+	protected int? HeldButtonIndex => buttonHeldByKey || !buttonRepeater.LongHeld ? null : heldButtonIndex;
     internal abstract byte ButtonGridPaletteIndex { get; }
     internal void UpdateButtons() => RequestButtonSetup();
     protected void RequestButtonSetup()
@@ -134,7 +146,8 @@ internal abstract class ButtonGridScreen : Screen
 		if (heldButtonIndex == index && buttonHeldByKey == byKey)
 			return;
 
-		if (!RepeatsWhileHeld(index))
+		// keys are only tracked to repeat their buttons
+		if (byKey && !RepeatsWhileHeld(index))
 			return;
 
 		heldButtonIndex = index;
@@ -142,7 +155,18 @@ internal abstract class ButtonGridScreen : Screen
 		buttonRepeater.Reset();
 	}
 
-	private void ReleaseButton() => heldButtonIndex = null;
+	private void ReleaseButton()
+	{
+		if (heldButtonIndex == null)
+			return;
+
+		bool longHeld = buttonRepeater.LongHeld;
+		heldButtonIndex = null;
+		buttonRepeater.Reset();
+
+		if (longHeld)
+			HeldButtonChanged();
+	}
 
 	/// <summary>
 	/// Clicks a held button again after some time. The screens call this in Update.
@@ -152,14 +176,19 @@ internal abstract class ButtonGridScreen : Screen
 		if (heldButtonIndex is not int index)
 			return;
 
-		if (buttonGrid?.IsButtonEnabled(index) != true || !RepeatsWhileHeld(index) || Game.Paused || !Game.InputEnabled)
+		if (buttonGrid?.IsButtonEnabled(index) != true || Game.Paused || !Game.InputEnabled)
 		{
 			ReleaseButton();
 			return;
 		}
 
-		if (buttonRepeater.Update(elapsedTicks))
+		bool longHeld = buttonRepeater.LongHeld;
+
+		if (buttonRepeater.Update(elapsedTicks) && RepeatsWhileHeld(index))
 			buttonGrid.Press(index);
+
+		if (!longHeld && buttonRepeater.LongHeld)
+			HeldButtonChanged();
 	}
 
 	public override bool KeyDown(Key key, KeyModifiers keyModifiers)

@@ -770,21 +770,21 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		if (Game.ButtonLayout == ButtonLayout.Movement)
 		{
 			if (!left)
-				left = Game.IsKeyDown(Key.Keypad4);
+				left = IsKeypadKeyDown(Key.Keypad4);
 			if (!right)
-				right = Game.IsKeyDown(Key.Keypad6);
+				right = IsKeypadKeyDown(Key.Keypad6);
 			if (!forward)
-				forward = Game.IsKeyDown(Key.Keypad8);
+				forward = IsKeypadKeyDown(Key.Keypad8);
 			if (!backward)
-				backward = Game.IsKeyDown(Key.Keypad2);
+				backward = IsKeypadKeyDown(Key.Keypad2);
 			if (!turnLeft)
-				turnLeft = Game.IsKeyDown(Key.Keypad7);
+				turnLeft = IsKeypadKeyDown(Key.Keypad7);
 			if (!turnRight)
-				turnRight = Game.IsKeyDown(Key.Keypad9);
+				turnRight = IsKeypadKeyDown(Key.Keypad9);
 			if (!fullTurnLeft)
-				fullTurnLeft = Game.IsKeyDown(Key.Keypad1);
+				fullTurnLeft = IsKeypadKeyDown(Key.Keypad1);
 			if (!fullTurnRight)
-				fullTurnRight = Game.IsKeyDown(Key.Keypad3);
+				fullTurnRight = IsKeypadKeyDown(Key.Keypad3);
 		}
 
 		if (fullTurnLeft != fullTurnRight)

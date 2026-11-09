@@ -1,0 +1,26 @@
+# Holding an arrow button moves the party like holding the key at the same place of the numeric keypad (the original handles the mouse events while the button is held).
+# The party starts to move after the button was held for 0.3 seconds, so a click is still one step.
+waittext
+dismissall
+teleport 37 10 12
+waitidle
+buttonlayout Movement
+pos 10 12
+# --- one click on the right arrow button is one step
+click 288 169
+wait 500
+pos 11 12
+# --- holding it for 0.8 seconds walks on
+holdmouse 288 169 800
+wait 500
+pos 15 12
+# --- the key on the numeric keypad still works (back to the left)
+hold Keypad4 800
+wait 500
+pos 10 12
+# --- 3D map (Breth's cellar, map 72): holding the forward button walks the two free steps to the wall
+teleport 72 10 17 up
+dismissall
+holdmouse 256 153 1000
+wait 500
+pos 10 15

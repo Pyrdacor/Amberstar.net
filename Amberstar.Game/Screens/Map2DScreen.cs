@@ -895,28 +895,31 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 					right = true;
 					break;
 				default:
-					return;
+					// e.g. an arrow button is held
+					if (!heldMovementButton)
+						return;
+					break;
 			}
 		}
 
 		if (Game.ButtonLayout == ButtonLayout.Movement)
 		{
 			if (!left)
-				left = Game.IsKeyDown(Key.Keypad4);
+				left = IsKeypadKeyDown(Key.Keypad4);
 			if (!right)
-				right = Game.IsKeyDown(Key.Keypad6);
+				right = IsKeypadKeyDown(Key.Keypad6);
 			if (!up)
-				up = Game.IsKeyDown(Key.Keypad8);
+				up = IsKeypadKeyDown(Key.Keypad8);
 			if (!down)
-				down = Game.IsKeyDown(Key.Keypad2);
+				down = IsKeypadKeyDown(Key.Keypad2);
 			if (!upLeft)
-				upLeft = Game.IsKeyDown(Key.Keypad7);
+				upLeft = IsKeypadKeyDown(Key.Keypad7);
 			if (!upRight)
-				upRight = Game.IsKeyDown(Key.Keypad9);
+				upRight = IsKeypadKeyDown(Key.Keypad9);
 			if (!downLeft)
-				downLeft = Game.IsKeyDown(Key.Keypad1);
+				downLeft = IsKeypadKeyDown(Key.Keypad1);
 			if (!downRight)
-				downRight = Game.IsKeyDown(Key.Keypad3);
+				downRight = IsKeypadKeyDown(Key.Keypad3);
 		}
 
 		if (upLeft || downLeft)
@@ -1028,6 +1031,15 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 	// Zzz lets the time pass while it is held (with the mouse or key 5 of the numeric keypad)
 	protected override bool RepeatsWhileHeld(int index) => Game.ButtonLayout == ButtonLayout.Movement && index == 4;
+
+	bool heldMovementButton = false;
+
+	// the party moves while an arrow button is held like while the key at the same place of the numeric keypad is held
+	protected override void HeldButtonChanged()
+	{
+		heldMovementButton = Game.ButtonLayout == ButtonLayout.Movement && HeldButtonIndex is int index && index != 4;
+		UpdateMovement();
+	}
 
 	readonly HoldRepeater zzzRepeater = new();
 
