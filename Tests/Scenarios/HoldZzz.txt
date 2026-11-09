@@ -1,0 +1,26 @@
+# Holding Zzz (the mouse button on the middle button or key 5 of the numeric keypad) lets the time pass like in the original.
+# One step is 5 minutes. The first repeat is after 0.3 seconds, then every 0.1 seconds.
+waittext
+dismissall
+buttonlayout Movement
+# --- key 5 of the numeric keypad held for 2 seconds: about 19 steps
+settime 8 0
+hour
+hold Keypad5 2000
+hour +1
+# --- the mouse button held on the middle button
+settime 8 0
+hour
+holdmouse 256 169 2000
+hour +1
+# --- also on 3D maps
+teleport 67 7 15 down
+dismissall
+settime 8 0
+hour
+hold Keypad5 2000
+hour +1
+settime 8 0
+hour
+holdmouse 256 169 2000
+hour +1

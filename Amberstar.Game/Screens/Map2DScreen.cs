@@ -610,6 +610,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 			return;
 
         currentTicks += elapsedTicks;
+		UpdateHeldButton(elapsedTicks);
+		UpdateHeldZzz(elapsedTicks);
 
 		if (worldMap != null && Game.State.TravelType != playedTravelType)
 			PlayMapSong();
@@ -1023,6 +1025,22 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	}
 
 	protected override bool KeypadMovesParty(Key key) => Game.ButtonLayout == ButtonLayout.Movement && key != Key.Keypad5;
+
+	// Zzz lets the time pass while it is held (with the mouse or key 5 of the numeric keypad)
+	protected override bool RepeatsWhileHeld(int index) => Game.ButtonLayout == ButtonLayout.Movement && index == 4;
+
+	readonly HoldRepeater zzzRepeater = new();
+
+	/// <summary>
+	/// The time also passes while the mouse button is held on the party (Zzz cursor).
+	/// </summary>
+	private void UpdateHeldZzz(long elapsedTicks)
+	{
+		if (!mouseDown || Game.Cursor.CursorType != CursorType.Zzz || Game.Paused || !Game.InputEnabled)
+			zzzRepeater.Reset();
+		else if (zzzRepeater.Update(elapsedTicks))
+			Game.Time.Tick();
+	}
 
 	public override bool KeyUp(Key key, KeyModifiers keyModifiers)
 	{

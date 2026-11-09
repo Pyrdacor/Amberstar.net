@@ -893,6 +893,16 @@ public sealed class ScenarioScript
 				});
 				break;
 			}
+			case "holdmouse":
+			{
+				// holds the left mouse button at x,y for the given milliseconds
+				var position = new Position(Arg(0), Arg(1));
+				double end = time + Arg(2);
+				game.MouseMove(position, MouseButtons.None);
+				game.MouseDown(position, MouseButtons.Left, KeyModifiers.None);
+				wait = new("holdmouse", double.MaxValue, _ => time >= end, Finish: () => game.MouseUp(position, MouseButtons.Left, KeyModifiers.None));
+				break;
+			}
 			case "click":
 			{
 				var position = new Position(Arg(0), Arg(1));

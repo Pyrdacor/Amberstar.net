@@ -63,6 +63,19 @@ internal class ButtonGrid
 
 	public ButtonType GetButtonType(int index) => index < 0 || index >= buttons.Length ? ButtonType.Empty : buttons[index].ButtonType;
 
+	/// <summary>
+	/// Gets the index of the enabled button at the given position.
+	/// </summary>
+	public int? GetButtonIndex(Position position)
+	{
+		if (!Area.Contains(position))
+			return null;
+
+		int index = (position.X - OffsetX) / Button.Width + (position.Y - OffsetY) / Button.Height * 3;
+
+		return IsButtonEnabled(index) ? index : null;
+	}
+
     public bool MouseClick(Position position)
 	{
 		foreach (var button in buttons)
