@@ -1,0 +1,14 @@
+# Encounter events start the battle at once and are only saved when the party wins (Encounter and End_of_combat in the program, the released source code shows the combat requester and saves the event at once). After fleeing the party is back at its previous position and the monsters stay, so the final battle in the ritual room of Godsbane (map 151, event 4 at 22,9) can't be skipped.
+waittext
+dismissall
+teleport 151 21 9 right
+waitidle
+move right 1
+waitscreen Battle
+leavebattle
+waitidle
+pos 21 9
+eventbit 151 3 0
+# --- the monsters are still there
+move right 1
+waitscreen Battle

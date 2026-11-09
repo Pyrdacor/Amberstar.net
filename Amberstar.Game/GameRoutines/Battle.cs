@@ -38,6 +38,8 @@ partial class Game
 
 	// the monster on the map which is fought (it is removed when the party wins)
 	MapCharacter? battleMapCharacter;
+	// the encounter event of the battle and its map (the event is saved when the party wins)
+	(IEvent Event, int MapIndex)? battleEvent;
 
 	/// <summary>
 	/// The combat background is given by the first set bit 16-29 of the tile flags at the party position
@@ -100,7 +102,14 @@ partial class Game
 			return;
 		}
 
-		// The party goes back to its previous position.
+		ResetPartyPosition();
+	}
+
+	/// <summary>
+	/// The party goes back to its previous position (Restore_coords in the original).
+	/// </summary>
+	void ResetPartyPosition()
+	{
 		switch (ScreenHandler.FindMapScreen())
 		{
 			case Map2DScreen map2DScreen:
@@ -110,6 +119,17 @@ partial class Game
 				map3DScreen.ResetPartyPosition();
 				break;
 		}
+	}
+
+	/// <summary>
+	/// An encounter event starts a battle without the combat requester. The event is only saved when the party
+	/// wins, so the monsters are still there after the party fled (Encounter and End_of_combat in the program,
+	/// the released source code saves the event at once and shows the requester).
+	/// </summary>
+	internal void StartEncounter(int monsterGroupIndex, IEvent encounterEvent, int mapIndex)
+	{
+		StartBattle(monsterGroupIndex);
+		battleEvent = (encounterEvent, mapIndex);
 	}
 
 	/// <summary>
@@ -243,6 +263,8 @@ partial class Game
 		CurrentBattle = null;
 		var mapCharacter = battleMapCharacter;
 		battleMapCharacter = null;
+		var encounterEvent = battleEvent;
+		battleEvent = null;
 		int experience = battle.Finish();
 
 		UpdatePartyMembers();
@@ -256,8 +278,15 @@ partial class Game
 		ScreenHandler.FindMapScreen()?.RestartMusic();
 		PartyMembersChanged();
 
+		// After fleeing the party goes back to its previous position, the monsters stay (End_of_combat in the program).
+		if (battle.Result == BattleResult.PartyFled)
+			ResetPartyPosition();
+
 		if (battle.Result != BattleResult.Won)
 			return;
+
+		if (encounterEvent is var (@event, mapIndex) && @event.SaveIndex != 0)
+			State.SetEventBit(mapIndex, @event.SaveIndex, true);
 
 		if (mapCharacter != null)
 			State.SetMapCharacterActive(mapCharacter.Map.Index, 1 + mapCharacter.Index, false);

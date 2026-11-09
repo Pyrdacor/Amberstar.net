@@ -1,0 +1,33 @@
+#! seed 5
+# An encounter event is saved when the party wins the battle (End_of_combat in the program), then the monsters are gone (map 38, 22,29, three swamp spiders, save index 2).
+waittext
+dismissall
+setvalue 1 hp 900
+setvalue 1 attack 100
+setvalue 1 strength 9000
+teleport 38 22 29
+waitscreen Battle
+eventbit 38 2 0
+battleaction parry
+battleround
+battleaction parry
+battleround
+battleaction attack 0 2
+battleround
+battleaction attack 2 2
+battleround
+battleaction parry
+battleround
+battleaction attack 2 2
+battleround
+battleresult Won
+closeall
+waitidle
+eventbit 38 2 1
+# --- no battle anymore
+teleport 38 21 29
+waitidle
+move right 1
+wait 300
+pos 22 29
+screen Map2D

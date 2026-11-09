@@ -15,6 +15,9 @@ namespace Amberstar.Game.Events
 
 		public word MonsterGroupIndex => @event.MonsterGroupIndex;
 
+		// the event is saved when the party wins the battle
+		public override bool AutoSave => false;
+
 		public override bool Handle(EventTrigger trigger, Game game, IMapEventProvider eventProvider)
 		{
 			if (trigger != EventTrigger.Move)
@@ -27,8 +30,9 @@ namespace Amberstar.Game.Events
 				return false;
 
 			byte textIndex = Quest != 0 ? QuestTextIndex : NoQuestTextIndex;
-			// The event is saved when the battle is requested, so the encounter is gone even if the party flees.
-			void StartBattle() => game.RequestBattle(MonsterGroupIndex);
+			// the map of the event (a part of the world map) is the current one only now
+			int mapIndex = game.EventHandler.CurrentEventMapIndex;
+			void StartBattle() => game.StartEncounter(MonsterGroupIndex, this, mapIndex);
 
 			if (textIndex < TextEventExtensions.NoText)
 				game.ShowTextMessage(game.GetMapText(game.EventHandler.CurrentEventMapIndex, textIndex), StartBattle);
