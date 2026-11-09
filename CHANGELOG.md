@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- The whirlpool to the realm of Vielauge (world map part 3 at 46,11) can be entered with the ship. Map exits are only blocked for horses, rafts and ships where the party could get off, the deep water around the whirlpool only allows the ship. Like in the original the party continues on foot and the ship is lost.
+
 ## 0.4.1
 
 ### Fixed

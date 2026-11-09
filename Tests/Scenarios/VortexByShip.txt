@@ -1,0 +1,18 @@
+# The whirlpool to the realm of Vielauge (world map part 3, 46,11) is a travel exit in the deep water. Only the ship reaches it and the original lets it enter (only the tiles decide), the party continues on foot and the ship is lost.
+waittext
+dismissall
+placetransport 3 47 11 ship
+teleport 3 47 11
+waitidle
+click 230 170 right
+wait 200
+button 3
+wait 200
+travel Ship
+move left 1 optional
+wait 1500
+map 111
+pos 12 12
+travel Walk
+transport 3 47 11 none
+transport 3 46 11 none

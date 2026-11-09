@@ -699,7 +699,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 		// The tiles already block the entrance of Twinlake like in the original. This also covers exits
 		// with passable tiles, as the transport would be lost at the exits to cities, caves and so on.
-		if (onTransport && @event?.Type is EventType.MapExit or EventType.TravelExit)
+		// But if the party can't get off here (e.g. in the deep water next to the whirlpool to the realm
+		// of Vielauge) only the tiles decide like in the original, otherwise the exit can't be reached.
+		if (onTransport && @event?.Type is EventType.MapExit or EventType.TravelExit && CanLeaveTransport())
 			return true;
 
 		if (@event != null && !onTransport)
@@ -1773,10 +1775,18 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		if (Game.State.TravelType == TravelType.Walk)
 			return transportHere;
 
+		return !transportHere && CanLeaveTransport();
+	}
+
+	/// <summary>
+	/// The party can get off a transport if it could walk at its position.
+	/// </summary>
+	private bool CanLeaveTransport()
+	{
 		var position = Game.State.PartyPosition;
 		var flags = GetTileFlags(position.X, position.Y);
 
-		return !transportHere && !flags.HasFlag(TileFlags.BlockAllMovement) && flags.HasFlag(TileFlags.AllowWalk);
+		return !flags.HasFlag(TileFlags.BlockAllMovement) && flags.HasFlag(TileFlags.AllowWalk);
 	}
 
 	/// <summary>
