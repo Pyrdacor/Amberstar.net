@@ -51,6 +51,11 @@ internal sealed class MerchantScreen : PlaceScreen
 
 	internal string ScriptMode => mode.ToString();
 
+	/// <summary>
+	/// The item which is shown in the given slot (1-based).
+	/// </summary>
+	internal uint? ScriptShownItem(int slot) => itemContainers[slot - 1].Empty ? null : itemContainers[slot - 1].Item?.Index;
+
 	protected override ItemContainer[] ItemContainers => itemContainers;
 
 	static Position GetSlotPosition(int slot) => new(16 + (slot % 6) * 32, 37 + 108 + (slot / 6) * 32);
@@ -283,6 +288,9 @@ internal sealed class MerchantScreen : PlaceScreen
 					wareCounts[slot] -= amount;
 					Game.State.SetWareCounts(PlaceEvent.WaresIndex, wareCounts);
 				}
+
+				// the confirmation window is already closed and showed the counter without the item
+				ShowSlots();
 			});
 			EndMode();
 		});

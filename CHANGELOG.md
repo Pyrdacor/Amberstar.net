@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Bought items are shown on the counter of the merchant at once. Before they only appeared after the next action.
+- DOS versions: the mouse pointer has its own colors (a silver sword with a black outline) instead of the colors of the UI palette, and the sword and shield next to the damage and protection values in the inventory are shown. They were not found in the DOS data before.
+- The first step or turn right after entering a map is no longer swallowed. The map took its opening for a step and ignored the next one for about a quarter of a second.
+
 ## 0.4.2
 
 ### Added

@@ -109,7 +109,12 @@ internal class Cursor
 	public byte PaletteIndex
 	{
 		get => sprite.PaletteIndex;
-		set => sprite.PaletteIndex = value;
+		set
+		{
+			// the cursors of the DOS version have their own colors
+			if (!game.AssetProvider.CursorLoader.OwnPalette)
+				sprite.PaletteIndex = value;
+		}
 	}
 
 	public Cursor(Game game)
@@ -117,7 +122,7 @@ internal class Cursor
 		this.game = game;
 		var layer = game.GetRenderLayer(Layer.UI);
 		var textureAtlas = layer.Config.Texture!;
-		var paletteIndex = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI];
+		var paletteIndex = game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.Cursor];
 
 		sprite = layer.SpriteFactory!.Create();
 		sprite.Position = new(0, 0);

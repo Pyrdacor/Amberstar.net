@@ -1078,6 +1078,9 @@ public sealed class ScenarioScript
 					Report(image == args[0], $"lockedimage = {image} (expected {args[0]})");
 				break;
 			}
+			case "merchantitem":
+				Report(game.ScriptShownMerchantItem(Arg(0)) == (args[1] == "empty" ? null : (uint)Arg(1)), $"merchantitem {Arg(0)} = {game.ScriptShownMerchantItem(Arg(0))} (expected {args[1]})");
+				break;
 			case "lockeditem":
 				Report(game.ScriptShownLockedItem(Arg(0)) == (args[1] == "empty" ? null : (uint)Arg(1)), $"lockeditem {Arg(0)} = {game.ScriptShownLockedItem(Arg(0))} (expected {args[1]})");
 				break;

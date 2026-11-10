@@ -10,6 +10,11 @@ internal class CursorLoader(AssetProvider assetProvider) : ICursorLoader
 	const int DosCursorSize = 4 + 128;
 	private readonly Dictionary<CursorType, ICursor> cursors = [];
 
+	/// <summary>
+	/// <inheritdoc/>
+	/// </summary>
+	public bool OwnPalette => assetProvider.Platform == LegacyPlatform.Dos;
+
 	public ICursor LoadCursor(CursorType cursorType)
 	{
 		if (cursors.TryGetValue(cursorType, out var cursor))

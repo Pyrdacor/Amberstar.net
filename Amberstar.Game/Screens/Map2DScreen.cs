@@ -356,7 +356,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
         base.Open(closeAction);
 
         moveTickCounter = 0;
-		lastMoveStartTicks = 0;
+		// there was no step yet, so the first one isn't delayed
+		lastMoveStartTicks = long.MinValue / 2;
 		currentTicks = 0;
 		additionalMoveRequested = false;
 		mouseDown = false;

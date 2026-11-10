@@ -71,6 +71,8 @@ partial class Game
 
 	public uint? ScriptShownInventoryItem(int slot) => (ScreenHandler.FindScreen(ScreenType.Inventory) as InventoryScreen)?.ScriptShownItem(slot);
 
+	public uint? ScriptShownMerchantItem(int slot) => (ScreenHandler.FindScreen(ScreenType.Merchant) as MerchantScreen)?.ScriptShownItem(slot);
+
 	public uint? ScriptShownLockedItem(int slot) => ScreenHandler.FindScreen(ScreenType.Chest) is ChestScreen chestScreen ? chestScreen.ScriptShownItem(slot)
 		: (ScreenHandler.FindScreen(ScreenType.Door) as DoorScreen)?.ScriptShownItem(slot);
 

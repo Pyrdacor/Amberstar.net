@@ -202,6 +202,34 @@ public sealed class GameDataTests
 	}
 
 	[Theory]
+	[InlineData("German/AmberfilesDOS")]
+	[InlineData("English/AmberfilesDOS")]
+	public void DosDamageAndProtectionIconsLoad(string folder)
+	{
+		var loader = TestData.CreateAssetProvider(folder).UIGraphicLoader;
+
+		// the 10x10 icons of CONTROL2.ICN on the background color 2
+		foreach (var graphic in new[] { UIGraphic.Sword, UIGraphic.Shield })
+			Assert.Contains(loader.LoadGraphic(graphic).GetData(), color => color is not (0 or 2));
+	}
+
+	[Theory]
+	[InlineData("German/AmberfilesDOS", true)]
+	[InlineData("English/AmberfilesDOS", true)]
+	[InlineData("German/AmberfilesST", false)]
+	public void OnlyDosCursorsHaveTheirOwnPalette(string folder, bool ownPalette)
+	{
+		var assetProvider = TestData.CreateAssetProvider(folder);
+
+		Assert.Equal(ownPalette, assetProvider.CursorLoader.OwnPalette);
+
+		// the DOS cursors have a gray gradient (colors 1 to 7 of COL_PALL.102), otherwise it is the UI palette
+		var cursorPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.Cursor).GetData();
+		var uiPalette = assetProvider.PaletteLoader.LoadBuiltinPalette(BuiltinPalette.UI).GetData();
+		Assert.Equal(!ownPalette, cursorPalette.SequenceEqual(uiPalette));
+	}
+
+	[Theory]
 	[MemberData(nameof(TestData.DataFolders), MemberType = typeof(TestData))]
 	public void ThalionLogoRuns(string folder)
 	{

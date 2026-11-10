@@ -224,8 +224,9 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
         base.Open(closeAction);
 
 		currentTicks = 0;
-		lastMoveTicks = 0;
-		lastTurnTicks = 0;
+		// there was no step or turn yet, so the first one isn't delayed
+		lastMoveTicks = long.MinValue / 2;
+		lastTurnTicks = long.MinValue / 2;
 		mouseDown = false;
 
 		darkness ??= new(Game, new Rect(OffsetX, OffsetY, ViewWidth, ViewHeight), DarknessDisplayLayer);

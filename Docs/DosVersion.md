@@ -30,8 +30,12 @@ The DOS version has the same game data as the Atari ST version, but stored diffe
 - Graphics have 4 bits per pixel, the left pixel in the high nibble. Rows of lab blocks have an even pixel count.
   The backgrounds have 1 byte per pixel (colors 16-31, the sky from color 160) and a second unused version of each graphic.
   The 80x80 pictures and the combat backgrounds have their VGA palette (48 bytes) in front of the pixels.
-- Palettes have 6 bits per color component (COL_PALL.001-010 maps, 101 UI, 104 sky, 106 items, 107 automap, 110 puzzle).
+- Palettes have 6 bits per color component (COL_PALL.001-010 maps, 101 UI, 102 cursors, 104 sky, 106 items, 107 automap,
+  110 puzzle).
 - The font (FONT.DAT) has 96 glyphs of 6x5 pixels: the characters from 32 to 95 and 32 runes.
-- The cursors (MAUSE.ICN) have colors, the windows (WINDOW.ICN) are made of 8 tiles.
+- The cursors (MAUSE.ICN) have colors (COL_PALL.102: a gray gradient with a black outline), the windows (WINDOW.ICN) are
+  made of 8 tiles.
+- CONTROL2.ICN has the feedback and the chequered icon (32x16), then the sword and the shield of the damage and protection
+  values (10x10 each) and a 16x16 triangle.
 - The loading screen (LOADING.ICN) has the dwarf of the Atari ST (128x112, 4 bits per pixel, the rest of the entry is
   unused) and uses COL_PALL.108, which has the colors of the Atari ST palette of the loading screen.

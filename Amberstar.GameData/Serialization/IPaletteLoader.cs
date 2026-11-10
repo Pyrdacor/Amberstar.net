@@ -8,6 +8,7 @@ public enum BuiltinPalette
     Item,
 	Automap,
 	Puzzle, // the altar where the Amberstar is assembled
+	Cursor, // the mouse pointer (only the DOS version has its own colors, otherwise it is the UI palette)
 }
 
 public interface IPaletteLoader

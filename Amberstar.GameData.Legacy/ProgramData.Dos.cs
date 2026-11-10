@@ -400,9 +400,26 @@ namespace Amberstar.GameData.Legacy
 			Add(UIGraphic.EmptyCharSlot, status, 5632);
 			Add(UIGraphic.HPBar, null, 0);
 			Add(UIGraphic.SPBar, null, 0);
-			// TODO: the sword and shield of the damage and protection values were not found in the DOS data
-			Add(UIGraphic.Sword, null, 0);
-			Add(UIGraphic.Shield, null, 0);
+			// The sword and the shield of the damage and protection values have 10x10 pixels and follow the two icons of
+			// CONTROL2.ICN. The game uses 16x10 pixels, the rest is filled with the background color 2.
+			void AddDamageProtectionIcon(UIGraphic graphic, int offset)
+			{
+				var pixels = new byte[16 * 10];
+				Array.Fill(pixels, (byte)2);
+
+				if (offset + 50 <= control2.Length)
+				{
+					var icon = DosGraphics.ChunkyToPixels(control2.AsSpan(offset, 50), 10, 10);
+
+					for (int y = 0; y < 10; y++)
+						icon.AsSpan(y * 10, 10).CopyTo(pixels.AsSpan(y * 16));
+				}
+
+				UIGraphics.Add((int)graphic, new DataReader(DosGraphics.PixelsToPlanar(pixels, 16, 10)));
+			}
+
+			AddDamageProtectionIcon(UIGraphic.Sword, 512);
+			AddDamageProtectionIcon(UIGraphic.Shield, 512 + 50);
 			var riddlemouth = dos.Read("ICN_DATA.VGA", "RM_ANIMA.ICN");
 			Add(UIGraphic.RiddlemouthEyes, riddlemouth, 0);
 			Add(UIGraphic.RiddlemouthMouth, riddlemouth, 4 * 80 * 29 / 2);

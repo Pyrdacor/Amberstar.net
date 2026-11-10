@@ -16,6 +16,8 @@ amount 3
 waitscreen Confirmation
 yes
 placegold -15
+# the torches are shown on the counter at once
+merchantitem 1 1
 # --- give them to the hero
 button 5
 slot 1

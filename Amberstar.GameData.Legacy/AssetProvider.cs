@@ -239,6 +239,7 @@ public class AssetProvider : IAssetProvider
             { BuiltinPalette.Item, ItemPalette },
             { BuiltinPalette.Automap, AutomapPalette },
             { BuiltinPalette.Puzzle, PuzzlePalette },
+            { BuiltinPalette.Cursor, UIPalette },
         };
 
 		textLoader = new(() => new TextLoader(this, Data.TextFragments));
@@ -575,6 +576,8 @@ public class AssetProvider : IAssetProvider
 			{ BuiltinPalette.Item, Load(106) },
 			{ BuiltinPalette.Automap, Load(107) },
 			{ BuiltinPalette.Puzzle, Load(110) },
+			// the colors of the mouse pointer (MAUSE.ICN): a gray gradient with a black outline
+			{ BuiltinPalette.Cursor, Load(102) },
 		};
 	}
 
