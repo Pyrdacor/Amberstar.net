@@ -580,6 +580,16 @@ public sealed class ScenarioScript
 					CheckBool($"specialitem {args[0]}", used.Value, args.Length > 1 ? ParseBool(args[1]) : null);
 				break;
 			}
+			case "skycurrent":
+			{
+				var current = game.ScriptSkyIsCurrent;
+
+				if (current == null)
+					Report(false, $"no 3D map is shown but {game.ScriptActiveScreen}");
+				else
+					CheckBool("skycurrent", current.Value, OptionalBool(0));
+				break;
+			}
 			case "specialdisplay":
 			{
 				var shown = game.ScriptSpecialItemDisplay.ToList();

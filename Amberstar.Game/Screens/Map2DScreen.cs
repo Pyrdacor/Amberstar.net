@@ -185,7 +185,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
     // In cities there was no delay, but each step waited for 3 vertical blanks
     // (Do_control_icons, the step and the main loop) and the map was drawn twice.
     // That is about 4 to 6 vertical blanks at 50 Hz, so about 0.1 seconds per step.
-    const int CityTicksPerStep = 6;
+    // This felt too fast, so it is 0.2 seconds like walking on the world map.
+    const int CityTicksPerStep = 12;
 	// A short key press must not cause a second step, also not with fast means of travel.
 	const int MinTicksTillFirstRepeat = 12;
 	const int WorldMapBaseTicksPerStep = 2;

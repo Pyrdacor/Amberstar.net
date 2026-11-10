@@ -184,8 +184,9 @@ internal abstract class ButtonGridScreen : Screen
 
 		bool longHeld = buttonRepeater.LongHeld;
 
+		// only the first click highlights the button, the repeats don't
 		if (buttonRepeater.Update(elapsedTicks) && RepeatsWhileHeld(index))
-			buttonGrid.Press(index);
+			ButtonClicked(index);
 
 		if (!longHeld && buttonRepeater.LongHeld)
 			HeldButtonChanged();

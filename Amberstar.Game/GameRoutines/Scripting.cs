@@ -492,6 +492,11 @@ partial class Game
 	/// <summary>
 	/// The special items which are shown next to the map view (e.g. "Compass Up", "Day", "X:012").
 	/// </summary>
+	/// <summary>
+	/// The sky of a 3D city belongs to the current time of day (null if no 3D map is shown).
+	/// </summary>
+	public bool? ScriptSkyIsCurrent => (ScreenHandler.FindMapScreen() as Map3DScreen)?.ScriptSkyIsCurrent;
+
 	public IEnumerable<string> ScriptSpecialItemDisplay => ScreenHandler.FindMapScreen() switch
 	{
 		Map2DScreen map2DScreen => map2DScreen.ScriptSpecialItemDisplay,

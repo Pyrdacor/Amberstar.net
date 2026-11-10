@@ -114,6 +114,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 	IMap3D? map;
 	ILabData? labData;
 	readonly List<IColoredRect> skyGradient = [];
+	DayTime? shownDayTime = null;
 	readonly List<IAnimatedSprite> images = [];
 	readonly List<Characters.MapCharacter> characters = [];
 
@@ -452,7 +453,13 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			UpdateLight();
 
 		if (map.Flags.HasFlag(MapFlags.City) && Game.CanSee())
+		{
+			// the clouds are only shown at day and dusk (e.g. while the time passes with Zzz)
+			if (Game.State.Hour.HourToDayTime() != shownDayTime)
+				UpdateView();
+
 			UpdateSky(true);
+		}
 
 		if (characters.Count != 0)
 		{
@@ -621,24 +628,34 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		var gradient = skyGradients[dayTime];
 		var skyColor = Game.AssetProvider.PaletteLoader.LoadPalette(palette).GetColorAt(SkyTransparentColorIndex, 0);
 
-		if (skyGradient.Count == 0)
+		// the lines already exist, the time of day changes their colors (e.g. while the time passes with Zzz)
+		if (skyGradient.Count == gradient.Length)
 		{
-			void CreateSkyLine(int y, Color color)
-			{
-				var skyLine = Game.GetRenderLayer(Layer.Map3D).ColoredRectFactory!.Create();
-				skyLine.Color = color;
-				skyLine.Position = new(OffsetX, OffsetY + y);
-				skyLine.Size = new(ViewWidth, 1);
-				skyLine.DisplayLayer = 0;
-				skyLine.Visible = true;				
-				skyGradient.Add(skyLine);
-			}
-
 			for (int y = 0; y < gradient.Length - 1; y++)
-				CreateSkyLine(y, gradient[y]);
-			
-			CreateSkyLine(gradient.Length - 1, skyColor);
+				skyGradient[y].Color = gradient[y];
+
+			skyGradient[^1].Color = skyColor;
+			return;
 		}
+
+		skyGradient.ForEach(g => g.Visible = false);
+		skyGradient.Clear();
+
+		void CreateSkyLine(int y, Color color)
+		{
+			var skyLine = Game.GetRenderLayer(Layer.Map3D).ColoredRectFactory!.Create();
+			skyLine.Color = color;
+			skyLine.Position = new(OffsetX, OffsetY + y);
+			skyLine.Size = new(ViewWidth, 1);
+			skyLine.DisplayLayer = 0;
+			skyLine.Visible = true;
+			skyGradient.Add(skyLine);
+		}
+
+		for (int y = 0; y < gradient.Length - 1; y++)
+			CreateSkyLine(y, gradient[y]);
+
+		CreateSkyLine(gradient.Length - 1, skyColor);
 	}
 
 	void IMapScreen.RestartMusic() => Game.PlaySong(Map.SongIndex);
@@ -1183,6 +1200,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 		var hasSky = map!.Flags.HasFlag(MapFlags.City);
 		var dayTime = Game.State.Hour.HourToDayTime();
+		shownDayTime = dayTime;
 
 		if (hasSky && (dayTime == DayTime.Day || dayTime == DayTime.Dusk))
 		{
@@ -1354,6 +1372,19 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 	}
 
 	internal IEnumerable<string> ScriptSpecialItemDisplay => specialItemDisplay?.ShownItems ?? [];
+
+	/// <summary>
+	/// The shown sky (gradient and clouds) belongs to the current time of day.
+	/// </summary>
+	internal bool ScriptSkyIsCurrent
+	{
+		get
+		{
+			var dayTime = Game.State.Hour.HourToDayTime();
+
+			return shownDayTime == dayTime && skyGradient.Count != 0 && skyGradient[0].Color == skyGradients[dayTime][0];
+		}
+	}
 
 	private void ClearView()
 	{

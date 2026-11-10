@@ -1,0 +1,19 @@
+# The sky of a 3D city follows the time of day while the time passes with Zzz. Before only a step updated the sky and the clouds.
+waittext
+dismissall
+settime 19 55
+teleport 67 7 15 down
+dismissall
+waitidle
+buttonlayout Movement
+skycurrent 1
+# --- Zzz: 20:00 is night
+button 4
+wait 300
+hour
+skycurrent 1
+# --- the morning: dawn at 6:00
+settime 5 55
+button 4
+wait 300
+skycurrent 1
