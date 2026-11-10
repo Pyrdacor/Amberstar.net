@@ -2,6 +2,7 @@
 using Amber.Common;
 using Amber.IO.Common.Serialization;
 using Amber.Serialization;
+using System.Runtime.CompilerServices;
 
 namespace Amberstar.GameData.Legacy;
 
@@ -142,6 +143,7 @@ internal class Text(List<string> textFragments) : IText
 		if (textIndices.Count == 0)
 			return [];
 
+		var markers = GetMarkers(textFragments);
 		int paragraphOffset = 0;
 		List<string> lines = [];
 		string currentLine = string.Empty;
@@ -150,29 +152,30 @@ internal class Text(List<string> textFragments) : IText
 		{
 			word textIndex = textIndices[i];
 
-			switch (textIndex)
+			if (textIndex == markers.OpenBracket)
 			{
-				case OpenBracket:
-					currentLine += "(";
-					break;
-				case CarriageReturn:
-					lines.Add(currentLine);
-					currentLine = string.Empty;
-					break;
-				case ParagraphMarker:
-					lines.Add(currentLine);
-					if (paragraphs.Count == 0)
-						paragraphs.Add(lines.ToArray());
-					else
-						paragraphs.Add(lines.Skip(paragraphOffset).ToArray());
-					paragraphOffset = lines.Count;
-					currentLine = string.Empty;
-					break;
-				default:
-					if (IsEndPunctuation(textIndex) && currentLine.Length > 0 && currentLine[^1] == ' ')
-						currentLine = currentLine[..^1];
-					AddText(textFragments[textIndex] + " ", i == textIndices.Count - 1);
-					break;
+				currentLine += "(";
+			}
+			else if (textIndex == markers.CarriageReturn)
+			{
+				lines.Add(currentLine);
+				currentLine = string.Empty;
+			}
+			else if (textIndex == markers.ParagraphMarker)
+			{
+				lines.Add(currentLine);
+				if (paragraphs.Count == 0)
+					paragraphs.Add(lines.ToArray());
+				else
+					paragraphs.Add(lines.Skip(paragraphOffset).ToArray());
+				paragraphOffset = lines.Count;
+				currentLine = string.Empty;
+			}
+			else
+			{
+				if (markers.EndPunctuation.Contains(textIndex) && currentLine.Length > 0 && currentLine[^1] == ' ')
+					currentLine = currentLine[..^1];
+				AddText(textFragments[textIndex] + " ", i == textIndices.Count - 1);
 			}
 
 			void AddText(string text, bool last)
@@ -218,23 +221,24 @@ internal class Text(List<string> textFragments) : IText
 		return [..lines];
 	}
 
-	public const int OpenBracket = 1580;
-	public const int ClosingBracket = 1581;
-	public const int ExclamationMark = 631;
-	public const int CarriageReturn = 1576;
-	public const int ParagraphMarker = 1577;
-	public const int SingleQuote = 1300;
-	public const int Comma = 166;
-	public const int DoubleColon = 155;
-	public const int SemiColon = 1302;
-	public const int FullStop = 170;
-	public const int QuestionMark = 743;
+	/// <summary>
+	/// The indices of the special words of a dictionary (-1 if it doesn't have them). The programs of the original
+	/// have them as constants (OpenBracket, CarrReturn and the table EndPuncts in WORDS.ASM), but each dictionary
+	/// has them at other indices: the German one at 1580, 1576, 1577 and 631, 1581, 1300, 166, 155, 1302, 170, 743,
+	/// the English one at 398 (#), 3115 ($), 3075 (!), 390 (,), 545 (:), 427 (.) and 395 (?).
+	/// </summary>
+	sealed record Markers(int OpenBracket, int CarriageReturn, int ParagraphMarker, HashSet<int> EndPunctuation);
 
-	private static bool IsEndPunctuation(int word)
+	static readonly ConditionalWeakTable<List<string>, Markers> markersByDictionary = [];
+
+	static Markers GetMarkers(List<string> textFragments) => markersByDictionary.GetValue(textFragments, fragments =>
 	{
-		return word == ExclamationMark || word == ClosingBracket ||
-			   word == SingleQuote || word == Comma ||
-			   word == DoubleColon || word == SemiColon ||
-			   word == FullStop || word == QuestionMark;
-	}
+		// index 0 is no word
+		int IndexOf(string word) => fragments.IndexOf(word, 1);
+
+		// no space is printed before these words
+		var endPunctuation = new[] { "!", ")", "'", ",", ":", ";", ".", "?" }.Select(IndexOf).Where(index => index > 0).ToHashSet();
+
+		return new(IndexOf("("), IndexOf("#"), IndexOf("$"), endPunctuation);
+	});
 }

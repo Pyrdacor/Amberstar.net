@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- English versions: no space is shown in front of periods, commas, colons and other punctuation, and line breaks and paragraphs of the texts work. The special words were taken from the German dictionary, the English one has them at other places. Some English words were also taken for line breaks, paragraphs or brackets.
+
 ## 0.4.3
 
 ### Added
