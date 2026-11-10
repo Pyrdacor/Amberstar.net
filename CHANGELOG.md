@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.3
 
 ### Added
 - Cheat `noclip`: the party moves through walls and other obstacles on 2D and 3D maps, like the super chicken of the original.
