@@ -50,6 +50,12 @@ internal class GameState(ISavegame savegame, IAssetProvider assetProvider)
 	public bool IsPossiblePartyMember(int characterIndex) => partyMembers.ContainsKey(characterIndex);
 
 	/// <summary>
+	/// All characters who can join the party with their character index (index in CHARDATA.AMB).
+	/// </summary>
+	public IEnumerable<(int CharacterIndex, IPartyMember PartyMember)> PossiblePartyMembers =>
+		partyMembers.Select(member => (member.Key, member.Value));
+
+	/// <summary>
 	/// The party members with their character index (index in CHARDATA.AMB).
 	/// </summary>
 	public IEnumerable<(int CharacterIndex, IPartyMember PartyMember)> PartyMembersWithCharacterIndex =>

@@ -180,12 +180,12 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
     }
 
     // Note: In original you could only move by mouse or buttons on 2D maps.
-    // In general travel types had a delay which was given in number
-    // of vertical blanks. The delays were 5, 2, 3, 2, 4, 0, 0.
-    // For movement in cities it was even 0 for waling.
-    // However this is way too fast when using automatic movement
-    // (e.g. holding the key down).
-    const int CityTicksPerStep = 16;
+    // On world maps the travel types had a delay which was given in number
+    // of vertical blanks after each step (After_move): 5, 2, 3, 2, 4, 0, 0.
+    // In cities there was no delay, but each step waited for 3 vertical blanks
+    // (Do_control_icons, the step and the main loop) and the map was drawn twice.
+    // That is about 4 to 6 vertical blanks at 50 Hz, so about 0.1 seconds per step.
+    const int CityTicksPerStep = 6;
 	// A short key press must not cause a second step, also not with fast means of travel.
 	const int MinTicksTillFirstRepeat = 12;
 	const int WorldMapBaseTicksPerStep = 2;
@@ -665,7 +665,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 		int newX = MathUtil.Limit(0, oldPosition.X + x, map!.Width - 1);
 		int newY = MathUtil.Limit(0, oldPosition.Y + y, map.Height - 1);
 
-		if (TileBlocksMovement(newX, newY))
+		// the noclip cheat moves through everything
+		if (!Game.NoClip && TileBlocksMovement(newX, newY))
 		{
 			if (newY != oldPosition.Y && !TileBlocksMovement(oldPosition.X, newY))
 			{

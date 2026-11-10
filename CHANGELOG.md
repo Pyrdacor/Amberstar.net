@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- Cheat `noclip`: the party moves through walls and other obstacles on 2D and 3D maps, like the super chicken of the original.
+- Cheats `members` and `invite`: show the characters who can join the party and add one of them by index or name, like asking to join but always successful regardless of the join chance (the person is removed from its map and is there again after the dismissal).
+
+### Changed
+- The party walks faster on 2D maps outside of the world map (about 10 steps per second instead of 4), like the original. There each step waited for about 4 to 6 vertical blanks.
+
 ### Fixed
 - Bought items are shown on the counter of the merchant at once. Before they only appeared after the next action.
 - DOS versions: the mouse pointer has its own colors (a silver sword with a black outline) instead of the colors of the UI palette, and the sword and shield next to the damage and protection values in the inventory are shown. They were not found in the DOS data before.

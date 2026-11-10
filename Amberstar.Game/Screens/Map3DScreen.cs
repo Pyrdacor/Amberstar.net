@@ -940,8 +940,10 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 		lastMoveTicks = currentTicks;
 		int targetX = Game.State.PartyPosition.X + x;
 		int targetY = Game.State.PartyPosition.Y + y;
+		// the noclip cheat moves through everything inside the map
+		bool noClip = Game.NoClip && targetX >= 0 && targetY >= 0 && targetX < map!.Width && targetY < map.Height;
 
-		if (CanMoveTo(targetX, targetY, true, 0))
+		if (noClip || CanMoveTo(targetX, targetY, true, 0))
 		{
 			Game.State.SetPartyPosition(targetX, targetY);
 			AfterMove();

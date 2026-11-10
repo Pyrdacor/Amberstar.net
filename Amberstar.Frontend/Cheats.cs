@@ -38,6 +38,9 @@ public static class Cheats
         AddCommand("food", Food, "Gives food", 1, "amount");
         AddCommand("items", Items, "Shows all items", 0, "partialItemName");
         AddCommand("item", Item, "Gives an item", 1, "itemIndexOrName", "count", new("slot", "1 to 6, default is the active party member"));
+        AddCommand("noclip", NoClip, "Moves through walls and other obstacles on 2D and 3D maps\n(like the super chicken of the original)", 0, new Parameter("active", "1: on, 0: off, default is to switch it"));
+        AddCommand("members", Members, "Shows all characters who can join the party", 0, "partialName");
+        AddCommand("invite", Invite, "Adds a character to the party like asking to join\n(the person is removed from its map)", 1, "characterIndexOrName");
     }
 
     public static void Init()
@@ -315,6 +318,63 @@ public static class Cheats
         var error = game.ScriptGiveItem(slot, itemIndex, count);
 
         Console.WriteLine(error ?? $"Gave {count} x item {itemIndex} to the party member in slot {slot}");
+    }
+
+    private static void NoClip(G game, string[] args)
+    {
+        game.NoClip = args.Length == 0 ? !game.NoClip : ParseNumber(args[0], 1) != 0;
+
+        Console.WriteLine(game.NoClip ? "You can now move through walls." : "You can no longer move through walls.");
+    }
+
+    private static IEnumerable<(int CharacterIndex, string Name, bool InParty)> FindPartyMembers(G game, string partialName) =>
+        game.GetPossiblePartyMembers().Where(member => member.Name.Contains(partialName, StringComparison.OrdinalIgnoreCase));
+
+    private static void Members(G game, string[] args)
+    {
+        var members = args.Length == 0 ? game.GetPossiblePartyMembers() : FindPartyMembers(game, string.Join(" ", args));
+
+        if (!members.Any())
+        {
+            Console.WriteLine("No matching characters found.");
+            return;
+        }
+
+        foreach (var (index, name, inParty) in members)
+            Console.WriteLine($"{index:000}: {name}{(inParty ? " (in the party)" : "")}");
+    }
+
+    private static void Invite(G game, string[] args)
+    {
+        int characterIndex;
+
+        if (int.TryParse(args[0], out var parsedIndex))
+        {
+            characterIndex = parsedIndex;
+        }
+        else
+        {
+            // characters who are already in the party don't count (e.g. the hero with the same name)
+            var members = FindPartyMembers(game, args[0]).Where(member => !member.InParty).ToList();
+            var exactMatches = members.Where(member => member.Name.Equals(args[0], StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (exactMatches.Count != 0)
+                members = exactMatches;
+
+            if (members.Count != 1)
+            {
+                Console.WriteLine(members.Count == 0 ? "No matching characters outside of the party found." : "Multiple characters match. Use the character index:");
+                members.ForEach(member => Console.WriteLine($"{member.CharacterIndex:000}: {member.Name}"));
+                return;
+            }
+
+            characterIndex = members[0].CharacterIndex;
+        }
+
+        var error = game.InvitePartyMember(characterIndex);
+        var name = game.GetPossiblePartyMembers().FirstOrDefault(member => member.CharacterIndex == characterIndex).Name;
+
+        Console.WriteLine(error ?? $"{name} joined the party.");
     }
 
     private static void Gold(G game, string[] args)

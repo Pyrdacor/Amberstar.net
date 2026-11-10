@@ -1,0 +1,37 @@
+# The noclip cheat lets the party move through walls and other obstacles on 2D and 3D maps (like the super chicken of the original).
+waittext
+dismissall
+buttonlayout Movement
+# --- graveyard (map 65): the left of the start position is blocked
+pos 8 11
+button 3
+wait 400
+pos 8 11
+cheat noclip 1
+button 3
+wait 400
+pos 7 11
+# --- switched off the party is blocked again
+cheat noclip 0
+button 5
+wait 400
+pos 8 11
+button 3
+wait 400
+pos 8 11
+# --- 3D map (Breth's cellar, map 72): forward is free for two steps
+teleport 72 10 17 up
+dismissall
+waitidle
+button 1
+wait 400
+button 1
+wait 400
+button 1
+wait 400
+pos 10 15
+cheat noclip
+button 1
+wait 400
+pos 10 14
+cheat noclip
