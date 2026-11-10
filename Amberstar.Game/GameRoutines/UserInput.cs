@@ -71,14 +71,15 @@ partial class Game
 			SelectNextWindowMode();
 			return;
 		}
-		else if (key == Key.F5&& SavegamePath != null && ScreenHandler.ActiveScreen is IMapScreen)
+		// F1 to F6 open the inventories of the party members like in the original, so quick save and load use F8 and F9
+		else if (key == Key.F8 && SavegamePath != null && ScreenHandler.ActiveScreen is IMapScreen)
 		{
 			// quick save
 			SaveGame();
-			ShowTextMessage($"Game was saved at '{Path.GetFileName(SavegamePath)}'.");
+			ShowTextMessage(HasEnglishTexts ? "The game was saved." : "Der Spielstand wurde gespeichert.");
 			return;
 		}
-        else if (key == Key.F7 && HasSavegame && ScreenHandler.ActiveScreen is IMapScreen)
+        else if (key == Key.F9 && HasSavegame && ScreenHandler.ActiveScreen is IMapScreen)
         {
             // quick load
             LoadGameAndContinue();
