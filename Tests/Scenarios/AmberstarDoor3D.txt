@@ -1,0 +1,23 @@
+# With the Amberstar the party walks through doors on 3D maps too and stays on the door like in the original
+# (Door in the program returns at once with the Amberstar). The door of the entrance of Godsbane is at 27,42 of map 148.
+waittext
+dismissall
+# --- without the Amberstar the door screen opens and the party is in front of the door after closing it
+teleport 148 27 43 up
+dismissall
+wait 1000
+move up 1
+waitscreen Door
+closeall
+waitscreen Map3D
+pos 27 43
+# --- with the Amberstar the party walks onto the door and through it
+setspecialitem Amberstar 1
+wait 1000
+move up 1
+waitidle
+screen Map3D
+pos 27 42
+move up 1
+waitidle
+pos 27 41

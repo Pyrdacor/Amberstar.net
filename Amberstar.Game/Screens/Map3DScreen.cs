@@ -537,9 +537,9 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 			var @event = map.Events[eventIndex - 1];
             var mapEvent = Event.CreateEvent(@event, eventIndex);
 
+			// Note: Doors don't reset the position here. Like in the original the party stays on the door when it
+			// was opened or with the Amberstar. Only closing the door screen without opening it restores the position.
 			if (@event is IPlaceEvent ||
-                @event is IDoorEvent ||
-                @event is IDoorExitEvent ||
                 @event is ITeleportEvent)
 			{
 				Game.State.ResetPartyPosition();

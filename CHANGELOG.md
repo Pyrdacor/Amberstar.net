@@ -6,6 +6,9 @@
 - Quick save and quick load on maps use F8 and F9 instead of F5 and F7. F5 opens the inventory of the fifth party member again, like F1 to F6 in the original.
 - The message after the quick save is German in German versions.
 
+### Fixed
+- With the Amberstar the party walks through doors on 3D maps (e.g. the entrance of Godsbane). The party was put back in front of the door. After opening a door on a 3D map the party also stays on the door like in the original.
+
 ## 0.4.4
 
 ### Fixed
