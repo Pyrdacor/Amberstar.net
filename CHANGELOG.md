@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.5
 
 ### Changed
 - Quick save and quick load on maps use F8 and F9 instead of F5 and F7. F5 opens the inventory of the fifth party member again, like F1 to F6 in the original.
