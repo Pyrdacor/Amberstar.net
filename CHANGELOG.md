@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
 
 ### Changed
 - Quick save uses F7 instead of F8, so it is further away from quick load with F9.
