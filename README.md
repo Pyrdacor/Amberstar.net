@@ -16,7 +16,8 @@ a version can be chosen (each version has its own savegames).
 
 Savegames and settings are stored in the folder `Saves` next to the executable. Without write permissions there they are
 stored in `Amberstar.net/Saves` of the application data of the user (e.g. `%APPDATA%` on Windows, `~/.config` on Linux).
-Savegames there are also found if there are none next to the executable.
+If there are no savegames or settings next to the executable but in the application data (e.g. from older versions), they are
+copied next to the executable.
 
 The archive is created and appended with [Amberstar.VersionPacker](#amberstarversionpacker). Instead of appending it, it can also
 be put next to the executable as `versions.dat`. Without packed versions the game uses the data folders of the repository

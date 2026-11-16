@@ -38,16 +38,36 @@ public sealed class SaveFolderTests : IDisposable
 	}
 
 	[Fact]
-	public void SavegamesInTheUserDataAreFoundIfThereAreNoneNextToTheExecutable()
+	public void SavegamesAndSettingsInTheUserDataAreCopiedNextToTheExecutable()
 	{
+		CreateFile(Path.Combine(userFolder, "AmigaGerman", "Savegame.sav"));
 		CreateFile(Path.Combine(userFolder, "AmigaGerman", "Savegame_03.sav"));
+		CreateFile(Path.Combine(userFolder, "AmigaGerman", "Savenames.txt"));
 		CreateFile(Path.Combine(userFolder, "Settings.txt"));
 		var folders = new SaveFolders(executableFolder, userFolder);
 
-		Assert.Equal(Path.Combine(userFolder, "AmigaGerman", "Savegame.sav"), folders.GetSavegamePath("AmigaGerman"));
-		Assert.Equal(Path.Combine(userFolder, "Settings.txt"), folders.SettingsPath);
+		Assert.Equal(Path.Combine(executableFolder, "AmigaGerman", "Savegame.sav"), folders.GetSavegamePath("AmigaGerman"));
+		Assert.Equal(Path.Combine(executableFolder, "Settings.txt"), folders.SettingsPath);
+		Assert.Equal(["Savegame.sav", "Savegame_03.sav", "Savenames.txt"],
+			Directory.GetFiles(Path.Combine(executableFolder, "AmigaGerman")).Select(Path.GetFileName).Order(StringComparer.Ordinal));
+		Assert.True(File.Exists(Path.Combine(executableFolder, "Settings.txt")));
+		// the files in the user data are kept
+		Assert.True(File.Exists(Path.Combine(userFolder, "AmigaGerman", "Savegame_03.sav")));
 		// other versions without savegames in the user data use the folder next to the executable
 		Assert.Equal(Path.Combine(executableFolder, "AtariGerman", "Savegame.sav"), folders.GetSavegamePath("AtariGerman"));
+		Assert.False(Directory.Exists(Path.Combine(executableFolder, "AtariGerman")));
+	}
+
+	[Fact]
+	public void TheSettingsAloneAreNoSavegames()
+	{
+		// without packed versions the savegames are in the same folder as the settings
+		CreateFile(Path.Combine(userFolder, "Settings.txt"));
+		var folders = new SaveFolders(executableFolder, userFolder);
+
+		Assert.Equal(Path.Combine(executableFolder, "Savegame.sav"), folders.GetSavegamePath());
+		Assert.Equal(Path.Combine(executableFolder, "Settings.txt"), folders.SettingsPath);
+		Assert.Equal(["Settings.txt"], Directory.GetFiles(executableFolder).Select(Path.GetFileName));
 	}
 
 	[Fact]
