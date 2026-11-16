@@ -14,6 +14,10 @@ The releases for Windows and Linux (x64) contain the English and German game dat
 They are packed into an archive which is appended to the executable, so the game runs without extra files. At the start
 a version can be chosen (each version has its own savegames).
 
+Savegames and settings are stored in the folder `Saves` next to the executable. Without write permissions there they are
+stored in `Amberstar.net/Saves` of the application data of the user (e.g. `%APPDATA%` on Windows, `~/.config` on Linux).
+Savegames there are also found if there are none next to the executable.
+
 The archive is created and appended with [Amberstar.VersionPacker](#amberstarversionpacker). Instead of appending it, it can also
 be put next to the executable as `versions.dat`. Without packed versions the game uses the data folders of the repository
 (or the folder given by `--data`).

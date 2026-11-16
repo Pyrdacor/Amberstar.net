@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Quick save uses F7 instead of F8, so it is further away from quick load with F9.
+- Savegames and settings are stored in the folder Saves next to the executable. Only without write permissions there the folder in the user data is used (Amberstar.net/Saves in the application data). Savegames and settings in the user data are still found if there are none next to the executable.
+
 ## 0.4.5
 
 ### Changed

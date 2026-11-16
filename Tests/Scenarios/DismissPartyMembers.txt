@@ -51,7 +51,7 @@ key Enter
 wait 500
 button 2
 waitidle
-key F7
+key F9
 waitidle
 partysize 2
 value 3 hp

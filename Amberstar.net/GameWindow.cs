@@ -316,7 +316,7 @@ namespace Amberstar
                     ?? throw new DirectoryNotFoundException("Game data not found. Use '--data <path>' or the environment variable " + GameSetup.DataPathEnvironmentVariable + ".");
 
                 game = GameSetup.CreateGame(renderer, dataPath, audioOutput, configuration, QueryPressedKeys, SetMousePosition);
-                SetupGame(Path.Combine(SavegameFolder, "Savegame.sav"));
+                SetupGame(SaveFolders.GetSavegamePath());
             }
             else
             {
@@ -326,9 +326,10 @@ namespace Amberstar
             StartCheatInputTask();
         }
 
-        static string SavegameFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Amberstar.net", "Saves");
+        // next to the executable or in the user data without write permissions there
+        static readonly SaveFolders SaveFolders = new();
 
-        static string SettingsPath => Path.Combine(SavegameFolder, "Settings.txt");
+        static string SettingsPath => SaveFolders.SettingsPath;
 
         /// <summary>
         /// Applies the resolution and the window mode of the settings.
@@ -393,7 +394,7 @@ namespace Amberstar
                 : null;
 
             game = GameSetup.CreateGame(renderer!, version.LoadFiles(), audioOutput!, configuration!, QueryPressedKeys, SetMousePosition, versionSelection);
-            SetupGame(Path.Combine(SavegameFolder, version.Id, "Savegame.sav"));
+            SetupGame(SaveFolders.GetSavegamePath(version.Id));
         }
 
         /// <summary>
