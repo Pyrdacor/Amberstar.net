@@ -574,7 +574,10 @@ namespace Amberstar
                 var api = new GraphicsAPI
                     (ContextAPI.OpenGLES, ContextProfile.Compatability, ContextFlags.Default, new APIVersion(2, 0));
 #else
-                var api = GraphicsAPI.Default;
+                // macOS only offers OpenGL 3 and newer (needed by the shaders) with a forward compatible core profile
+                var api = OperatingSystem.IsMacOS()
+                    ? new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3))
+                    : GraphicsAPI.Default;
 #endif
                 var version = Assembly.GetExecutingAssembly().GetName().Version;
                 gameVersion = $"Amberstar.net v{version.Major}.{version.Minor}.{version.Build}";

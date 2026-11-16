@@ -25,9 +25,19 @@ jobs:
           - runtime: win-x64
             os: windows-latest
             executable: Amberstar.net.exe
+          - runtime: win-x86
+            os: windows-latest
+            executable: Amberstar.net.exe
           # the oldest supported runner, so the executable also runs with older versions of glibc
           - runtime: linux-x64
             os: ubuntu-22.04
+            executable: Amberstar.net
+          # Apple Silicon and Intel (cross compiled on the same runner)
+          - runtime: osx-arm64
+            os: macos-latest
+            executable: Amberstar.net
+          - runtime: osx-x64
+            os: macos-latest
             executable: Amberstar.net
 
     runs-on: ${{ matrix.os }}
@@ -69,10 +79,16 @@ jobs:
       - name: Publish
         run: dotnet publish Amberstar.net -c Release -r ${{ matrix.runtime }} -p:Version="$VERSION" -o publish
 
+      # On macOS the executable is signed (ad hoc) by the linker and appended data would break the signature,
+      # so versions.dat is put next to the executable there.
       - name: Embed the game versions
         run: |
-          dotnet run --project Amberstar.VersionPacker -c Release -- embed publish/${{ matrix.executable }} versions.dat
-          rm -f publish/*.pdb publish/*.dbg
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            cp versions.dat publish/
+          else
+            dotnet run --project Amberstar.VersionPacker -c Release -- embed publish/${{ matrix.executable }} versions.dat
+          fi
+          rm -rf publish/*.pdb publish/*.dbg publish/*.dSYM
           cp LICENSE publish/
 
       - name: Create the archive

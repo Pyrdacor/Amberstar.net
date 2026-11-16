@@ -10,9 +10,13 @@ See the [changelog](CHANGELOG.md) for the changes of each version.
 
 ## Game versions
 
-The releases for Windows and Linux (x64) contain the English and German game data of the Amiga, Atari ST and DOS versions.
-They are packed into an archive which is appended to the executable, so the game runs without extra files. At the start
-a version can be chosen (each version has its own savegames).
+The releases for Windows (x64 and x86), Linux (x64) and macOS (Apple Silicon and Intel) contain the English and German game data
+of the Amiga, Atari ST and DOS versions. They are packed into an archive which is appended to the executable, so the game runs
+without extra files. At the start a version can be chosen (each version has its own savegames).
+
+On macOS the archive is the file `versions.dat` next to the executable (appended data would break the signature). The executable
+isn't notarized, so macOS blocks it after the download. Allow it in the system settings (Privacy & Security) or remove the
+quarantine attribute with `xattr -dr com.apple.quarantine <folder>`.
 
 Savegames and settings are stored in the folder `Saves` next to the executable. Without write permissions there they are
 stored in `Amberstar.net/Saves` of the application data of the user (e.g. `%APPDATA%` on Windows, `~/.config` on Linux).
