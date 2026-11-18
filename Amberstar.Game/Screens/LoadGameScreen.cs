@@ -35,7 +35,7 @@ internal sealed class LoadGameScreen() : WindowScreen(WindowX, WindowY, WindowWi
 
 		var (clientWidth, clientHeight) = ClientArea.Size;
 		var title = AddLabel(0, 0, clientWidth, TitleHeight, ControlDisplayLayer);
-		title.SetText(Game.HasEnglishTexts ? "LOAD GAME" : "SPIEL LADEN", TextColorIndex, TextManager.TransparentPaper, Game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI]);
+		title.SetText(TextManager.ToGameCharacters(Game.GetProgramText(ProgramText.LoadGameTitle)), TextColorIndex, TextManager.TransparentPaper, Game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI]);
 		title.Alignment = TextAlignment.Center;
 		title.Visible = true;
 

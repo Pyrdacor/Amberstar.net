@@ -1,0 +1,161 @@
+using Amberstar.GameData.Legacy.Translation;
+using Amberstar.Translator;
+
+// Extracts the texts of the game data for translators (gettext PO files) and integrates the translations.
+
+string[] defaultFolders =
+[
+	Path.Combine("English", "AmberfilesAmiga"),
+	Path.Combine("English", "AmberfilesST"),
+	Path.Combine("English", "AmberfilesDOS"),
+];
+string[] defaultReferenceFolders =
+[
+	Path.Combine("German", "AmberfilesAmiga"),
+	Path.Combine("German", "AmberfilesST"),
+	Path.Combine("German", "AmberfilesDOS"),
+];
+
+try
+{
+	var command = args.FirstOrDefault()?.ToLowerInvariant();
+	var options = ParseOptions(args.Skip(1), out var arguments);
+
+	switch (command)
+	{
+		case "extract":
+		{
+			var output = options.GetValueOrDefault("output") ?? "amberstar.pot";
+			var folders = arguments.Count != 0 ? arguments : [.. defaultFolders.Select(FindRepositoryFolder)];
+			var referenceFolders = options.TryGetValue("reference", out var reference)
+				? (reference.Length == 0 ? [] : reference.Split(';', StringSplitOptions.RemoveEmptyEntries))
+				: arguments.Count != 0 ? [] : defaultReferenceFolders.Select(TryFindRepositoryFolder).OfType<string>().ToArray();
+			var template = TranslationTool.CreateTemplate(folders, referenceFolders, Console.WriteLine);
+			template.Save(output);
+			Console.WriteLine($"Wrote {template.Entries.Count} texts to {output}.");
+			return 0;
+		}
+		case "update" when arguments.Count == 2:
+		{
+			var (result, kept, fuzzy, obsolete) = TranslationTool.Merge(PoFile.Load(arguments[0]), PoFile.Load(arguments[1]));
+			var output = options.GetValueOrDefault("output") ?? arguments[0];
+			result.Save(output);
+			Console.WriteLine($"Wrote {output}: {kept} translations kept, {fuzzy} marked as fuzzy (changed source text), {obsolete} dropped.");
+			return 0;
+		}
+		case "check" when arguments.Count == 2:
+			return PrintCheck(TranslationTool.Check(FindDataFolder(arguments[0]), PoFile.Load(arguments[1]))) ? 0 : 1;
+		case "create" when arguments.Count == 3:
+		{
+			var folder = FindDataFolder(arguments[0]);
+			var translation = PoFile.Load(arguments[1]);
+
+			if (!PrintCheck(TranslationTool.Check(folder, translation)) && !options.ContainsKey("force"))
+			{
+				Console.WriteLine("The translation has errors. Fix them or use --force.");
+				return 1;
+			}
+
+			TranslationTool.Install(folder, translation, arguments[2]);
+			Console.WriteLine($"Created {arguments[2]} with the game data of {folder} and the translation.");
+			Console.WriteLine("Start the game with it: Amberstar.net --data " + arguments[2]);
+			return 0;
+		}
+	}
+}
+catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or FormatException or InvalidOperationException)
+{
+	Console.WriteLine("Error: " + ex.Message);
+	return 1;
+}
+
+Console.WriteLine("Usage:");
+Console.WriteLine("  Amberstar.Translator extract [--output <file.pot>] [--reference <folder>[;<folder>...]] [<data folder>...]");
+Console.WriteLine("      Writes all texts of the game data to a PO template for the translators (default amberstar.pot).");
+Console.WriteLine("      Without folders the English Amiga, Atari ST and DOS data of the repository are used and the");
+Console.WriteLine("      German texts are added as comments (--reference \"\" leaves them out).");
+Console.WriteLine("  Amberstar.Translator update <translation.po> <template.pot> [--output <file.po>]");
+Console.WriteLine("      Takes the translations for a new template (changed source texts are marked as fuzzy).");
+Console.WriteLine("  Amberstar.Translator check <data folder> <translation.po>");
+Console.WriteLine("      Checks a translation (lengths, characters of the font, keywords, control codes) and shows");
+Console.WriteLine("      how much is translated. The folder is the game data which the translation was made from.");
+Console.WriteLine("  Amberstar.Translator create <data folder> <translation.po> <output folder> [--force]");
+Console.WriteLine("      Checks the translation and creates a new game data folder with it (the files of the data");
+Console.WriteLine($"      folder and the translation as {TranslationTool.TranslationFileName}).");
+Console.WriteLine();
+Console.WriteLine("The data folders can also be given like English/AmberfilesAmiga (searched upwards from the current directory).");
+return 1;
+
+static Dictionary<string, string> ParseOptions(IEnumerable<string> args, out List<string> arguments)
+{
+	var options = new Dictionary<string, string>();
+	arguments = [];
+	var list = args.ToList();
+
+	for (int i = 0; i < list.Count; i++)
+	{
+		var arg = list[i];
+
+		if (arg == "--force")
+			options["force"] = "";
+		else if (arg is "--output" or "-o" or "--reference")
+		{
+			if (i + 1 >= list.Count)
+				throw new ArgumentException($"The option {arg} needs a value.");
+
+			options[arg == "-o" ? "output" : arg[2..]] = list[++i];
+		}
+		else if (arg.StartsWith("--"))
+			throw new ArgumentException($"Unknown option {arg}.");
+		else
+			arguments.Add(arg);
+	}
+
+	return options;
+}
+
+static bool PrintCheck(TranslationTool.CheckResult result)
+{
+	foreach (var error in result.Errors)
+		Console.WriteLine("Error: " + error);
+
+	foreach (var warning in result.Warnings)
+		Console.WriteLine("Warning: " + warning);
+
+	Console.WriteLine();
+	Console.WriteLine("Translated texts:");
+
+	foreach (var (category, (total, translated)) in result.Categories.OrderBy(c => c.Key))
+		Console.WriteLine($"  {category,-16} {translated,5} / {total,5}");
+
+	Console.WriteLine($"  {"total",-16} {result.TranslatedCount,5} / {result.TextCount,5} ({(result.TextCount == 0 ? 0 : 100.0 * result.TranslatedCount / result.TextCount):0.0}%)");
+	if (result.UnusedCount != 0)
+		Console.WriteLine($"{result.UnusedCount} translations are not used by this game data (texts of other versions or changed texts).");
+
+	Console.WriteLine($"{result.Errors.Count} errors, {result.Warnings.Count} warnings");
+
+	return result.Errors.Count == 0;
+}
+
+static string FindDataFolder(string path) => Directory.Exists(path) ? path : FindRepositoryFolder(path);
+
+static string FindRepositoryFolder(string relativePath) => TryFindRepositoryFolder(relativePath)
+	?? throw new DirectoryNotFoundException($"The data folder {relativePath} was not found.");
+
+// the data folders are searched upwards from the current directory
+static string? TryFindRepositoryFolder(string relativePath)
+{
+	var directory = new DirectoryInfo(Environment.CurrentDirectory);
+
+	while (directory != null)
+	{
+		var path = Path.Combine(directory.FullName, relativePath);
+
+		if (Directory.Exists(path))
+			return path;
+
+		directory = directory.Parent;
+	}
+
+	return null;
+}

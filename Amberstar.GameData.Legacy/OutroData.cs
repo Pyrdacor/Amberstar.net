@@ -241,8 +241,8 @@ internal class OutroData : IOutroData
 	public IReadOnlyList<IReadOnlyList<IGraphic>> BalconyPeople { get; }
 	public IReadOnlyList<Position> BalconyPeoplePositions { get; }
 	public IReadOnlyList<byte> BalconyScript { get; }
-	public IReadOnlyList<string> ChancellorTexts { get; }
-	public IReadOnlyList<string> BalconyTexts { get; }
+	public IReadOnlyList<string> ChancellorTexts { get; internal set; }
+	public IReadOnlyList<string> BalconyTexts { get; internal set; }
 	public ISong? Music { get; }
 
 	public IReadOnlyList<IGraphic> GetGraphics(OutroGraphic graphic) => graphic switch

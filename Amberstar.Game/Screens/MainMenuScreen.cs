@@ -25,8 +25,7 @@ internal sealed class MainMenuScreen() : WindowScreen(64, WindowY, 12, WindowHei
 	const int NewGameIndex = 1;
 	const int LoadGameIndex = 2;
 	const int QuitIndex = 3;
-	static readonly string[] EnglishTexts = ["CONTINUE GAME", "START NEW GAME", "LOAD GAME", "QUIT"];
-	static readonly string[] GermanTexts = ["SPIEL FORTSETZEN", "NEUES SPIEL STARTEN", "SPIEL LADEN", "BEENDEN"];
+	static readonly ProgramText[] EntryTexts = [ProgramText.MainMenuContinueGame, ProgramText.MainMenuStartNewGame, ProgramText.MainMenuLoadGame, ProgramText.MainMenuQuit];
 	readonly List<(Label Label, Rect Area)> entries = [];
 	readonly bool[] enabled = new bool[4];
 	IColoredRect? background;
@@ -113,7 +112,7 @@ internal sealed class MainMenuScreen() : WindowScreen(64, WindowY, 12, WindowHei
 
 	void UpdateEntries()
 	{
-		var texts = Game.HasEnglishTexts ? EnglishTexts : GermanTexts;
+		var texts = EntryTexts.Select(text => TextManager.ToGameCharacters(Game.GetProgramText(text))).ToArray();
 
 		for (int i = 0; i < entries.Count; i++)
 		{

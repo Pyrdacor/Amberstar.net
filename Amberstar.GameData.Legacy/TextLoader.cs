@@ -1,12 +1,19 @@
 ﻿using Amber.Common;
 using Amber.IO.Common.Serialization;
 using Amberstar.GameData.Serialization;
+using Amberstar.GameData.Legacy.Translation;
 
 namespace Amberstar.GameData.Legacy;
 
-internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List<string> textFragments) : ITextLoader
+internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List<string> textFragments, GameTranslation? translation = null) : ITextLoader
 {
 	readonly List<string> textFragments = textFragments;
+
+	public bool HasTranslation => translation != null;
+
+	public string? TranslationSourceLanguage => translation?.SourceLanguage;
+
+	public string? GetProgramText(string key) => translation?.GetProgramText(key);
 	readonly Dictionary<AssetIdentifier, IText> texts = [];
 
     public IText FromString(string text)
@@ -21,6 +28,10 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 
     public word? FindWord(string word)
 	{
+		// The translated keywords are found first (another word could be the same).
+		if (translation?.FindKeyword(word) is word keyword)
+			return keyword;
+
 		int index = textFragments.FindIndex(text => string.Compare(text, word, true) == 0);
 
 		if (index == -1)

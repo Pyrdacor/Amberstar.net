@@ -38,7 +38,7 @@ partial class Game
 			CheatMode = true;
 
 			if (ScreenHandler.ActiveScreen is IMapScreen)
-				ShowTextMessage(TextManager.ToGameCharacters(HasEnglishTexts ? "CHEAT MODE ON. CTRL+D SELECTS THE MUSIC." : "CHEATMODUS AN. STRG+D WÄHLT DIE MUSIK."));
+				ShowTextMessage(TextManager.ToGameCharacters(GetProgramText(ProgramText.CheatModeOn)));
 		}
 	}
 
@@ -76,7 +76,7 @@ partial class Game
 		{
 			// quick save
 			SaveGame();
-			ShowTextMessage(HasEnglishTexts ? "The game was saved." : "Der Spielstand wurde gespeichert.");
+			ShowTextMessage(TextManager.ToGameCharacters(GetProgramText(ProgramText.GameSaved)));
 			return;
 		}
         else if (key == Key.F9 && HasSavegame && ScreenHandler.ActiveScreen is IMapScreen)

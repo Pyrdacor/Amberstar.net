@@ -67,6 +67,19 @@ dotnet run --project Amberstar.VersionPacker -- embed path/to/Amberstar.net.exe 
 Without more arguments `pack` uses the English and German Amiga, Atari ST and DOS data of the repository. The release workflow
 ([.github/workflows/release.yml](.github/workflows/release.yml)) does this for a tag like `v0.1.0-alpha` (native AOT builds for Windows and Linux).
 
+### Amberstar.Translator
+
+Extracts the texts of the game data for translators (gettext PO file) and creates the game data of a new language
+from a translation:
+
+```
+dotnet run --project Amberstar.Translator -- extract --output amberstar.pot
+dotnet run --project Amberstar.Translator -- check English/AmberfilesAmiga fr.po
+dotnet run --project Amberstar.Translator -- create English/AmberfilesAmiga fr.po French/AmberfilesAmiga
+```
+
+See [Docs/Translation.md](Docs/Translation.md).
+
 ### Amberstar.Tests
 
 Automated tests: loading the game data of all versions in the repository, game logic in a headless game and all scenario scripts in [Tests/Scenarios](Tests/Scenarios/README.md). Run them with `dotnet test Amberstar.Tests`.

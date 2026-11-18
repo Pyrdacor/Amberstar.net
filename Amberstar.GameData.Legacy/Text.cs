@@ -14,6 +14,13 @@ internal class Text(List<string> textFragments) : IText
 
     public int TextBlockCount => textBlockOffsets.Count;
 
+	/// <summary>
+	/// The indices of the words of the dictionary (of all text blocks).
+	/// </summary>
+	internal IReadOnlyList<word> WordIndices => textIndices;
+
+	internal List<string> Dictionary => textFragments;
+
     public static Text FromString(string text)
 	{
 		// Note: We need to use fragment index 1, as 0 is treated as empty.
@@ -227,11 +234,11 @@ internal class Text(List<string> textFragments) : IText
 	/// has them at other indices: the German one at 1580, 1576, 1577 and 631, 1581, 1300, 166, 155, 1302, 170, 743,
 	/// the English one at 398 (#), 3115 ($), 3075 (!), 390 (,), 545 (:), 427 (.) and 395 (?).
 	/// </summary>
-	sealed record Markers(int OpenBracket, int CarriageReturn, int ParagraphMarker, HashSet<int> EndPunctuation);
+	internal sealed record Markers(int OpenBracket, int CarriageReturn, int ParagraphMarker, HashSet<int> EndPunctuation);
 
 	static readonly ConditionalWeakTable<List<string>, Markers> markersByDictionary = [];
 
-	static Markers GetMarkers(List<string> textFragments) => markersByDictionary.GetValue(textFragments, fragments =>
+	internal static Markers GetMarkers(List<string> textFragments) => markersByDictionary.GetValue(textFragments, fragments =>
 	{
 		// index 0 is no word
 		int IndexOf(string word) => fragments.IndexOf(word, 1);
