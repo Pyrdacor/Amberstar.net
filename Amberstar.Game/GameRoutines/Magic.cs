@@ -589,13 +589,11 @@ partial class Game
 	/// </summary>
 	string GetCorpseSpellHint(IPartyMember target)
 	{
-		bool english = HasEnglishTexts;
-
-		return UI.TextManager.ToGameCharacters(target.HasAnyConditionOf(Condition.Dust)
-				? english ? $"{target.Name} HAS CRUMBLED TO DUST." : $"{target.Name} IST ZU STAUB ZERFALLEN."
+		return UI.TextManager.ToGameCharacters(GetProgramText(target.HasAnyConditionOf(Condition.Dust)
+				? ProgramText.CrumbledToDust
 			: target.HasAnyConditionOf(Condition.Ashes)
-				? english ? $"{target.Name} HAS BEEN BURNED TO ASHES." : $"{target.Name} IST ZU ASCHE VERBRANNT."
-			: english ? $"THE SPELL HAS NO EFFECT ON {target.Name}." : $"DER SPRUCH WIRKT BEI {target.Name} NICHT.");
+				? ProgramText.BurnedToAshes
+			: ProgramText.SpellHasNoEffect, target.Name));
 	}
 
 	void ConvertCorpseSpell(Message message, Condition condition, Condition? failCondition, Action finished)

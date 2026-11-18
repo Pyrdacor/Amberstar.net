@@ -247,7 +247,7 @@ partial class Game
 		catch (Exception ex) when (ex is InvalidDataException or IOException or AmberException or IndexOutOfRangeException or ArgumentException)
 		{
 			ResetGameState();
-			ShowTextMessage(HasEnglishTexts ? "The savegame could not be loaded." : "Der Spielstand konnte nicht geladen werden.");
+			ShowTextMessage(UI.TextManager.ToGameCharacters(GetProgramText(ProgramText.SavegameNotLoaded)));
 		}
 	}
 

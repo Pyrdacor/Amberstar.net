@@ -241,8 +241,13 @@ internal class OutroData : IOutroData
 	public IReadOnlyList<IReadOnlyList<IGraphic>> BalconyPeople { get; }
 	public IReadOnlyList<Position> BalconyPeoplePositions { get; }
 	public IReadOnlyList<byte> BalconyScript { get; }
-	public IReadOnlyList<string> ChancellorTexts { get; }
-	public IReadOnlyList<string> BalconyTexts { get; }
+	/// <summary>
+	/// The characters of a translation which the font doesn't have.
+	/// </summary>
+	internal Translation.CustomCharset? Charset { get; set; }
+
+	public IReadOnlyList<string> ChancellorTexts { get; internal set; }
+	public IReadOnlyList<string> BalconyTexts { get; internal set; }
 	public ISong? Music { get; }
 
 	public IReadOnlyList<IGraphic> GetGraphics(OutroGraphic graphic) => graphic switch
@@ -373,6 +378,29 @@ internal class OutroData : IOutroData
 	/// </summary>
 	public IGraphic? GetGlyph(char ch)
 	{
+		if (Charset != null)
+		{
+			var (customGlyph, character) = Charset.GetTextGlyph(ch);
+
+			if (customGlyph != null)
+			{
+				var pixels = new byte[IOutroData.GlyphWidth * IOutroData.GlyphHeight];
+
+				for (int y = 0; y < IOutroData.GlyphHeight && y < customGlyph.Length; y++)
+				{
+					for (int x = 0; x < IOutroData.GlyphWidth; x++)
+					{
+						if ((customGlyph[y] & (0x80 >> x)) != 0)
+							pixels[y * IOutroData.GlyphWidth + x] = FontColor;
+					}
+				}
+
+				return new Graphic(IOutroData.GlyphWidth, IOutroData.GlyphHeight, pixels, GraphicFormat.PaletteIndices);
+			}
+
+			ch = character;
+		}
+
 		if (glyphs.TryGetValue(ch, out var glyph))
 			return glyph;
 

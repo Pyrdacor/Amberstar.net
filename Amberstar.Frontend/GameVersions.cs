@@ -36,9 +36,10 @@ public static class GameVersionArchive
 	const int FooterSize = 16;
 
 	/// <summary>
-	/// Only these files of a data folder are packed (the game reads nothing else).
+	/// Only these files of a data folder are packed (the game reads nothing else). The PO file is the
+	/// translation of a folder made with Amberstar.Translator.
 	/// </summary>
-	static readonly string[] DataFileExtensions = [".AMB", ".ICN", ".UDO", ".68K", ".SAV", ".IMG", ".TXT"];
+	static readonly string[] DataFileExtensions = [".AMB", ".ICN", ".UDO", ".68K", ".SAV", ".IMG", ".TXT", ".PO"];
 
 	/// <summary>
 	/// The files of the DOS version which the game reads (the other programs and pictures are not needed).

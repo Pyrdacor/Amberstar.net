@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amberstar.Tests", "Ambersta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amberstar.VersionPacker", "Amberstar.VersionPacker\Amberstar.VersionPacker.csproj", "{81FFE89C-9442-451A-B5FD-D0A775EECCA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amberstar.Translator", "Amberstar.Translator\Amberstar.Translator.csproj", "{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{81FFE89C-9442-451A-B5FD-D0A775EECCA1}.Release|x64.Build.0 = Release|Any CPU
 		{81FFE89C-9442-451A-B5FD-D0A775EECCA1}.Release|x86.ActiveCfg = Release|Any CPU
 		{81FFE89C-9442-451A-B5FD-D0A775EECCA1}.Release|x86.Build.0 = Release|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Debug|x86.Build.0 = Debug|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Release|x64.Build.0 = Release|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{F95AEA00-C822-4420-BC3A-C46FDFA1C9DB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

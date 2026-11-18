@@ -38,7 +38,7 @@ internal sealed class SettingsScreen() : WindowScreen(WindowX, WindowY, WindowWi
 
 		var (clientWidth, clientHeight) = ClientArea.Size;
 		var title = AddLabel(0, 0, clientWidth, TitleHeight, ControlDisplayLayer);
-		title.SetText(Game.HasEnglishTexts ? "SETTINGS" : "EINSTELLUNGEN", TextColorIndex, TextManager.TransparentPaper, Game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI]);
+		title.SetText(TextManager.ToGameCharacters(Game.GetProgramText(ProgramText.SettingsTitle)), TextColorIndex, TextManager.TransparentPaper, Game.PaletteIndexProvider.BuiltinPaletteIndices[BuiltinPalette.UI]);
 		title.Alignment = TextAlignment.Center;
 		title.Visible = true;
 
@@ -62,18 +62,16 @@ internal sealed class SettingsScreen() : WindowScreen(WindowX, WindowY, WindowWi
 	string GetText(int entry)
 	{
 		var configuration = Game.Configuration;
-		bool english = Game.HasEnglishTexts;
-
 		var (name, value) = entry switch
 		{
-			ResolutionEntry => (english ? "RESOLUTION" : "AUFLÖSUNG", configuration.WindowMode == WindowMode.Window ? configuration.Resolutions[configuration.Resolution].ToString() : "-"),
-			WindowModeEntry => (english ? "DISPLAY" : "ANZEIGE", configuration.WindowMode switch
+			ResolutionEntry => (Game.GetProgramText(ProgramText.SettingsResolution), configuration.WindowMode == WindowMode.Window ? configuration.Resolutions[configuration.Resolution].ToString() : "-"),
+			WindowModeEntry => (Game.GetProgramText(ProgramText.SettingsDisplay), Game.GetProgramText(configuration.WindowMode switch
 			{
-				WindowMode.Window => english ? "WINDOW" : "FENSTER",
-				WindowMode.BorderlessWindow => english ? "FULLSCREEN WINDOW" : "VOLLBILD-FENSTER",
-				_ => english ? "NATIVE" : "NATIV",
-			}),
-			_ => (english ? "CAMP REGENERATION" : "LAGER-REGENERATION", $"{configuration.CampRegeneration}%"),
+				WindowMode.Window => ProgramText.SettingsWindow,
+				WindowMode.BorderlessWindow => ProgramText.SettingsFullscreenWindow,
+				_ => ProgramText.SettingsNative,
+			})),
+			_ => (Game.GetProgramText(ProgramText.SettingsCampRegeneration), $"{configuration.CampRegeneration}%"),
 		};
 		// All characters have the same width, so spaces align the values to the right.
 		int lineLength = (ClientArea.Size.Width - 2 * ListTextPadding) / CharacterWidth;

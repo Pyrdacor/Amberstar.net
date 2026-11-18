@@ -12,7 +12,7 @@ internal sealed class SavegameNameScreen : InputWordScreen
 {
 	public override ScreenType Type { get; } = ScreenType.InputSavegameName;
 
-	protected override IText LabelText => Game.AssetProvider.TextLoader.FromString(Game.HasEnglishTexts ? "ENTER NAME :" : "GIB NAME EIN :");
+	protected override IText LabelText => Game.AssetProvider.TextLoader.FromString(TextManager.ToGameCharacters(Game.GetProgramText(ProgramText.EnterName)));
 
 	protected override int? MaxInputLength => Game.MaxSavegameNameLength;
 
@@ -60,7 +60,7 @@ internal sealed class OptionsScreen : ButtonGridScreen
 		Game.Cursor.CursorType = CursorType.Sword;
 
 		title = AddLabel(16, 50, 176, 7, ControlDisplayLayer);
-		title.SetText(TextManager.ToGameCharacters(Game.HasEnglishTexts ? "SAVEGAMES" : "SPIELST\u00c4NDE"), TextColorIndex, TextManager.TransparentPaper, ButtonGridPaletteIndex);
+		title.SetText(TextManager.ToGameCharacters(Game.GetProgramText(ProgramText.SavegamesTitle)), TextColorIndex, TextManager.TransparentPaper, ButtonGridPaletteIndex);
 		title.Alignment = TextAlignment.Center;
 		title.Visible = true;
 
@@ -131,7 +131,7 @@ internal sealed class OptionsScreen : ButtonGridScreen
 
 	string GetSlotText(int slot)
 	{
-		var name = used[slot - 1] ? Game.GetSavegameName(names, slot) : Game.HasEnglishTexts ? "(empty)" : "(leer)";
+		var name = used[slot - 1] ? Game.GetSavegameName(names, slot) : Game.GetProgramText(ProgramText.EmptySavegameSlot);
 
 		return TextManager.ToGameCharacters($"{slot:00} {name}");
 	}

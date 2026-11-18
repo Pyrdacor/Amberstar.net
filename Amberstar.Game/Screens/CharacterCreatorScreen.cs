@@ -15,7 +15,7 @@ internal sealed class CharacterNameScreen : InputWordScreen
 
 	// The text is only part of the program of the installer.
 	protected override IText LabelText => Game.AssetProvider.TextLoader.FromString(
-		Game.HasEnglishTexts ? "ENTER NAME :" : "GIB NAME EIN :");
+		TextManager.ToGameCharacters(Game.GetProgramText(ProgramText.EnterName)));
 
 	protected override int? MaxInputLength => CharacterCreatorScreen.MaxNameLength;
 }

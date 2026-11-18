@@ -7,6 +7,7 @@ using Amber.IO.FileFormats.Serialization;
 using Amber.Serialization;
 using Amberstar.GameData.Serialization;
 using Amberstar.GameData.Legacy.Dos;
+using Amberstar.GameData.Legacy.Translation;
 using Amiga.FileFormats.LHA;
 
 namespace Amberstar.GameData.Legacy;
@@ -144,6 +145,8 @@ public class AssetProvider : IAssetProvider
 	readonly DosGameData? dosData;
 	readonly Dictionary<AssetType, Dictionary<int, Asset>> assets = [];
 	readonly Dictionary<AssetType, IFileContainer> assetContainers = [];
+	readonly Dictionary<AssetIdentifier, IAsset> translatedAssets = [];
+	readonly GameTranslation? translation;
 	readonly Lazy<ProgramData> programData;
 	readonly Lazy<ITextLoader> textLoader;
 	readonly Lazy<IPlaceLoader> placeLoader;
@@ -212,7 +215,7 @@ public class AssetProvider : IAssetProvider
 		{
 			var dos = new DosGameData(fileSystem);
 			dosData = dos;
-			programData = new(() => new ProgramData(dos));
+			programData = new(() => Translate(new ProgramData(dos)));
 			Platform = LegacyPlatform.Dos;
 		}
 		else
@@ -223,7 +226,7 @@ public class AssetProvider : IAssetProvider
 
 				if (programFile != null)
 				{
-					programData = new(() => programFileLoaders[platform](programFile));
+					programData = new(() => Translate(programFileLoaders[platform](programFile)));
 					Platform = platform;
 					break;
 				}
@@ -232,6 +235,8 @@ public class AssetProvider : IAssetProvider
 
 		if (Platform == LegacyPlatform.Source)
 			programData = new(() => LoadProgramDataFromSource(fileSystem));
+
+		translation = GameTranslation.Load(fileSystem);
 
 		var builtinPalettes = new Dictionary<BuiltinPalette, IGraphic>()
 		{
@@ -242,7 +247,7 @@ public class AssetProvider : IAssetProvider
             { BuiltinPalette.Cursor, UIPalette },
         };
 
-		textLoader = new(() => new TextLoader(this, Data.TextFragments));
+		textLoader = new(() => new TextLoader(this, Data.TextFragments, translation));
 		placeLoader = new(() => new PlaceLoader(this));
 		layoutLoader = new(() => new LayoutLoader(this, Data.LayoutBlocks,
 			Data.LayoutBottomCorners, Data.LayoutBottomCornerMasks, Data.PortraitArea));
@@ -251,7 +256,7 @@ public class AssetProvider : IAssetProvider
 		paletteLoader = new(() => new PaletteLoader(this, dosData == null ? builtinPalettes : LoadDosBuiltinPalettes(dosData)));
 		graphicLoader = new(() => new GraphicLoader(this, Data.LoadingScreenData, Data.LoadingScreenPaletteData));
 		tilesetLoader = new(() => new TilesetLoader(this));
-		fontLoader = new(() => dosData == null ? new FontLoader(this) : new DosFontLoader(dosData));
+		fontLoader = new(() => ExtendFont(dosData == null ? new FontLoader(this) : new DosFontLoader(dosData)));
 		savegameLoader = new(() => new SavegameLoader(this));
 		labDataLoader = new(() => new LabDataLoader(this));
 		chestLoader = new(() => new ChestLoader(this));
@@ -315,7 +320,7 @@ public class AssetProvider : IAssetProvider
 				unpacked.Position = 0;
 				var program = PrgReader.Read(unpacked);
 
-				return new OutroData([.. program.TextSegment, .. program.DataSegment], Platform);
+				return Translate(new OutroData([.. program.TextSegment, .. program.DataSegment], Platform));
 			}
 
 			var prgFile = PrgReader.Read(fileReader);
@@ -323,12 +328,19 @@ public class AssetProvider : IAssetProvider
 			var reader = container.Files.Values.First();
 			reader.Position = 0;
 
-			return new OutroData(reader.ReadBytes(reader.Size), Platform);
+			return Translate(new OutroData(reader.ReadBytes(reader.Size), Platform));
 		}
 		catch
 		{
 			return null;
 		}
+	}
+
+	private OutroData Translate(OutroData outro)
+	{
+		translation?.Apply(outro);
+
+		return outro;
 	}
 
 	/// <summary>
@@ -438,6 +450,44 @@ public class AssetProvider : IAssetProvider
 	}
 
 	public LegacyPlatform Platform { get; } = LegacyPlatform.Source;
+
+	/// <summary>
+	/// True if the game data has a translation (see <see cref="GameTranslation"/>).
+	/// </summary>
+	public bool HasTranslation => translation != null;
+
+	/// <summary>
+	/// The PO file of the translation or null.
+	/// </summary>
+	public PoFile? TranslationFile => translation?.File;
+
+	/// <summary>
+	/// Characters of the translation which are not part of the character set of the game. They are
+	/// known after the texts were loaded.
+	/// </summary>
+	public IReadOnlySet<char> InvalidTranslationCharacters => translation?.InvalidCharacters ?? [];
+
+	/// <summary>
+	/// The characters of the translation which the fonts don't have (see <see cref="GlyphFile"/>) or null.
+	/// </summary>
+	public CustomCharset? TranslationCharset => translation?.Charset;
+
+	private IFontLoader ExtendFont(IFontLoader loader) =>
+		translation?.Charset is CustomCharset charset ? new ExtendedFontLoader(loader, charset) : loader;
+
+	sealed class ExtendedFontLoader(IFontLoader loader, CustomCharset charset) : IFontLoader
+	{
+		IFont? font;
+
+		public IFont LoadFont() => font ??= new ExtendedFont(loader.LoadFont(), charset);
+	}
+
+	private ProgramData Translate(ProgramData data)
+	{
+		translation?.Apply(data);
+
+		return data;
+	}
 
 	private static ProgramData LoadAtariProgramData(IReadOnlyFile file)
 	{
@@ -637,6 +687,28 @@ public class AssetProvider : IAssetProvider
 	}
 
 	public virtual IAsset? GetAsset(AssetIdentifier identifier)
+	{
+		if (translation == null)
+			return GetUntranslatedAsset(identifier);
+
+		if (translatedAssets.TryGetValue(identifier, out var translatedAsset))
+			return translatedAsset;
+
+		// the words of the dictionary are translated first
+		_ = Data;
+
+		var asset = GetUntranslatedAsset(identifier);
+
+		if (asset == null)
+			return null;
+
+		translatedAsset = translation.Translate(asset);
+		translatedAssets.Add(identifier, translatedAsset);
+
+		return translatedAsset;
+	}
+
+	private IAsset? GetUntranslatedAsset(AssetIdentifier identifier)
 	{
 		if (dosData != null)
 			return dosData.HasAssetType(identifier.Type) ? GetDosAsset(identifier) : GetAssetFromProgramData(identifier);

@@ -43,9 +43,35 @@ partial class Game
     internal Rect PortraitArea { get; } = new(16, 1, 6 * 48, 34);
 
     /// <summary>
-    /// Texts which are not part of the game data are only available in English and German.
+    /// Texts which are not part of the game data are only available in English and German (and in translations).
+    /// A translation uses the texts of the language which it was made from if a text isn't translated.
     /// </summary>
-    internal bool HasEnglishTexts => GetFullText(LoadUIText(UIText.Male)).Contains("MALE");
+    internal bool HasEnglishTexts => AssetProvider.TextLoader.HasTranslation
+        ? AssetProvider.TextLoader.TranslationSourceLanguage is not ("German" or "Deutsch")
+        : GetFullText(LoadUIText(UIText.Male)).Contains("MALE");
+
+    /// <summary>
+    /// A text of the program which is not part of the game data. {0} is replaced by the first argument and so on.
+    /// </summary>
+    internal string GetProgramText(ProgramText text, params object[] args)
+    {
+        var (english, german, _) = ProgramTexts.Texts[text];
+        var fallback = HasEnglishTexts ? english : german;
+        var value = AssetProvider.TextLoader.GetProgramText(text.ToString()) ?? fallback;
+
+        if (args.Length == 0)
+            return value;
+
+        try
+        {
+            return string.Format(value, args);
+        }
+        catch (FormatException)
+        {
+            // an invalid translation
+            return string.Format(fallback, args);
+        }
+    }
 
     internal Layout CurrentLayout { get; private set; }
 

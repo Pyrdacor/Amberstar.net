@@ -60,7 +60,7 @@ internal class TextManager(Game game, IFont font,
     /// <summary>
     /// Checks if the font has a glyph for the character (given as normal text).
     /// </summary>
-    public bool HasGlyph(char ch) => ch == ' ' || fontInfoProvider.TextGlyphTextureIndices.ContainsKey(ToGameCharacters(ch.ToString())[0]);
+    public bool HasGlyph(char ch) => ch == ' ' || fontInfoProvider.TextGlyphTextureIndices.ContainsKey(FontCharacters.ToFontCharacter(ToGameCharacters(ch.ToString())[0]));
 
     public int GetTextRenderWidth(string text)
     {
@@ -189,74 +189,12 @@ internal class TextManager(Game game, IFont font,
 
         public bool Scrolling { get; private set; }
 
-        private static readonly Dictionary<char, int> UnicodeToAtariST = new()
-        {
-            { 'Ç', 0x80 },
-            { 'ü', 0x81 },
-            { 'é', 0x82 },
-            { 'â', 0x83 },
-            { 'ä', 0x84 },
-            { 'à', 0x85 },
-            { 'å', 0x86 },
-            { 'ç', 0x87 },
-            { 'ê', 0x88 },
-            { 'ë', 0x89 },
-            { 'è', 0x8A },
-            { 'ï', 0x8B },
-            { 'î', 0x8C },
-            { 'ì', 0x8D },
-            { 'Ä', 0x8E },
-            { 'Å', 0x8F },
-            { 'É', 0x90 },
-            { 'æ', 0x91 },
-            { 'Æ', 0x92 },
-            { 'ô', 0x93 },
-            { 'ö', 0x94 },
-            { 'ò', 0x95 },
-            { 'û', 0x96 },
-            { 'ù', 0x97 },
-            { 'ÿ', 0x98 },
-            { 'Ö', 0x99 },
-            { 'Ü', 0x9A },
-            { '¢', 0x9B },
-            { '£', 0x9C },
-            { '¥', 0x9D },
-            { 'ß', 0x9E },
-            { 'ƒ', 0x9F },
-            { 'á', 0xA0 },
-            { 'í', 0xA1 },
-            { 'ó', 0xA2 },
-            { 'ú', 0xA3 },
-            { 'ñ', 0xA4 },
-            { 'Ñ', 0xA5 },
-            { '¿', 0xA8 },
-            { '¬', 0xAA },
-            { '¡', 0xAD },
-            { '«', 0xAE },
-            { '»', 0xAF },
-            { 'ã', 0xB0 },
-            { 'õ', 0xB1 },
-            { 'Ø', 0xB2 },
-            { 'ø', 0xB3 },
-            { 'œ', 0xB4 },
-            { 'Œ', 0xB5 },
-            { 'À', 0xB6 },
-            { 'Ã', 0xB7 },
-            { 'Õ', 0xB8 },
-            { 'ĳ', 0xC0 },
-            { 'Ĳ', 0xC1 },
-            { '§', 0xDD },
-            { '°', 0xF8 },
-            { '²', 0xFD },
-            { '³', 0xFE },
-        };
-
         private static char ConvertChar(char ch)
         {
             // Note: This is not related to original Amberstar code but
             // the encoding on the Atari/Amiga was different so we have
             // to map some characters like german Umlauts here.
-            return (char)UnicodeToAtariST.GetValueOrDefault(ch, ch);
+            return FontCharacters.ToFontCharacter(ch);
         }
 
         // TODO: use paperIndex!

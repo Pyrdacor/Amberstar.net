@@ -57,7 +57,7 @@ internal sealed class CombatPositionsScreen : ButtonGridScreen
 			background.DisplayLayer = BackgroundDisplayLayer;
 
 		var title = AddLabel(16, 55, 176, 7, TextDisplayLayer);
-		title.SetText(TextManager.ToGameCharacters(Game.HasEnglishTexts ? "BATTLE POSITIONS" : "KAMPFPOSITIONEN"), HeaderColorIndex, TextManager.TransparentPaper, palette);
+		title.SetText(TextManager.ToGameCharacters(Game.GetProgramText(ProgramText.BattlePositionsTitle)), HeaderColorIndex, TextManager.TransparentPaper, palette);
 		title.Alignment = TextAlignment.Center;
 		title.Visible = true;
 
@@ -144,10 +144,9 @@ internal sealed class CombatPositionsScreen : ButtonGridScreen
 			AddMarkerRect(x + CellSize - 1, y + 1, 1, CellSize - 2);
 		}
 
-		bool english = Game.HasEnglishTexts;
 		string hint = selectedSlot is int slotIndex
-			? $"{Game.State.GetPartyMember(slotIndex + 1)!.Name}: {(english ? "CLICK THE NEW POSITION." : "KLICKE AUF DIE NEUE POSITION.")}"
-			: english ? "CLICK A PARTY MEMBER." : "KLICKE AUF EIN GRUPPENMITGLIED.";
+			? $"{Game.State.GetPartyMember(slotIndex + 1)!.Name}: {Game.GetProgramText(ProgramText.ClickNewPosition)}"
+			: Game.GetProgramText(ProgramText.ClickPartyMember);
 		text!.SetText(Game.AssetProvider.TextLoader.FromString(TextManager.ToGameCharacters(hint)), textArea.Size.Width, TextColorIndex, TextManager.TransparentPaper, ButtonGridPaletteIndex);
 		text.Visible = true;
 	}
