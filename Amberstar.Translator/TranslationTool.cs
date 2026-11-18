@@ -18,22 +18,29 @@ public static partial class TranslationTool
 	// Longer words can't be wrapped in the text windows.
 	const int MaxWordLength = 25;
 
+	static bool IsTranslationFile(string path) =>
+		Path.GetFileName(path).Equals(TranslationFileName, StringComparison.OrdinalIgnoreCase) ||
+		Path.GetFileName(path).Equals(GlyphFile.FileName, StringComparison.OrdinalIgnoreCase);
+
 	public static AssetProvider LoadGameData(string folder) => new(FileSystem.FromOperatingSystemPath(folder).AsReadOnly());
 
 	/// <summary>
 	/// The game data of the folder with the given translation (without changing the folder).
 	/// </summary>
-	public static AssetProvider LoadGameData(string folder, PoFile translation)
+	public static AssetProvider LoadGameData(string folder, PoFile translation, GlyphFile? glyphs = null)
 	{
 		var fileSystem = FileSystem.CreateVirtual();
 
 		foreach (var file in Directory.GetFiles(folder))
 		{
-			if (!Path.GetFileName(file).Equals(TranslationFileName, StringComparison.OrdinalIgnoreCase))
+			if (!IsTranslationFile(file))
 				fileSystem.CreateFile(Path.GetFileName(file), File.ReadAllBytes(file));
 		}
 
 		fileSystem.CreateFile(TranslationFileName, System.Text.Encoding.UTF8.GetBytes(translation.Write()));
+
+		if (glyphs != null)
+			fileSystem.CreateFile(GlyphFile.FileName, System.Text.Encoding.UTF8.GetBytes(glyphs.Write()));
 
 		return new AssetProvider(fileSystem.AsReadOnly());
 	}
@@ -238,7 +245,7 @@ public static partial class TranslationTool
 	/// <summary>
 	/// Checks a translation for the game data of the given folder (the language it was made from).
 	/// </summary>
-	public static CheckResult Check(string folder, PoFile translation)
+	public static CheckResult Check(string folder, PoFile translation, GlyphFile? glyphs = null)
 	{
 		var result = new CheckResult();
 		var original = LoadGameData(folder);
@@ -363,7 +370,23 @@ public static partial class TranslationTool
 			!counted.Contains((e.Context, e.Id)) && !textTranslations.ContainsKey(e.Id));
 
 		// Load all translated texts like the game does.
-		var translatedData = LoadGameData(folder, translation);
+		var translatedData = LoadGameData(folder, translation, glyphs);
+		var charset = translatedData.TranslationCharset;
+
+		if (charset != null)
+		{
+			foreach (var ch in charset.UnassignedCharacters)
+				result.Errors.Add($"The character '{ch}' of the glyph file has no free place in the font (too many characters with their own glyph).");
+
+			foreach (var glyph in charset.File.Glyphs)
+			{
+				if (glyph.Rows != null && glyph.Rows.All(row => !row.Contains('#')))
+					result.Warnings.Add($"The glyph of '{glyph.Character}' in the glyph file is empty.");
+				else if (glyph.Rows != null && glyph.Rows.Any(row => row.IndexOf('#', Math.Min(5, row.Length)) != -1))
+					result.Warnings.Add($"The glyph of '{glyph.Character}' is wider than 5 pixels (it touches the next character).");
+			}
+		}
+
 		List<TranslationUnit> translatedUnits;
 
 		try
@@ -380,16 +403,17 @@ public static partial class TranslationTool
 			result.Errors.Add($"The character '{ch}' (U+{(int)ch:X4}) is not part of the character set of the game.");
 
 		var font = translatedData.FontLoader.LoadFont();
+		var originalFont = original.FontLoader.LoadFont();
 		var missingGlyphs = new SortedSet<string>();
 		// Some characters of the original texts have no glyph (e.g. the paper code of the dialog title).
 		var originalMissingGlyphs = units
 			.Where(u => !u.Context.StartsWith("outro/"))
-			.SelectMany(u => GameCharset.GetCharactersWithoutGlyph(GameCharset.ToGameString(u.Source), font))
+			.SelectMany(u => GameCharset.GetCharactersWithoutGlyph(GameCharset.ToGameString(u.Source), originalFont))
 			.ToHashSet();
 
 		foreach (var unit in translatedUnits.Where(u => !u.Context.StartsWith("outro/")))
 		{
-			foreach (var ch in GameCharset.GetCharactersWithoutGlyph(GameCharset.ToGameString(unit.Source), font))
+			foreach (var ch in GameCharset.GetCharactersWithoutGlyph(GameCharset.ToGameString(unit.Source), font, charset))
 				missingGlyphs.Add(ch);
 		}
 
@@ -397,13 +421,13 @@ public static partial class TranslationTool
 		{
 			if (translatedData.TextLoader.GetProgramText(key.ToString()) is string text)
 			{
-				foreach (var ch in GameCharset.GetCharactersWithoutGlyph(PlaceholderRegex().Replace(text, ""), font))
+				foreach (var ch in GameCharset.GetCharactersWithoutGlyph(PlaceholderRegex().Replace(text, ""), font, charset))
 					missingGlyphs.Add(ch);
 			}
 		}
 
 		foreach (var ch in missingGlyphs.Where(ch => !originalMissingGlyphs.Contains(ch)))
-			result.Errors.Add($"The font of the game has no glyph for the character '{ch}'.");
+			result.Errors.Add($"The font of the game has no glyph for the character '{ch}' (add it to the glyph file, see the command glyphs).");
 
 		if (translatedData.OutroData is IOutroData outro)
 		{
@@ -420,7 +444,7 @@ public static partial class TranslationTool
 	/// Creates a folder with the game data and the translation. It can be packed with Amberstar.VersionPacker
 	/// or used with the option --data of the game.
 	/// </summary>
-	public static void Install(string folder, PoFile translation, string outputFolder)
+	public static void Install(string folder, PoFile translation, string outputFolder, GlyphFile? glyphs = null)
 	{
 		if (Path.GetFullPath(folder).TrimEnd(Path.DirectorySeparatorChar) == Path.GetFullPath(outputFolder).TrimEnd(Path.DirectorySeparatorChar))
 			throw new InvalidOperationException("The output folder must not be the folder of the original game data.");
@@ -429,10 +453,17 @@ public static partial class TranslationTool
 
 		foreach (var file in Directory.GetFiles(folder))
 		{
-			if (!Path.GetFileName(file).Equals(TranslationFileName, StringComparison.OrdinalIgnoreCase))
+			if (!IsTranslationFile(file))
 				File.Copy(file, Path.Combine(outputFolder, Path.GetFileName(file)), true);
 		}
 
 		translation.Save(Path.Combine(outputFolder, TranslationFileName));
+
+		var glyphPath = Path.Combine(outputFolder, GlyphFile.FileName);
+
+		if (glyphs != null)
+			glyphs.Save(glyphPath);
+		else if (File.Exists(glyphPath))
+			File.Delete(glyphPath);
 	}
 }

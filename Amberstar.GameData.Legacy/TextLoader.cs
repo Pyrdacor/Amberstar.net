@@ -14,6 +14,8 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 	public string? TranslationSourceLanguage => translation?.SourceLanguage;
 
 	public string? GetProgramText(string key) => translation?.GetProgramText(key);
+
+	public string ToGameText(string text) => translation?.ToGameText(text) ?? text;
 	readonly Dictionary<AssetIdentifier, IText> texts = [];
 
     public IText FromString(string text)
@@ -32,6 +34,7 @@ internal class TextLoader(Amber.Assets.Common.IAssetProvider assetProvider, List
 		if (translation?.FindKeyword(word) is word keyword)
 			return keyword;
 
+		word = ToGameText(word);
 		int index = textFragments.FindIndex(text => string.Compare(text, word, true) == 0);
 
 		if (index == -1)

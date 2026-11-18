@@ -155,7 +155,9 @@ internal class Input : Control
         if (text.Length > maxLength)
             return true;
 
-        char upperChar = char.ToUpper(ch);
+        // A translation can store its characters as other characters.
+        var gameText = game.AssetProvider.TextLoader.ToGameText(char.ToUpper(ch).ToString());
+        char upperChar = gameText.Length == 1 ? gameText[0] : char.ToUpper(ch);
 
         // Keyboards can enter more than the font can show (e.g. with Alt+number).
         if (game.TextManager.HasGlyph(upperChar) &&

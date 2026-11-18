@@ -225,6 +225,130 @@ public class TranslationTests
 	}
 
 	[Fact]
+	public void GlyphFileKeepsTheGlyphs()
+	{
+		var file = GlyphFile.Parse("# a comment\nА = A\n\nÉ\n..##.\n#####\n##...\n###..\n#####\n");
+
+		Assert.Equal(2, file.Glyphs.Count);
+		Assert.Equal('A', file.Find('А')!.Reference);
+		Assert.Equal(["a comment"], file.Find('А')!.Comments);
+		Assert.Equal(new byte[] { 0x30, 0xf8, 0xc0, 0xe0, 0xf8 }, file.Find('É')!.GetRowBytes());
+
+		var read = GlyphFile.Parse(file.Write());
+		Assert.Equal(file.Write(), read.Write());
+
+		Assert.Throws<FormatException>(() => GlyphFile.Parse("É\n#####\n"));
+		Assert.Throws<FormatException>(() => GlyphFile.Parse("А = A\nА = B\n"));
+	}
+
+	[Theory]
+	[InlineData("English/AmberfilesAmiga")]
+	[InlineData("English/AmberfilesST")]
+	[InlineData("English/AmberfilesDOS")]
+	public void CharactersOfTheGlyphFileAreShownAndStored(string folder)
+	{
+		var original = TestData.CreateAssetProvider(folder);
+		var template = CreateTemplate(folder);
+
+		var characterName = FindEntry(template, e => e.Context == TranslationExtractor.CharacterNameContext);
+		characterName.Translation = "ŁUCJA É";
+		var mapText = FindEntry(template, e => e.Context.StartsWith("maptext/"));
+		mapText.Translation = "ŻÓŁW, ÉCOLE, ÇA.";
+		var keyword = FindEntry(template, e => e.Context == "word" && e.References.Any(r => r.StartsWith("keyword/")) && !e.Id.Contains(' '));
+		keyword.Translation = "ŁÓDŹ";
+		FindEntry(template, e => e.Context == "ui/Gold").Translation = "ZŁOTO";
+		FindEntry(template, e => e.Context == "program/MainMenuQuit").Translation = "ВЫХОД";
+		var outroText = template.Entries.FirstOrDefault(e => e.Context == "outro/chancellor/00");
+
+		if (outroText != null)
+			outroText.Translation = "ПРИВЕТ, АМБЕРСТАР!";
+
+		var missing = GlyphDrafts.FindMissingCharacters(original, template, null);
+		Assert.All("ÇÉŁÓŹŻВЫХ", ch => Assert.Contains(ch, missing));
+		// the lowercase letters use the glyphs of the uppercase letters
+		Assert.DoesNotContain('ł', missing);
+
+		var (glyphs, _, empty) = GlyphDrafts.AddDrafts(original, missing, null);
+		Assert.Equal(0, empty);
+
+		var translated = TranslationTool.LoadGameData(TestData.GetDataPath(folder), template, glyphs);
+		var charset = translated.TranslationCharset!;
+		var font = translated.FontLoader.LoadFont();
+		Assert.Empty(charset.UnassignedCharacters);
+		Assert.Empty(translated.InvalidTranslationCharacters);
+
+		void AssertShown(string gameString) => Assert.Empty(GameCharset.GetCharactersWithoutGlyph(gameString, font, charset));
+
+		// The name is stored in the character data (one byte per character).
+		var person = translated.PersonLoader.LoadPerson(int.Parse(characterName.References[0].Split('/')[1]));
+		Assert.Equal("ŁUCJA É", GameCharset.ToText(person.Name, charset));
+		AssertShown(person.Name);
+
+		var parts = mapText.Context.Split('/');
+		var text = string.Join(" ", translated.TextLoader.LoadText(new AssetIdentifier(AssetType.MapText, int.Parse(parts[1])))
+			.GetTextBlock(int.Parse(parts[2])).GetLines(100));
+		Assert.Equal("ŻÓŁW, ÉCOLE, ÇA.", GameCharset.ToText(text, charset));
+		AssertShown(text);
+
+		// The É of the Atari ST character set gets its glyph at its place.
+		var glyph = font.GetGlyph(FontCharacters.ToFontCharacter('É'), false)!;
+		Assert.Equal(glyphs.Find('É')!.GetRowBytes(), Enumerable.Range(0, 5)
+			.Select(y => (byte)Enumerable.Range(0, 8).Sum(x => glyph.GetData()[y * 8 + x] != 0 ? 0x80 >> x : 0)));
+
+		// The keyword can be typed (also in lowercase).
+		Assert.Equal(original.TextLoader.FindWord(keyword.Id), translated.TextLoader.FindWord("łódź"));
+
+		var gold = translated.TextLoader.LoadText(new AssetIdentifier(AssetType.UIText, (int)UIText.Gold)).GetString();
+		Assert.Equal("ZŁOTO", GameCharset.ToText(gold, charset));
+		AssertShown(gold);
+
+		var quit = translated.TextLoader.GetProgramText("MainMenuQuit")!;
+		Assert.Equal(5, quit.Length);
+		AssertShown(quit);
+
+		if (outroText != null)
+		{
+			var outro = translated.OutroData!;
+			Assert.All(outro.ChancellorTexts[0].Where(ch => ch > ' '), ch => Assert.NotNull(outro.GetGlyph(ch)));
+			// a reference shows the glyph of the other character
+			Assert.Equal(outro.GetGlyph('A')!.GetData(), outro.GetGlyph('А')!.GetData());
+		}
+
+		var result = TranslationTool.Check(TestData.GetDataPath(folder), template, glyphs);
+		Assert.True(result.Errors.Count == 0, string.Join(Environment.NewLine, result.Errors));
+	}
+
+	[Fact]
+	public void TheGameShowsTheCharactersOfTheGlyphFile()
+	{
+		const string folder = "English/AmberfilesST";
+		var template = CreateTemplate(folder);
+		FindEntry(template, e => e.Context == "program/MainMenuQuit").Translation = "WYJŚCIE";
+		var original = TestData.CreateAssetProvider(folder);
+		var (glyphs, _, _) = GlyphDrafts.AddDrafts(original, GlyphDrafts.FindMissingCharacters(original, template, null), null);
+		var outputFolder = Path.Combine(Path.GetTempPath(), "AmberstarGlyphTest-" + Guid.NewGuid().ToString("N"));
+
+		try
+		{
+			TranslationTool.Install(TestData.GetDataPath(folder), template, outputFolder, glyphs);
+			Assert.True(File.Exists(Path.Combine(outputFolder, GlyphFile.FileName)));
+
+			using var game = new Amberstar.Frontend.HeadlessGame(outputFolder, showMainMenu: true);
+			game.Step(120);
+
+			var textLoader = game.Game.AssetProvider.TextLoader;
+			Assert.True(game.Game.TextManager.HasGlyph(textLoader.ToGameText("Ś")[0]));
+			Assert.True(game.Game.TextManager.HasGlyph(textLoader.ToGameText("ś")[0]));
+			Assert.False(game.Game.TextManager.HasGlyph('Ś'));
+			Assert.All(game.Game.GetProgramText(Amberstar.Game.ProgramText.MainMenuQuit), ch => Assert.True(game.Game.TextManager.HasGlyph(ch)));
+		}
+		finally
+		{
+			Directory.Delete(outputFolder, true);
+		}
+	}
+
+	[Fact]
 	public void CheckFindsErrors()
 	{
 		const string folder = "English/AmberfilesST";

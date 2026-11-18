@@ -31,9 +31,10 @@ internal sealed class GameTranslation
 	List<string> dictionary = [];
 	readonly Dictionary<string, word> wordIndices = [];
 
-	public GameTranslation(PoFile file)
+	public GameTranslation(PoFile file, GlyphFile? glyphFile = null)
 	{
 		File = file;
+		Charset = glyphFile == null ? null : new CustomCharset(glyphFile);
 		SourceLanguage = file.GetHeader("X-Source-Language");
 
 		foreach (var entry in file.Entries)
@@ -53,6 +54,11 @@ internal sealed class GameTranslation
 
 	public PoFile File { get; }
 
+	/// <summary>
+	/// The characters of the translation which the fonts don't have (file GLYPHS.TXT) or null.
+	/// </summary>
+	public CustomCharset? Charset { get; }
+
 	public string? SourceLanguage { get; }
 
 	/// <summary>
@@ -69,10 +75,17 @@ internal sealed class GameTranslation
 		if (file == null)
 			return null;
 
-		using var reader = file.Stream.GetReader();
-		reader.Position = 0;
+		static string ReadText(IReadOnlyFile file)
+		{
+			using var reader = file.Stream.GetReader();
+			reader.Position = 0;
 
-		return new GameTranslation(PoFile.Read(System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.Size))));
+			return System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.Size));
+		}
+
+		var glyphFile = fileSystem.GetFile(GlyphFile.FileName);
+
+		return new GameTranslation(PoFile.Read(ReadText(file)), glyphFile == null ? null : GlyphFile.Parse(ReadText(glyphFile)));
 	}
 
 	public string? GetTranslation(string context, string source)
@@ -86,12 +99,17 @@ internal sealed class GameTranslation
 	/// <summary>
 	/// The translation of a text of the program which is not part of the game data (e.g. the main menu).
 	/// </summary>
-	public string? GetProgramText(string key) => programTexts.GetValueOrDefault(key);
+	public string? GetProgramText(string key) => programTexts.TryGetValue(key, out var text) ? ToGameText(text) : null;
+
+	/// <summary>
+	/// Replaces the characters of the glyph file by the characters of the game data (e.g. for the typed words).
+	/// </summary>
+	public string ToGameText(string text) => Charset?.ToGameText(text) ?? text;
 
 	/// <summary>
 	/// The index of a translated keyword (the words which the player can type).
 	/// </summary>
-	public word? FindKeyword(string word) => keywordIndices.TryGetValue(word, out var index) ? index : null;
+	public word? FindKeyword(string word) => keywordIndices.TryGetValue(ToGameText(word), out var index) ? index : null;
 
 	/// <summary>
 	/// Translates the words of the dictionary and the texts of the program data.
@@ -107,7 +125,7 @@ internal sealed class GameTranslation
 
 			if (translation != null)
 			{
-				dictionary[i] = GameCharset.ToGameString(translation, InvalidCharacters);
+				dictionary[i] = GameCharset.ToGameString(translation, InvalidCharacters, Charset);
 				keywordIndices.TryAdd(dictionary[i].Trim(), (word)i);
 			}
 		}
@@ -137,7 +155,7 @@ internal sealed class GameTranslation
 			var translation = GetTranslation($"ui/{(UIText)key}", GameCharset.ToText(DataReader.Encoding.GetString(bytes)));
 
 			if (translation != null)
-				bytes = GameCharset.ToBytes(GameCharset.ToGameString(translation, InvalidCharacters));
+				bytes = GameCharset.ToBytes(GameCharset.ToGameString(translation, InvalidCharacters, Charset));
 
 			data.UITexts[key] = new DataReader(bytes);
 		}
@@ -169,7 +187,7 @@ internal sealed class GameTranslation
 		if (translation == null)
 			return null;
 
-		var gameString = GameCharset.ToGameString(translation, InvalidCharacters);
+		var gameString = GameCharset.ToGameString(translation, InvalidCharacters, Charset);
 
 		return gameString.Length > maxLength ? gameString[..maxLength] : gameString;
 	}
@@ -194,7 +212,7 @@ internal sealed class GameTranslation
 	/// <summary>
 	/// Gives the words of a translated text.
 	/// </summary>
-	public List<word> ParseText(string text) => TextFormat.Parse(text, dictionary, FindExistingWord, FindOrAddWord, InvalidCharacters);
+	public List<word> ParseText(string text) => TextFormat.Parse(text, dictionary, FindExistingWord, FindOrAddWord, InvalidCharacters, Charset);
 
 	/// <summary>
 	/// The source text of the original words.
@@ -354,6 +372,7 @@ internal sealed class GameTranslation
 		List<string> Translate(string name, IReadOnlyList<string> texts) =>
 			[.. texts.Select((text, index) => GetTranslation($"outro/{name}/{index:00}", text)?.Replace("\r\n", "\n") ?? text)];
 
+		outro.Charset = Charset;
 		outro.ChancellorTexts = Translate("chancellor", outro.ChancellorTexts);
 		outro.BalconyTexts = Translate("balcony", outro.BalconyTexts);
 	}

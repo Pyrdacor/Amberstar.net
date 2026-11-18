@@ -256,7 +256,7 @@ public class AssetProvider : IAssetProvider
 		paletteLoader = new(() => new PaletteLoader(this, dosData == null ? builtinPalettes : LoadDosBuiltinPalettes(dosData)));
 		graphicLoader = new(() => new GraphicLoader(this, Data.LoadingScreenData, Data.LoadingScreenPaletteData));
 		tilesetLoader = new(() => new TilesetLoader(this));
-		fontLoader = new(() => dosData == null ? new FontLoader(this) : new DosFontLoader(dosData));
+		fontLoader = new(() => ExtendFont(dosData == null ? new FontLoader(this) : new DosFontLoader(dosData)));
 		savegameLoader = new(() => new SavegameLoader(this));
 		labDataLoader = new(() => new LabDataLoader(this));
 		chestLoader = new(() => new ChestLoader(this));
@@ -466,6 +466,21 @@ public class AssetProvider : IAssetProvider
 	/// known after the texts were loaded.
 	/// </summary>
 	public IReadOnlySet<char> InvalidTranslationCharacters => translation?.InvalidCharacters ?? [];
+
+	/// <summary>
+	/// The characters of the translation which the fonts don't have (see <see cref="GlyphFile"/>) or null.
+	/// </summary>
+	public CustomCharset? TranslationCharset => translation?.Charset;
+
+	private IFontLoader ExtendFont(IFontLoader loader) =>
+		translation?.Charset is CustomCharset charset ? new ExtendedFontLoader(loader, charset) : loader;
+
+	sealed class ExtendedFontLoader(IFontLoader loader, CustomCharset charset) : IFontLoader
+	{
+		IFont? font;
+
+		public IFont LoadFont() => font ??= new ExtendedFont(loader.LoadFont(), charset);
+	}
 
 	private ProgramData Translate(ProgramData data)
 	{

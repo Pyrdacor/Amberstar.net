@@ -53,7 +53,7 @@ internal static class TextFormat
 	/// and <paramref name="findOrAddWord"/> adds it if it is not part of the dictionary. Characters which are not part of the character set of the game are
 	/// added to <paramref name="invalidCharacters"/>.
 	/// </summary>
-	public static List<word> Parse(string text, List<string> dictionary, Func<string, word?> findWord, Func<string, word> findOrAddWord, ISet<char>? invalidCharacters = null)
+	public static List<word> Parse(string text, List<string> dictionary, Func<string, word?> findWord, Func<string, word> findOrAddWord, ISet<char>? invalidCharacters = null, CustomCharset? charset = null)
 	{
 		var markers = Text.GetMarkers(dictionary);
 		var words = new List<word>();
@@ -65,7 +65,7 @@ internal static class TextFormat
 			if (chunk.Length == 0)
 				return;
 
-			string gameString = GameCharset.ToGameString(chunk, invalidCharacters);
+			string gameString = GameCharset.ToGameString(chunk, invalidCharacters, charset);
 
 			if (gameString.Length == 0)
 				return;

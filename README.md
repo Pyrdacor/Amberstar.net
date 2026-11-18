@@ -75,7 +75,8 @@ from a translation:
 ```
 dotnet run --project Amberstar.Translator -- extract --output amberstar.pot
 dotnet run --project Amberstar.Translator -- check English/AmberfilesAmiga fr.po
-dotnet run --project Amberstar.Translator -- create English/AmberfilesAmiga fr.po French/AmberfilesAmiga
+dotnet run --project Amberstar.Translator -- glyphs English/AmberfilesAmiga fr.po --output glyphs.txt
+dotnet run --project Amberstar.Translator -- create English/AmberfilesAmiga fr.po French/AmberfilesAmiga --glyphs glyphs.txt
 ```
 
 See [Docs/Translation.md](Docs/Translation.md).

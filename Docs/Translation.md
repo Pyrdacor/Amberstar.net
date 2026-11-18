@@ -25,10 +25,13 @@ game replaces the texts while it loads them. Texts which are not translated stay
    dotnet run --project Amberstar.Translator -- check English/AmberfilesAmiga fr.po
    ```
 
-4. Create the game data of the new language (a copy of the English data with the translation):
+   If it reports characters without glyph (e.g. é or Ł), create the glyphs for them (see [Glyphs](#glyphs)) and
+   check again with `--glyphs glyphs.txt`.
+
+4. Create the game data of the new language (a copy of the English data with the translation and the glyphs):
 
    ```
-   dotnet run --project Amberstar.Translator -- create English/AmberfilesAmiga fr.po French/AmberfilesAmiga
+   dotnet run --project Amberstar.Translator -- create English/AmberfilesAmiga fr.po French/AmberfilesAmiga --glyphs glyphs.txt
    ```
 
    The game can be started with it (`Amberstar.net --data French/AmberfilesAmiga`) and it can be packed for the
@@ -63,9 +66,53 @@ the text is used, the maximum length and the German text. Empty translations kee
 | `outro/…` | The texts of the outro | The lines must not be longer than the English ones. |
 | `program/…` | Texts of Amberstar.net (main menu, settings, messages) | Keep the placeholders like `{0}` (e.g. the name of a party member). |
 
-Characters: the fonts of the game only have the letters A-Z, a-z, the digits, some punctuation and the German special
-characters Ä, Ö, Ü, ä, ö, ü and ß (``$ & < > @ [ \ ] ^ ` { | } ~`` are missing, `check` reports characters without
-glyph). Accented letters like é or ñ can't be shown without new glyphs in the font.
+Characters: the fonts of the game only have the uppercase letters A-Z (the lowercase letters are shown as uppercase
+letters), the digits, some punctuation and the German special characters Ä, Ö, Ü and ß
+(``$ & < > @ [ \ ] ^ ` { | } ~`` are missing). Other characters need new glyphs (see below).
+
+## Glyphs
+
+The glyphs of the characters which the fonts don't have are defined in a glyph file (`GLYPHS.TXT` in the game data
+folder). The command `glyphs` finds the characters of a translation without glyph and writes drafts for them:
+
+```
+dotnet run --project Amberstar.Translator -- glyphs English/AmberfilesAmiga fr.po --output glyphs.txt
+```
+
+Check and improve the drafts with a text editor. A glyph has 5 rows of 5 pixels (`#` is set, `.` is not set), like
+the glyphs of the original. The special characters have the letter in the lower 4 rows and the mark in the first
+row like the Ä of the original. A character can also show the glyph of another character (e.g. Cyrillic letters
+which look like Latin letters):
+
+```
+# Ä of the original
+Ä
+##.##
+.###.
+##.##
+#####
+##.##
+
+# draft of É (E with acute)
+É
+..##.
+#####
+##...
+###..
+#####
+
+А = A
+```
+
+The drafts are made from the letters of the font and the marks (accents, cedilla, caron, ...), some letters (e.g. Ł,
+Ø, Æ, Œ and the Cyrillic letters) are drawn and letters which look like Latin letters use their glyphs. Characters
+without a draft get an empty glyph which `check` reports. Running `glyphs` again with `--glyphs glyphs.txt` adds the
+characters which are still missing. Lowercase letters use the glyph of the uppercase letter.
+
+The glyphs are used for the texts, the names, the user interface, the typed words and the outro. The fonts map each
+character (byte) to a glyph: the characters of the Atari ST character set (like é) get their glyph at their place,
+the other characters get a free place of the font (55 are free), so they can also be stored in the names of
+the game data.
 
 ## How it works
 

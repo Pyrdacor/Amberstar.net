@@ -26,6 +26,12 @@ public interface ITextLoader
     /// main menu), or null if there is none.
     /// </summary>
     string? GetProgramText(string key) => null;
+
+    /// <summary>
+    /// Converts typed text to the characters of the game data (a translation can have characters which are
+    /// stored as other characters, see the glyph file of Amberstar.Translator).
+    /// </summary>
+    string ToGameText(string text) => text;
 }
 
 public static class TextLoaderExtensions

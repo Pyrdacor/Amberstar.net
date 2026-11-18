@@ -44,19 +44,40 @@ try
 			return 0;
 		}
 		case "check" when arguments.Count == 2:
-			return PrintCheck(TranslationTool.Check(FindDataFolder(arguments[0]), PoFile.Load(arguments[1]))) ? 0 : 1;
+			return PrintCheck(TranslationTool.Check(FindDataFolder(arguments[0]), PoFile.Load(arguments[1]), LoadGlyphs(options))) ? 0 : 1;
+		case "glyphs" when arguments.Count == 2:
+		{
+			var original = TranslationTool.LoadGameData(FindDataFolder(arguments[0]));
+			var glyphs = LoadGlyphs(options, false);
+			var output = options.GetValueOrDefault("output") ?? options.GetValueOrDefault("glyphs") ?? "glyphs.txt";
+			var missing = GlyphDrafts.FindMissingCharacters(original, PoFile.Load(arguments[1]), glyphs);
+
+			if (missing.Count == 0)
+			{
+				Console.WriteLine("The translation needs no new glyphs.");
+				return 0;
+			}
+
+			var (file, drafts, empty) = GlyphDrafts.AddDrafts(original, missing, glyphs);
+			file.Save(output);
+			Console.WriteLine($"Characters without glyph: {string.Concat(missing)}");
+			Console.WriteLine($"Wrote {output}: {drafts} drafts, {empty} empty glyphs to draw.");
+			return 0;
+		}
 		case "create" when arguments.Count == 3:
 		{
 			var folder = FindDataFolder(arguments[0]);
 			var translation = PoFile.Load(arguments[1]);
 
-			if (!PrintCheck(TranslationTool.Check(folder, translation)) && !options.ContainsKey("force"))
+			var glyphs = LoadGlyphs(options);
+
+			if (!PrintCheck(TranslationTool.Check(folder, translation, glyphs)) && !options.ContainsKey("force"))
 			{
 				Console.WriteLine("The translation has errors. Fix them or use --force.");
 				return 1;
 			}
 
-			TranslationTool.Install(folder, translation, arguments[2]);
+			TranslationTool.Install(folder, translation, arguments[2], glyphs);
 			Console.WriteLine($"Created {arguments[2]} with the game data of {folder} and the translation.");
 			Console.WriteLine("Start the game with it: Amberstar.net --data " + arguments[2]);
 			return 0;
@@ -76,12 +97,15 @@ Console.WriteLine("      Without folders the English Amiga, Atari ST and DOS dat
 Console.WriteLine("      German texts are added as comments (--reference \"\" leaves them out).");
 Console.WriteLine("  Amberstar.Translator update <translation.po> <template.pot> [--output <file.po>]");
 Console.WriteLine("      Takes the translations for a new template (changed source texts are marked as fuzzy).");
-Console.WriteLine("  Amberstar.Translator check <data folder> <translation.po>");
+Console.WriteLine("  Amberstar.Translator glyphs <data folder> <translation.po> [--glyphs <glyphs.txt>] [--output <glyphs.txt>]");
+Console.WriteLine("      Writes drafts of the glyphs of the characters which the fonts don't have (e.g. É or Ł) to a glyph");
+Console.WriteLine("      file (default glyphs.txt, an existing glyph file is extended). Check and improve them with a text editor.");
+Console.WriteLine("  Amberstar.Translator check <data folder> <translation.po> [--glyphs <glyphs.txt>]");
 Console.WriteLine("      Checks a translation (lengths, characters of the font, keywords, control codes) and shows");
 Console.WriteLine("      how much is translated. The folder is the game data which the translation was made from.");
-Console.WriteLine("  Amberstar.Translator create <data folder> <translation.po> <output folder> [--force]");
+Console.WriteLine("  Amberstar.Translator create <data folder> <translation.po> <output folder> [--glyphs <glyphs.txt>] [--force]");
 Console.WriteLine("      Checks the translation and creates a new game data folder with it (the files of the data");
-Console.WriteLine($"      folder and the translation as {TranslationTool.TranslationFileName}).");
+Console.WriteLine($"      folder, the translation as {TranslationTool.TranslationFileName} and the glyphs as {GlyphFile.FileName}).");
 Console.WriteLine();
 Console.WriteLine("The data folders can also be given like English/AmberfilesAmiga (searched upwards from the current directory).");
 return 1;
@@ -98,7 +122,7 @@ static Dictionary<string, string> ParseOptions(IEnumerable<string> args, out Lis
 
 		if (arg == "--force")
 			options["force"] = "";
-		else if (arg is "--output" or "-o" or "--reference")
+		else if (arg is "--output" or "-o" or "--reference" or "--glyphs")
 		{
 			if (i + 1 >= list.Count)
 				throw new ArgumentException($"The option {arg} needs a value.");
@@ -112,6 +136,18 @@ static Dictionary<string, string> ParseOptions(IEnumerable<string> args, out Lis
 	}
 
 	return options;
+}
+
+// The glyph file is optional for the command glyphs (it is created then).
+static GlyphFile? LoadGlyphs(Dictionary<string, string> options, bool mustExist = true)
+{
+	if (!options.TryGetValue("glyphs", out var path))
+		return null;
+
+	if (File.Exists(path))
+		return GlyphFile.Load(path);
+
+	return mustExist ? throw new FileNotFoundException($"The glyph file {path} was not found.") : null;
 }
 
 static bool PrintCheck(TranslationTool.CheckResult result)
