@@ -1255,7 +1255,7 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 					return;
 
 				// With x-ray vision the party sees through the walls up to the farthest row.
-				if (labBlock.Type == LabBlockType.Wall && Game.XRayVisionStepsLeft > 0 && i is > (int)PerspectiveLocation.Forward3 and < (int)PerspectiveLocation.PlayerLocation)
+				if (labBlock.Type == LabBlockType.Wall && XRayHidesWall(i))
 					return;
 
 				if (i > 11)
@@ -1333,14 +1333,22 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 			var primary = labData!.LabBlocks[labTile.PrimaryLabBlockIndex - 1];
 
+			bool drawPrimary = labTile.PrimaryLabBlockIndex != 1; // 1 seems to be a marker for free tiles
+
 			if (primary.Type == LabBlockType.Overlay && labTile.SecondaryLabBlockIndex != 0)
 			{
-				// Draw underlay for overlays
-				DrawBlock(labData!.LabBlocks[labTile.SecondaryLabBlockIndex - 1]);
+				var underlay = labData!.LabBlocks[labTile.SecondaryLabBlockIndex - 1];
+
+				// An overlay on a wall (e.g. a door or a sign) is part of the wall, so x-ray vision hides it with the wall.
+				// Otherwise it would float in the air and things behind the walls would show through.
+				if (underlay.Type == LabBlockType.Wall && XRayHidesWall(i))
+					drawPrimary = false;
+				else
+					DrawBlock(underlay); // Draw underlay for overlays
 			}
 
 			// Draw underlay or overlay
-			if (labTile.PrimaryLabBlockIndex != 1) // 1 seems to be a marker for free tiles
+			if (drawPrimary)
 				DrawBlock(primary);
 
 			var character = PresentCharacters.FirstOrDefault(character => character.Position == new Position(x, y));
@@ -1361,6 +1369,12 @@ internal class Map3DScreen : ButtonGridScreen, IScriptMapScreen
 
 		UpdateSpecialItems();
 	}
+
+	/// <summary>
+	/// With x-ray vision the party sees through the walls up to the farthest row.
+	/// </summary>
+	private bool XRayHidesWall(int perspectiveIndex) => Game.XRayVisionStepsLeft > 0 &&
+		perspectiveIndex is > (int)PerspectiveLocation.Forward3 and < (int)PerspectiveLocation.PlayerLocation;
 
 	/// <summary>
 	/// Shows the used special items. The compass shows the view direction (Show_special_items in the original).

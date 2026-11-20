@@ -9,6 +9,10 @@
 - Quick save uses F7 instead of F8, so it is further away from quick load with F9.
 - Savegames and settings are stored in the folder Saves next to the executable. Only without write permissions there the folder in the user data is used (Amberstar.net/Saves in the application data). Savegames and settings in the user data (e.g. from older versions) are copied next to the executable if there are none there yet, so everything is in one place. The files in the user data are kept.
 
+### Fixed
+- No crash when a 2D map is shown after a teleport (e.g. leaving a 3D map). The camp button was checked with the tiles of the previous map.
+- X-ray vision (e.g. the brooch of sight) on 3D maps hides doors, signs and other overlays on the walls it sees through. They floated in the air and showed things behind the walls.
+
 ## 0.4.5
 
 ### Changed
