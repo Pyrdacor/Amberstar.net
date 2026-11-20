@@ -234,6 +234,7 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 	IMap2D? map;
 	WorldMap? worldMap;
 	ITileset[]? tilesets;
+	bool mapLoaded;
 	readonly Dictionary<int, IAnimatedSprite> underlay = [];
 	readonly Dictionary<int, IAnimatedSprite> overlay = [];
     readonly List<Characters.MapCharacter> characters = [];
@@ -354,6 +355,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 	public override void Open(Action? closeAction)
 	{
+		// The buttons are set up by the base class before the new map is loaded. The old map must not be used
+		// then, as the party position already belongs to the new map.
+		mapLoaded = false;
         base.Open(closeAction);
 
         moveTickCounter = 0;
@@ -368,6 +372,8 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 		SetLayout();
 		LoadMap(Game.State.MapIndex);
+		mapLoaded = true;
+		RequestButtonSetup();
         ShowMapName();
         InitPlayer();
 		// An event of the first tile can open a screen at once when a fade is running (e.g. when a game is loaded).
@@ -525,6 +531,9 @@ internal class Map2DScreen : ButtonGridScreen, IScriptMapScreen
 
 	protected override void SetupButtons(ButtonGrid buttonGrid)
 	{
+		if (!mapLoaded)
+			return;
+
 		if (Game.ButtonLayout == ButtonLayout.Movement)
 		{
 			// Upper row
