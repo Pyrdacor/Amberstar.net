@@ -26,6 +26,7 @@ internal sealed class GameTranslation
 	// translation of the same source text is used.
 	readonly Dictionary<string, string> textTranslationsBySource = [];
 	readonly Dictionary<string, string> programTexts = [];
+	readonly Dictionary<string, string> uiTranslations = [];
 	readonly Dictionary<string, word> keywordIndices = new(StringComparer.OrdinalIgnoreCase);
 	List<string> originalDictionary = [];
 	List<string> dictionary = [];
@@ -49,6 +50,10 @@ internal sealed class GameTranslation
 
 			if (IsTextContext(entry.Context))
 				textTranslationsBySource.TryAdd(entry.Id, entry.Translation);
+
+			// The UI texts of the versions differ a little (e.g. the DOS version has other words).
+			if (entry.Context.StartsWith("ui/"))
+				uiTranslations.TryAdd(entry.Context, entry.Translation);
 		}
 	}
 
@@ -66,7 +71,7 @@ internal sealed class GameTranslation
 	/// </summary>
 	public HashSet<char> InvalidCharacters { get; } = [];
 
-	static bool IsTextContext(string context) => context != TranslationExtractor.WordContext && !context.StartsWith("name/") && !context.StartsWith(ProgramTextPrefix);
+	static bool IsTextContext(string context) => TranslationExtractor.IsText(context);
 
 	public static GameTranslation? Load(IReadOnlyFileSystem fileSystem)
 	{
@@ -93,8 +98,17 @@ internal sealed class GameTranslation
 		if (translations.TryGetValue((context, source), out var translation))
 			return translation;
 
-		return IsTextContext(context) ? textTranslationsBySource.GetValueOrDefault(source) : null;
+		if (!IsTextContext(context))
+			return null;
+
+		if (textTranslationsBySource.TryGetValue(source, out translation))
+			return translation;
+
+		// The control codes must be the same.
+		return uiTranslations.TryGetValue(context, out translation) && ControlCodes(translation) == ControlCodes(source) ? translation : null;
 	}
+
+	static string ControlCodes(string text) => string.Concat(System.Text.RegularExpressions.Regex.Matches(text, @"\{[0-9A-Fa-f]{2}\}").Select(m => m.Value.ToUpperInvariant()));
 
 	/// <summary>
 	/// The translation of a text of the program which is not part of the game data (e.g. the main menu).
@@ -132,6 +146,38 @@ internal sealed class GameTranslation
 
 		for (int i = 0; i < dictionary.Count; i++)
 			wordIndices.TryAdd(dictionary[i], (word)i);
+
+		// The names of the program data refer to a word of the dictionary. A translated name gets its own word.
+		var names = new (AssetType Type, Dictionary<int, IDataReader> Names)[]
+		{
+			(AssetType.ClassName, data.ClassNames), (AssetType.RaceName, data.RaceNames), (AssetType.AttributeName, data.AttributeNames),
+			(AssetType.SkillName, data.SkillNames), (AssetType.CharInfoText, data.CharInfoTexts), (AssetType.LanguageName, data.LanguageNames),
+			(AssetType.ConditionName, data.ConditionNames), (AssetType.ItemTypeName, data.ItemTypeNames),
+			(AssetType.SpellSchoolName, data.SpellSchoolNames), (AssetType.SpellName, data.SpellNames),
+		};
+
+		foreach (var (type, entries) in names)
+		{
+			foreach (var key in entries.Keys.ToList())
+			{
+				var reader = entries[key];
+				reader.Position = 0;
+				int index = reader.Size >= 2 ? reader.ReadWord() : 0;
+				reader.Position = 0;
+
+				if (index <= 0 || index >= originalDictionary.Count)
+					continue;
+
+				var translation = GetTranslation($"{type}/{key:000}", GameCharset.ToText(originalDictionary[index]));
+
+				if (translation == null)
+					continue;
+
+				var writer = new DataWriter();
+				writer.Write(FindOrAddWord(GameCharset.ToGameString(translation, InvalidCharacters, Charset)));
+				entries[key] = new DataReader(writer.ToArray());
+			}
+		}
 
 		foreach (var key in data.PlaceNames.Keys.ToList())
 		{

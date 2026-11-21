@@ -1,0 +1,78 @@
+# Draft of Ó (O with acute), please check it.
+Ó
+..##.
+.###.
+##.##
+##.##
+.###.
+
+# Draft of Ą (A with ogonek), please check it.
+Ą
+.###.
+##.##
+#####
+##.##
+...##
+
+# Draft of Ć (C with acute), please check it.
+Ć
+..##.
+.###.
+##.##
+##...
+.###.
+
+# Draft of Ę (E with ogonek), please check it.
+Ę
+#####
+##...
+###..
+#####
+...##
+
+# Draft of Ł (drawn), please check it.
+Ł
+##...
+##...
+###..
+##...
+#####
+
+# Draft of Ń (N with acute), please check it.
+Ń
+..##.
+#..##
+##.##
+#####
+##..#
+
+# Draft of Ś (S with acute), please check it.
+Ś
+..##.
+.####
+###..
+.###.
+####.
+
+# Draft of Ź (Z with acute), please check it.
+Ź
+..##.
+#####
+..###
+.###.
+#####
+
+# Draft of Ż (Z with dot above), please check it.
+Ż
+..#..
+#####
+..###
+.###.
+#####
+
+# ” looks like ".
+” = "
+
+# „ looks like ".
+„ = "
+

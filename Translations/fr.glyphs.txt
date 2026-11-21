@@ -1,0 +1,139 @@
+# Draft of « (drawn), please check it.
+«
+..#.#
+.#.#.
+#.#..
+.#.#.
+..#.#
+
+# Draft of » (drawn), please check it.
+»
+#.#..
+.#.#.
+..#.#
+.#.#.
+#.#..
+
+# Draft of À (A with grave), please check it.
+À
+.##..
+.###.
+##.##
+#####
+##.##
+
+# Draft of Â (A with circumflex), please check it.
+Â
+.#.#.
+.###.
+##.##
+#####
+##.##
+
+# Draft of Æ (drawn), please check it.
+Æ
+.####
+##.#.
+#####
+##.#.
+##.##
+
+# Draft of Ç (C with cedilla), please check it.
+Ç
+.###.
+##.##
+##...
+.###.
+..##.
+
+# Draft of È (E with grave), please check it.
+È
+.##..
+#####
+##...
+###..
+#####
+
+# Draft of É (E with acute), please check it.
+É
+..##.
+#####
+##...
+###..
+#####
+
+# Draft of Ê (E with circumflex), please check it.
+Ê
+.#.#.
+#####
+##...
+###..
+#####
+
+# Draft of Ë (E with diaeresis), please check it.
+Ë
+##.##
+#####
+##...
+###..
+#####
+
+# Draft of Î (I with circumflex), please check it.
+Î
+.#.#.
+####.
+.##..
+.##..
+####.
+
+# Draft of Ï (I with diaeresis), please check it.
+Ï
+##.##
+####.
+.##..
+.##..
+####.
+
+# Draft of Ô (O with circumflex), please check it.
+Ô
+.#.#.
+.###.
+##.##
+##.##
+.###.
+
+# Draft of Ù (U with grave), please check it.
+Ù
+.##..
+##.##
+##.##
+##.##
+.####
+
+# Draft of Û (U with circumflex), please check it.
+Û
+.#.#.
+##.##
+##.##
+##.##
+.####
+
+# Draft of Œ (drawn), please check it.
+Œ
+.####
+##.#.
+##.##
+##.#.
+.####
+
+# Draft of Ÿ (Y with diaeresis), please check it.
+Ÿ
+##.##
+##.##
+.####
+...##
+####.
+
+# ’ looks like '.
+’ = '
+

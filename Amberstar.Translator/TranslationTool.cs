@@ -186,7 +186,7 @@ public static partial class TranslationTool
 				if (old.Translation.Length != 0)
 					kept++;
 			}
-			else if (byContext.TryGetValue(entry.Context, out old) && entry.Context != TranslationExtractor.WordContext && !entry.Context.StartsWith("name/"))
+			else if (byContext.TryGetValue(entry.Context, out old) && TranslationExtractor.IsText(entry.Context))
 			{
 				entry.Translation = old.Translation;
 				entry.TranslatorComments.AddRange(old.TranslatorComments);
@@ -226,6 +226,7 @@ public static partial class TranslationTool
 	{
 		TranslationExtractor.WordContext => "words",
 		_ when context.StartsWith("name/") => context,
+		_ when TranslationExtractor.IsNameOfProgramData(context) => "names",
 		_ => context.Split('/')[0]
 	};
 
@@ -238,6 +239,8 @@ public static partial class TranslationTool
 
 	[GeneratedRegex(@"\{[0-9A-Fa-f]{2}\}")]
 	private static partial Regex ControlCodeRegex();
+
+	static string ControlCodes(string text) => string.Concat(ControlCodeRegex().Matches(text).Select(m => m.Value.ToUpperInvariant()));
 
 	[GeneratedRegex(@"\{\d+\}")]
 	private static partial Regex PlaceholderRegex();
@@ -262,8 +265,10 @@ public static partial class TranslationTool
 		var units = TranslationExtractor.Extract(original);
 		var translations = translation.Entries.Where(e => e.IsTranslated).GroupBy(e => (e.Context, e.Id)).ToDictionary(g => g.Key, g => g.First().Translation);
 		var textTranslations = translation.Entries
-			.Where(e => e.IsTranslated && e.Context != TranslationExtractor.WordContext && !e.Context.StartsWith("name/") && !e.Context.StartsWith(ProgramContextPrefix))
+			.Where(e => e.IsTranslated && TranslationExtractor.IsText(e.Context))
 			.GroupBy(e => e.Id).ToDictionary(g => g.Key, g => g.First().Translation);
+		var uiTranslations = translation.Entries.Where(e => e.IsTranslated && e.Context.StartsWith("ui/"))
+			.GroupBy(e => e.Context).ToDictionary(g => g.Key, g => g.First().Translation);
 		var usedEntries = new HashSet<(string, string)>();
 		var counted = new HashSet<(string, string)>();
 		var keywords = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -276,9 +281,15 @@ public static partial class TranslationTool
 				return text;
 			}
 
-			return unit.Context != TranslationExtractor.WordContext && !unit.Context.StartsWith("name/")
-				? textTranslations.GetValueOrDefault(unit.Source)
-				: null;
+			if (!TranslationExtractor.IsText(unit.Context))
+				return null;
+
+			if (textTranslations.TryGetValue(unit.Source, out text))
+				return text;
+
+			// like the game: the UI texts of another version (e.g. DOS) with the same control codes
+			return unit.Context.StartsWith("ui/") && uiTranslations.TryGetValue(unit.Context, out text) &&
+				ControlCodes(text) == ControlCodes(unit.Source) ? text : null;
 		}
 
 		foreach (var unit in units)
@@ -332,7 +343,7 @@ public static partial class TranslationTool
 				if (translated.Replace("\r\n", "\n").Split('\n').Any(line => line.Length > maxLineLength))
 					result.Warnings.Add($"{where}: a line is longer than {maxLineLength} characters.");
 			}
-			else if (unit.Context != TranslationExtractor.WordContext && !unit.Context.StartsWith("name/"))
+			else if (TranslationExtractor.IsText(unit.Context))
 			{
 				foreach (var word in translated.Split([' ', '\n', '\r', '\t'], StringSplitOptions.RemoveEmptyEntries))
 				{

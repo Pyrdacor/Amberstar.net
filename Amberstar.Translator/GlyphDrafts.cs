@@ -30,15 +30,15 @@ public static partial class GlyphDrafts
 	{
 		{ '\u0300', (".##..", false, "grave") },
 		{ '\u0301', ("..##.", false, "acute") },
-		{ '\u0302', (".###.", false, "circumflex") },
+		{ '\u0302', (".#.#.", false, "circumflex") },
 		{ '\u0303', (".####", false, "tilde") },
 		{ '\u0304', ("#####", false, "macron") },
-		{ '\u0306', ("#...#", false, "breve") },
+		{ '\u0306', ("#.#.#", false, "breve") },
 		{ '\u0307', ("..#..", false, "dot above") },
 		{ '\u0308', ("##.##", false, "diaeresis") },
 		{ '\u030A', ("..#..", false, "ring above") },
 		{ '\u030B', ("#..#.", false, "double acute") },
-		{ '\u030C', (".#.#.", false, "caron") },
+		{ '\u030C', ("#...#", false, "caron") },
 		{ '\u0327', ("..##.", true, "cedilla") },
 		{ '\u0328', ("...##", true, "ogonek") },
 	};
@@ -99,6 +99,8 @@ public static partial class GlyphDrafts
 		var font = original.FontLoader.LoadFont();
 		var outro = original.OutroData;
 		var missing = new SortedSet<char>();
+		// characters of the source texts (e.g. ~ switches to the runes)
+		var sourceCharacters = translation.Entries.SelectMany(e => e.Id).ToHashSet();
 
 		foreach (var entry in translation.Entries.Where(e => e.Translation.Length != 0))
 		{
@@ -106,7 +108,7 @@ public static partial class GlyphDrafts
 
 			foreach (var ch in CodeRegex().Replace(entry.Translation, ""))
 			{
-				if (ch <= ' ' || ch == '\u00a0')
+				if (ch <= ' ' || ch == '\u00a0' || ch == '\uFEFF' || sourceCharacters.Contains(ch))
 					continue;
 
 				var upper = char.ToUpperInvariant(ch);

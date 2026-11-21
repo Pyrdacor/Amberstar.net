@@ -7,6 +7,10 @@ for the translators and creates a new game data folder with the translation.
 The original data files are not changed. The translation is the file `TRANSLAT.PO` in the game data folder and the
 game replaces the texts while it loads them. Texts which are not translated stay in the language of the data.
 
+The template and the translations are in the folder [Translations](../Translations) (a `.po` file and a glyph
+file per language). If the texts of the game data or the extraction change, create the template again (a test
+fails if it is outdated) and update the translations with it.
+
 ## Workflow
 
 1. Create the template with all texts (English Amiga, Atari ST and DOS data of the repository, the German texts are
@@ -26,7 +30,8 @@ game replaces the texts while it loads them. Texts which are not translated stay
    ```
 
    If it reports characters without glyph (e.g. é or Ł), create the glyphs for them (see [Glyphs](#glyphs)) and
-   check again with `--glyphs glyphs.txt`.
+   check again. The glyph file next to the translation (e.g. `fr.glyphs.txt` for `fr.po`) is used automatically,
+   another one can be given with `--glyphs`.
 
 4. Create the game data of the new language (a copy of the English data with the translation and the glyphs):
 
@@ -52,6 +57,38 @@ game replaces the texts while it loads them. Texts which are not translated stay
 
    `msgmerge` of gettext works as well.
 
+## Texts of the old text export
+
+The Amberstar tool of the repository exported the texts to a folder per kind of text (`ClassNames/001.txt`,
+`MapTexts/004/000.txt`, `UITexts/009.txt`, ...). Translations in this format (the words of the dictionary: `#` is a
+line break, `$` a new paragraph, the UI texts have the control codes as characters) are imported with:
+
+```
+dotnet run --project Amberstar.Translator -- import amberstar.pot AmberstarCzechTexts --language cs --output cs.po
+```
+
+They replace fuzzy translations. Words with the same English text as an imported name (e.g. a class name which
+is also a conversation keyword) get its translation as a fuzzy suggestion.
+
+## Translations of Ambermoon
+
+Ambermoon has French, Polish and Czech translations. Many texts are the same as in Amberstar (the names of the
+classes, races, attributes, skills, conditions, item types, spells and items, some UI texts and messages). The
+command `ambermoon` fills the untranslated texts of a template or translation with them. The source are the text
+exports of the Ambermoon translators (`Disks/Bugfixing/<Language>/AllTexts` of the
+[Ambermoon repository](https://github.com/Pyrdacor/Ambermoon)), the texts are found by the English text:
+
+```
+dotnet run --project Amberstar.Translator -- ambermoon amberstar.pot Ambermoon/Disks/Bugfixing/English/AllTexts Ambermoon/Disks/Bugfixing/French/AllTexts --german Ambermoon/Disks/Bugfixing/German/AllTexts --language fr --output fr.po
+```
+
+The imported texts are marked as fuzzy: the game ignores them until a translator checked them and removed the flag.
+Each one has a comment with the file of Ambermoon. A text is only taken from the same kind of text (e.g. a condition
+name of Amberstar from the condition names of Ambermoon). With `--german` the German texts of Ambermoon and Amberstar
+are compared: if they differ, the comment says so, because the English word could mean something else (e.g. STONED
+is "berauscht" in Ambermoon but "versteinert" in Amberstar). About 130 texts are found for each language. The French
+texts of Ambermoon have no accents and some class names are abbreviated (the Amiga version had no room for more).
+
 ## Notes for the translators
 
 Each entry has a key (`msgctxt`), the English text (`msgid`) and the translation (`msgstr`). The comments say where
@@ -59,7 +96,8 @@ the text is used, the maximum length and the German text. Empty translations kee
 
 | Key | Texts | Notes |
 | --- | --- | --- |
-| `word` | Single words of the dictionary: names of items, spells, classes, races, skills, ..., conversation keywords and answers of riddle mouths | The translation replaces the word everywhere. Keywords are typed by the player, so they should be single words and each must be unique. Item names should be about as long as the English ones (the longest has 20 characters). |
+| `ClassName/…`, `RaceName/…`, `SpellName/…`, … | The names of the classes, races, attributes, skills, languages, conditions, item types, spell schools and spells | Each name has its own entry, so the same English word can be translated differently (e.g. the race HUMAN and the language HUMAN). |
+| `word` | Single words of the dictionary: names of items, conversation keywords and answers of riddle mouths | The translation replaces the word everywhere. Keywords are typed by the player, so they should be single words and each must be unique. Item names should be about as long as the English ones (the longest has 20 characters). |
 | `maptext/…`, `conversation/…`, `message/…`, `itemtext/…`, `puzzletext/…` | The texts of the maps, the conversations, the messages, the item texts (letters, books) and the altar puzzle | The game wraps the lines itself. A line break is a new line (empty lines are kept) and `{P}` is a new paragraph. Words longer than 25 characters can't be wrapped. |
 | `name/character`, `name/map`, `name/place` | Names of persons, monsters, maps and places | Max. 15 characters (persons and monsters) or 30 characters (maps and places). |
 | `ui/…` | Texts of the user interface | Keep the codes like `{01}{08}` (colors) and the length: the spaces are used for the layout. |
@@ -78,6 +116,9 @@ folder). The command `glyphs` finds the characters of a translation without glyp
 ```
 dotnet run --project Amberstar.Translator -- glyphs English/AmberfilesAmiga fr.po --output glyphs.txt
 ```
+
+`--characters` adds further characters, e.g. all special characters of the language, so the glyph file is complete
+before the translation is (French: `--characters "àâæçèéêëîïôœùûüÿ«»’"`).
 
 Check and improve the drafts with a text editor. A glyph has 5 rows of 5 pixels (`#` is set, `.` is not set), like
 the glyphs of the original. The special characters have the letter in the lower 4 rows and the mark in the first
