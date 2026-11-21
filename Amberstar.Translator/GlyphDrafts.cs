@@ -30,15 +30,15 @@ public static partial class GlyphDrafts
 	{
 		{ '\u0300', (".##..", false, "grave") },
 		{ '\u0301', ("..##.", false, "acute") },
-		{ '\u0302', (".###.", false, "circumflex") },
+		{ '\u0302', (".#.#.", false, "circumflex") },
 		{ '\u0303', (".####", false, "tilde") },
 		{ '\u0304', ("#####", false, "macron") },
-		{ '\u0306', ("#...#", false, "breve") },
+		{ '\u0306', ("#.#.#", false, "breve") },
 		{ '\u0307', ("..#..", false, "dot above") },
 		{ '\u0308', ("##.##", false, "diaeresis") },
 		{ '\u030A', ("..#..", false, "ring above") },
 		{ '\u030B', ("#..#.", false, "double acute") },
-		{ '\u030C', (".#.#.", false, "caron") },
+		{ '\u030C', ("#...#", false, "caron") },
 		{ '\u0327', ("..##.", true, "cedilla") },
 		{ '\u0328', ("...##", true, "ogonek") },
 	};

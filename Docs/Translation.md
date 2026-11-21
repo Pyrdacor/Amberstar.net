@@ -98,6 +98,9 @@ folder). The command `glyphs` finds the characters of a translation without glyp
 dotnet run --project Amberstar.Translator -- glyphs English/AmberfilesAmiga fr.po --output glyphs.txt
 ```
 
+`--characters` adds further characters, e.g. all special characters of the language, so the glyph file is complete
+before the translation is (French: `--characters "àâæçèéêëîïôœùûüÿ«»’"`).
+
 Check and improve the drafts with a text editor. A glyph has 5 rows of 5 pixels (`#` is set, `.` is not set), like
 the glyphs of the original. The special characters have the letter in the lower 4 rows and the mark in the first
 row like the Ä of the original. A character can also show the glyph of another character (e.g. Cyrillic letters

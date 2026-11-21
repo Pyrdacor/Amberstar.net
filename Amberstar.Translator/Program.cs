@@ -69,6 +69,22 @@ try
 			var output = options.GetValueOrDefault("output") ?? options.GetValueOrDefault("glyphs") ?? "glyphs.txt";
 			var missing = GlyphDrafts.FindMissingCharacters(original, PoFile.Load(arguments[1]), glyphs);
 
+			// additional characters (e.g. all special characters of a language)
+			if (options.TryGetValue("characters", out var characters))
+			{
+				var font = original.FontLoader.LoadFont();
+
+				foreach (var ch in characters.Where(ch => ch > ' ').Select(char.ToUpperInvariant))
+				{
+					if (glyphs?.Find(ch) == null && !GameCharset.GetCharactersWithoutGlyph(GameCharset.ToGameString(ch.ToString()), font).Any() &&
+						GameCharset.ToGameString(ch.ToString()).Length == 1)
+						continue; // the font has it
+
+					if (glyphs?.Find(ch) == null)
+						missing.Add(ch);
+				}
+			}
+
 			if (missing.Count == 0)
 			{
 				Console.WriteLine("The translation needs no new glyphs.");
@@ -114,9 +130,10 @@ Console.WriteLine("      Without folders the English Amiga, Atari ST and DOS dat
 Console.WriteLine("      German texts are added as comments (--reference \"\" leaves them out).");
 Console.WriteLine("  Amberstar.Translator update <translation.po> <template.pot> [--output <file.po>]");
 Console.WriteLine("      Takes the translations for a new template (changed source texts are marked as fuzzy).");
-Console.WriteLine("  Amberstar.Translator glyphs <data folder> <translation.po> [--glyphs <glyphs.txt>] [--output <glyphs.txt>]");
+Console.WriteLine("  Amberstar.Translator glyphs <data folder> <translation.po> [--glyphs <glyphs.txt>] [--output <glyphs.txt>] [--characters <chars>]");
 Console.WriteLine("      Writes drafts of the glyphs of the characters which the fonts don't have (e.g. É or Ł) to a glyph");
 Console.WriteLine("      file (default glyphs.txt, an existing glyph file is extended). Check and improve them with a text editor.");
+Console.WriteLine("      --characters adds further characters (e.g. all special characters of the language).");
 Console.WriteLine("  Amberstar.Translator ambermoon <translation.po or template.pot> <Ambermoon English AllTexts> <Ambermoon translated AllTexts>");
 Console.WriteLine("                               [--german <Ambermoon German AllTexts>] [--output <file.po>] [--language <code>]");
 Console.WriteLine("      Fills untranslated texts with the translations of Ambermoon for the same English texts (the text exports");
@@ -144,7 +161,7 @@ static Dictionary<string, string> ParseOptions(IEnumerable<string> args, out Lis
 
 		if (arg == "--force")
 			options["force"] = "";
-		else if (arg is "--output" or "-o" or "--reference" or "--glyphs" or "--language" or "--german")
+		else if (arg is "--output" or "-o" or "--reference" or "--glyphs" or "--language" or "--german" or "--characters")
 		{
 			if (i + 1 >= list.Count)
 				throw new ArgumentException($"The option {arg} needs a value.");
