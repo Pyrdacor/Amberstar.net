@@ -52,6 +52,19 @@ game replaces the texts while it loads them. Texts which are not translated stay
 
    `msgmerge` of gettext works as well.
 
+## Texts of the old text export
+
+The Amberstar tool of the repository exported the texts to a folder per kind of text (`ClassNames/001.txt`,
+`MapTexts/004/000.txt`, `UITexts/009.txt`, ...). Translations in this format (the words of the dictionary: `#` is a
+line break, `$` a new paragraph, the UI texts have the control codes as characters) are imported with:
+
+```
+dotnet run --project Amberstar.Translator -- import amberstar.pot AmberstarCzechTexts --language cs --output cs.po
+```
+
+They replace fuzzy translations. Words with the same English text as an imported name (e.g. a class name which
+is also a conversation keyword) get its translation as a fuzzy suggestion.
+
 ## Translations of Ambermoon
 
 Ambermoon has French, Polish and Czech translations. Many texts are the same as in Amberstar (the names of the
@@ -78,7 +91,8 @@ the text is used, the maximum length and the German text. Empty translations kee
 
 | Key | Texts | Notes |
 | --- | --- | --- |
-| `word` | Single words of the dictionary: names of items, spells, classes, races, skills, ..., conversation keywords and answers of riddle mouths | The translation replaces the word everywhere. Keywords are typed by the player, so they should be single words and each must be unique. Item names should be about as long as the English ones (the longest has 20 characters). |
+| `ClassName/…`, `RaceName/…`, `SpellName/…`, … | The names of the classes, races, attributes, skills, languages, conditions, item types, spell schools and spells | Each name has its own entry, so the same English word can be translated differently (e.g. the race HUMAN and the language HUMAN). |
+| `word` | Single words of the dictionary: names of items, conversation keywords and answers of riddle mouths | The translation replaces the word everywhere. Keywords are typed by the player, so they should be single words and each must be unique. Item names should be about as long as the English ones (the longest has 20 characters). |
 | `maptext/…`, `conversation/…`, `message/…`, `itemtext/…`, `puzzletext/…` | The texts of the maps, the conversations, the messages, the item texts (letters, books) and the altar puzzle | The game wraps the lines itself. A line break is a new line (empty lines are kept) and `{P}` is a new paragraph. Words longer than 25 characters can't be wrapped. |
 | `name/character`, `name/map`, `name/place` | Names of persons, monsters, maps and places | Max. 15 characters (persons and monsters) or 30 characters (maps and places). |
 | `ui/…` | Texts of the user interface | Keep the codes like `{01}{08}` (colors) and the length: the spaces are used for the layout. |

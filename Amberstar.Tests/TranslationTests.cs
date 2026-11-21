@@ -414,6 +414,90 @@ public class TranslationTests
 		}
 	}
 
+	[Theory]
+	[InlineData("English/AmberfilesAmiga")]
+	[InlineData("English/AmberfilesDOS")]
+	public void NamesWithTheSameEnglishWordCanHaveDifferentTranslations(string folder)
+	{
+		var template = CreateTemplate(folder);
+		var race = FindEntry(template, e => e.Context == "RaceName/000");
+		var language = FindEntry(template, e => e.Context == "LanguageName/000");
+		Assert.Equal("HUMAN", race.Id);
+		Assert.Equal("HUMAN", language.Id);
+		race.Translation = "MENSCH";
+		language.Translation = "MENSCHLICH";
+
+		var translated = LoadTranslated(folder, template);
+		var textLoader = translated.TextLoader;
+
+		Assert.Equal("MENSCH", textLoader.LoadText(new AssetIdentifier(AssetType.RaceName, 0)).GetString());
+		Assert.Equal("MENSCHLICH", textLoader.LoadText(new AssetIdentifier(AssetType.LanguageName, 0)).GetString());
+		// the dictionary word (e.g. used in the texts) stays
+		var original = TestData.CreateAssetProvider(folder);
+		var index = original.TextLoader.FindWord("HUMAN")!.Value;
+		Assert.Equal("HUMAN", textLoader.FromTextFragmentIndex(index).GetString());
+	}
+
+	[Fact]
+	public void TextsOfTheTextExportAreImported()
+	{
+		var root = Path.Combine(Path.GetTempPath(), "LegacyImportTest-" + Guid.NewGuid().ToString("N"));
+
+		void Write(string path, string text)
+		{
+			var file = Path.Combine(root, path);
+			Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+			File.WriteAllText(file, "\uFEFF" + text);
+		}
+
+		try
+		{
+			Write("ClassNames/001.txt", "VÁLEČNÍK\n");
+			Write("MapTexts/004/000.txt", "ŘÁDEK 1: # ŘÁDEK 2 $ STRANA 2… ~ RUNY ~");
+			Write("UITexts/009.txt", "Z:01234 J:0123");
+			Write("UITexts/000.txt", "\u0001\u0008DOVEDNOSTI\u0001\u000f");
+			Write("SpellNames/029.txt", "");
+			Write("Unknown/001.txt", "X");
+
+			var translation = new PoFile();
+			PoEntry Add(string context, string id, string reference, string translated = "", bool fuzzy = false)
+			{
+				var entry = new PoEntry { Context = context, Id = id, Translation = translated };
+				entry.References.Add(reference);
+
+				if (fuzzy)
+					entry.Flags.Add("fuzzy");
+
+				translation.Entries.Add(entry);
+				return entry;
+			}
+
+			var className = Add("ClassName/001", "WARRIOR", "ClassName/001", "GUERR.", fuzzy: true);
+			var keyword = Add("word", "WARRIOR", "keyword/0066/0");
+			var mapText = Add("maptext/004/000", "LINE 1:\nLINE 2{P}PAGE 2", "maptext/004/000");
+			var goldFood = Add("ui/GoldFood", "G:01234 R:0123", "ui/GoldFood");
+			var skills = Add("ui/Skills", "{01}{08}SKILLS{01}{0F}", "ui/Skills");
+
+			var result = LegacyTextImport.Import(translation, root);
+
+			Assert.Equal(4, result.Imported);
+			Assert.Equal(1, result.Replaced);
+			Assert.Equal(1, result.Suggested);
+			Assert.Equal(["Unknown/001.txt"], result.Unknown);
+			Assert.Equal("VÁLEČNÍK", className.Translation);
+			Assert.False(className.IsFuzzy);
+			Assert.Equal("VÁLEČNÍK", keyword.Translation);
+			Assert.True(keyword.IsFuzzy);
+			Assert.Equal("ŘÁDEK 1:\nŘÁDEK 2{P}STRANA 2... ~ RUNY ~", mapText.Translation);
+			Assert.Equal("Z:01234 J:0123", goldFood.Translation);
+			Assert.Equal("{01}{08}DOVEDNOSTI{01}{0F}", skills.Translation);
+		}
+		finally
+		{
+			Directory.Delete(root, true);
+		}
+	}
+
 	[Fact]
 	public void CheckFindsErrors()
 	{

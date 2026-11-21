@@ -99,6 +99,8 @@ public static partial class GlyphDrafts
 		var font = original.FontLoader.LoadFont();
 		var outro = original.OutroData;
 		var missing = new SortedSet<char>();
+		// characters of the source texts (e.g. ~ switches to the runes)
+		var sourceCharacters = translation.Entries.SelectMany(e => e.Id).ToHashSet();
 
 		foreach (var entry in translation.Entries.Where(e => e.Translation.Length != 0))
 		{
@@ -106,7 +108,7 @@ public static partial class GlyphDrafts
 
 			foreach (var ch in CodeRegex().Replace(entry.Translation, ""))
 			{
-				if (ch <= ' ' || ch == '\u00a0')
+				if (ch <= ' ' || ch == '\u00a0' || ch == '\uFEFF' || sourceCharacters.Contains(ch))
 					continue;
 
 				var upper = char.ToUpperInvariant(ch);

@@ -19,8 +19,10 @@ public sealed record TranslationUnit(string Context, string Source, string Locat
 /// language it was made from.
 ///
 /// The contexts are:
-///  - word: a single word of the dictionary which is used on its own (names of items, spells, classes, ...,
-///    conversation keywords and the answers of the riddle mouths). It replaces the word everywhere.
+///  - word: a single word of the dictionary which is used on its own (names of items, conversation keywords and
+///    the answers of the riddle mouths). It replaces the word everywhere.
+///  - ClassName/NNN, RaceName/NNN, SpellName/NNN, ...: the names of the program data (classes, races, attributes,
+///    skills, languages, conditions, item types, spell schools and spells). Each gets its own word.
 ///  - maptext/MMM/BBB, itemtext/III/BBB, puzzletext/III/BBB, message/NNN, conversation/CCCC/BBB: texts which
 ///    are made of words of the dictionary.
 ///  - ui/NAME: the texts of the user interface (with control codes).
@@ -42,6 +44,19 @@ public static class TranslationExtractor
 		AssetType.ClassName, AssetType.RaceName, AssetType.AttributeName, AssetType.SkillName, AssetType.CharInfoText,
 		AssetType.LanguageName, AssetType.ConditionName, AssetType.ItemTypeName, AssetType.SpellSchoolName, AssetType.SpellName,
 	];
+
+	/// <summary>
+	/// True for the contexts of the names of the program data (e.g. "ClassName/001").
+	/// </summary>
+	public static bool IsNameOfProgramData(string context) =>
+		SingleWordAssetTypes.Any(type => context.StartsWith(type.ToString() + "/", StringComparison.Ordinal));
+
+	/// <summary>
+	/// True for texts made of words (map texts, messages, conversations, ...) and UI and outro texts. Their
+	/// translation is also used for the same source text at another place (e.g. of another version).
+	/// </summary>
+	public static bool IsText(string context) => context != WordContext && !context.StartsWith("name/") &&
+		!context.StartsWith("program/") && !IsNameOfProgramData(context);
 
 	public static List<TranslationUnit> Extract(AssetProvider assetProvider)
 	{
@@ -80,8 +95,14 @@ public static class TranslationExtractor
 			{
 				var text = (Text)textLoader.LoadText(new AssetIdentifier(type, key));
 
-				if (text.WordIndices.Count != 0)
-					AddWord(text.WordIndices[0], $"{type}/{key:000}", WordNote(type));
+				// Each name has its own key: the same English word can need different translations (e.g. the race
+				// HUMAN and the language HUMAN).
+				if (text.WordIndices.Count != 0 && text.WordIndices[0] > 0 && text.WordIndices[0] < dictionary.Count &&
+					dictionary[text.WordIndices[0]].Trim().Length != 0)
+				{
+					var location = $"{type}/{key:000}";
+					units.Add(new(location, ToText(dictionary[text.WordIndices[0]]), location, WordNote(type)));
+				}
 			}
 		}
 

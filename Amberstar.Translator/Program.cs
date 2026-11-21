@@ -35,6 +35,29 @@ try
 			Console.WriteLine($"Wrote {template.Entries.Count} texts to {output}.");
 			return 0;
 		}
+		case "import" when arguments.Count == 2:
+		{
+			var translation = PoFile.Load(arguments[0]);
+			var output = options.GetValueOrDefault("output") ?? arguments[0];
+
+			if (options.TryGetValue("language", out var language))
+				translation.SetHeader("Language", language);
+
+			var result = LegacyTextImport.Import(translation, arguments[1]);
+			translation.Save(output);
+
+			foreach (var conflict in result.Conflicts)
+				Console.WriteLine("Conflict: " + conflict);
+
+			foreach (var path in result.Unknown)
+				Console.WriteLine("Unknown text: " + path);
+
+			Console.WriteLine($"Wrote {output}: {result.Imported} translations imported ({result.Replaced} replaced fuzzy ones, {result.Unchanged} are the same as the source text).");
+
+			if (result.Suggested != 0)
+				Console.WriteLine($"{result.Suggested} words with the same English text (e.g. keywords) got the translation of a name as a fuzzy suggestion.");
+			return 0;
+		}
 		case "ambermoon" when arguments.Count == 3:
 		{
 			var translation = PoFile.Load(arguments[0]);
@@ -134,6 +157,9 @@ Console.WriteLine("  Amberstar.Translator glyphs <data folder> <translation.po> 
 Console.WriteLine("      Writes drafts of the glyphs of the characters which the fonts don't have (e.g. É or Ł) to a glyph");
 Console.WriteLine("      file (default glyphs.txt, an existing glyph file is extended). Check and improve them with a text editor.");
 Console.WriteLine("      --characters adds further characters (e.g. all special characters of the language).");
+Console.WriteLine("  Amberstar.Translator import <translation.po or template.pot> <text folder> [--output <file.po>] [--language <code>]");
+Console.WriteLine("      Imports translated texts in the folder format of the text export of the Amberstar tool (ClassNames/001.txt,");
+Console.WriteLine("      MapTexts/004/000.txt, ..., '#' is a line break, '$' a new paragraph). Fuzzy translations are replaced.");
 Console.WriteLine("  Amberstar.Translator ambermoon <translation.po or template.pot> <Ambermoon English AllTexts> <Ambermoon translated AllTexts>");
 Console.WriteLine("                               [--german <Ambermoon German AllTexts>] [--output <file.po>] [--language <code>]");
 Console.WriteLine("      Fills untranslated texts with the translations of Ambermoon for the same English texts (the text exports");
