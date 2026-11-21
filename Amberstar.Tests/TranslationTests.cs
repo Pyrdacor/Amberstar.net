@@ -349,6 +349,72 @@ public class TranslationTests
 	}
 
 	[Fact]
+	public void AmbermoonTranslationsAreImportedAsFuzzy()
+	{
+		var root = Path.Combine(Path.GetTempPath(), "AmbermoonImportTest-" + Guid.NewGuid().ToString("N"));
+
+		void Write(string language, string path, string text)
+		{
+			var file = Path.Combine(root, language, path);
+			Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+			File.WriteAllText(file, text);
+		}
+
+		try
+		{
+			Write("English", "Text.amb/ClassNames/001.txt", "Warrior");
+			Write("French", "Text.amb/ClassNames/001.txt", "Guerrier");
+			Write("German", "Text.amb/ClassNames/001.txt", "Krieger");
+			Write("English", "Text.amb/ConditionNames/011.txt", "Stoned");
+			Write("French", "Text.amb/ConditionNames/011.txt", "Drogué");
+			Write("German", "Text.amb/ConditionNames/011.txt", "Berauscht");
+			// another meaning (a spell) is not used for a class name
+			Write("English", "Objects.amb/010.txt", "Thief");
+			Write("French", "Objects.amb/010.txt", "Voleur magique");
+			Write("English", "Text.amb/UITexts/024.txt", "GOLD");
+			Write("French", "Text.amb/UITexts/024.txt", "OR");
+			Write("English", "Dict.amb/001.txt", "Warrior");
+			Write("French", "Dict.amb/001.txt", "Mot");
+
+			var translation = new PoFile();
+			PoEntry Add(string context, string id, string reference, string? german = null, string? existing = null)
+			{
+				var entry = new PoEntry { Context = context, Id = id, Translation = existing ?? "" };
+				entry.References.Add(reference);
+
+				if (german != null)
+					entry.ExtractedComments.Add($"German: {german}");
+
+				translation.Entries.Add(entry);
+				return entry;
+			}
+
+			var warrior = Add("word", "WARRIOR", "ClassName/001", "KRIEGER");
+			var stoned = Add("word", "STONED", "ConditionName/003", "VERSTEINERT");
+			var thief = Add("word", "THIEF", "ClassName/004");
+			var gold = Add("ui/Gold", "{01}{08}GOLD  {01}{0F}", "ui/Gold");
+			var translated = Add("word", "WARRIOR", "item/0001", existing: "GUERRIER!");
+
+			var result = AmbermoonImport.Import(translation, Path.Combine(root, "English"), Path.Combine(root, "French"), Path.Combine(root, "German"));
+
+			Assert.Equal(3, result.Imported);
+			Assert.Equal("GUERRIER", warrior.Translation);
+			Assert.True(warrior.IsFuzzy);
+			Assert.DoesNotContain(warrior.TranslatorComments, c => c.Contains("check if it means the same"));
+			Assert.Equal("DROGUÉ", stoned.Translation);
+			Assert.Contains(stoned.TranslatorComments, c => c.Contains("BERAUSCHT") && c.Contains("VERSTEINERT"));
+			Assert.Equal("", thief.Translation);
+			Assert.Equal("{01}{08}OR    {01}{0F}", gold.Translation);
+			Assert.Equal("GUERRIER!", translated.Translation);
+			Assert.False(translated.IsFuzzy);
+		}
+		finally
+		{
+			Directory.Delete(root, true);
+		}
+	}
+
+	[Fact]
 	public void CheckFindsErrors()
 	{
 		const string folder = "English/AmberfilesST";

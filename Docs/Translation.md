@@ -52,6 +52,25 @@ game replaces the texts while it loads them. Texts which are not translated stay
 
    `msgmerge` of gettext works as well.
 
+## Translations of Ambermoon
+
+Ambermoon has French, Polish and Czech translations. Many texts are the same as in Amberstar (the names of the
+classes, races, attributes, skills, conditions, item types, spells and items, some UI texts and messages). The
+command `ambermoon` fills the untranslated texts of a template or translation with them. The source are the text
+exports of the Ambermoon translators (`Disks/Bugfixing/<Language>/AllTexts` of the
+[Ambermoon repository](https://github.com/Pyrdacor/Ambermoon)), the texts are found by the English text:
+
+```
+dotnet run --project Amberstar.Translator -- ambermoon amberstar.pot Ambermoon/Disks/Bugfixing/English/AllTexts Ambermoon/Disks/Bugfixing/French/AllTexts --german Ambermoon/Disks/Bugfixing/German/AllTexts --language fr --output fr.po
+```
+
+The imported texts are marked as fuzzy: the game ignores them until a translator checked them and removed the flag.
+Each one has a comment with the file of Ambermoon. A text is only taken from the same kind of text (e.g. a condition
+name of Amberstar from the condition names of Ambermoon). With `--german` the German texts of Ambermoon and Amberstar
+are compared: if they differ, the comment says so, because the English word could mean something else (e.g. STONED
+is "berauscht" in Ambermoon but "versteinert" in Amberstar). About 130 texts are found for each language. The French
+texts of Ambermoon have no accents and some class names are abbreviated (the Amiga version had no room for more).
+
 ## Notes for the translators
 
 Each entry has a key (`msgctxt`), the English text (`msgid`) and the translation (`msgstr`). The comments say where

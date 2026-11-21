@@ -35,6 +35,23 @@ try
 			Console.WriteLine($"Wrote {template.Entries.Count} texts to {output}.");
 			return 0;
 		}
+		case "ambermoon" when arguments.Count == 3:
+		{
+			var translation = PoFile.Load(arguments[0]);
+			var output = options.GetValueOrDefault("output") ?? arguments[0];
+
+			if (options.TryGetValue("language", out var language))
+				translation.SetHeader("Language", language);
+
+			var result = AmbermoonImport.Import(translation, arguments[1], arguments[2], options.GetValueOrDefault("german"));
+			translation.Save(output);
+			Console.WriteLine($"Wrote {output}: {result.Imported} translations of Ambermoon (marked as fuzzy).");
+
+			foreach (var (category, count) in result.Categories.OrderBy(c => c.Key))
+				Console.WriteLine($"  {category,-16} {count,5}");
+
+			return 0;
+		}
 		case "update" when arguments.Count == 2:
 		{
 			var (result, kept, fuzzy, obsolete) = TranslationTool.Merge(PoFile.Load(arguments[0]), PoFile.Load(arguments[1]));
@@ -100,6 +117,11 @@ Console.WriteLine("      Takes the translations for a new template (changed sour
 Console.WriteLine("  Amberstar.Translator glyphs <data folder> <translation.po> [--glyphs <glyphs.txt>] [--output <glyphs.txt>]");
 Console.WriteLine("      Writes drafts of the glyphs of the characters which the fonts don't have (e.g. É or Ł) to a glyph");
 Console.WriteLine("      file (default glyphs.txt, an existing glyph file is extended). Check and improve them with a text editor.");
+Console.WriteLine("  Amberstar.Translator ambermoon <translation.po or template.pot> <Ambermoon English AllTexts> <Ambermoon translated AllTexts>");
+Console.WriteLine("                               [--german <Ambermoon German AllTexts>] [--output <file.po>] [--language <code>]");
+Console.WriteLine("      Fills untranslated texts with the translations of Ambermoon for the same English texts (the text exports");
+Console.WriteLine("      of the Ambermoon translations). They are marked as fuzzy until a translator checked them. With the German");
+Console.WriteLine("      export, texts whose German translation differs from the one of Amberstar get a hint (other meaning?).");
 Console.WriteLine("  Amberstar.Translator check <data folder> <translation.po> [--glyphs <glyphs.txt>]");
 Console.WriteLine("      Checks a translation (lengths, characters of the font, keywords, control codes) and shows");
 Console.WriteLine("      how much is translated. The folder is the game data which the translation was made from.");
@@ -122,7 +144,7 @@ static Dictionary<string, string> ParseOptions(IEnumerable<string> args, out Lis
 
 		if (arg == "--force")
 			options["force"] = "";
-		else if (arg is "--output" or "-o" or "--reference" or "--glyphs")
+		else if (arg is "--output" or "-o" or "--reference" or "--glyphs" or "--language" or "--german")
 		{
 			if (i + 1 >= list.Count)
 				throw new ArgumentException($"The option {arg} needs a value.");
