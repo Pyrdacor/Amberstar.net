@@ -84,12 +84,12 @@ try
 			return 0;
 		}
 		case "check" when arguments.Count == 2:
-			return PrintCheck(TranslationTool.Check(FindDataFolder(arguments[0]), PoFile.Load(arguments[1]), LoadGlyphs(options))) ? 0 : 1;
+			return PrintCheck(TranslationTool.Check(FindDataFolder(arguments[0]), PoFile.Load(arguments[1]), LoadGlyphs(options, arguments[1]))) ? 0 : 1;
 		case "glyphs" when arguments.Count == 2:
 		{
 			var original = TranslationTool.LoadGameData(FindDataFolder(arguments[0]));
-			var glyphs = LoadGlyphs(options, false);
-			var output = options.GetValueOrDefault("output") ?? options.GetValueOrDefault("glyphs") ?? "glyphs.txt";
+			var glyphs = LoadGlyphs(options, arguments[1], false);
+			var output = options.GetValueOrDefault("output") ?? options.GetValueOrDefault("glyphs") ?? DefaultGlyphPath(arguments[1]);
 			var missing = GlyphDrafts.FindMissingCharacters(original, PoFile.Load(arguments[1]), glyphs);
 
 			// additional characters (e.g. all special characters of a language)
@@ -125,7 +125,7 @@ try
 			var folder = FindDataFolder(arguments[0]);
 			var translation = PoFile.Load(arguments[1]);
 
-			var glyphs = LoadGlyphs(options);
+			var glyphs = LoadGlyphs(options, arguments[1]);
 
 			if (!PrintCheck(TranslationTool.Check(folder, translation, glyphs)) && !options.ContainsKey("force"))
 			{
@@ -155,7 +155,7 @@ Console.WriteLine("  Amberstar.Translator update <translation.po> <template.pot>
 Console.WriteLine("      Takes the translations for a new template (changed source texts are marked as fuzzy).");
 Console.WriteLine("  Amberstar.Translator glyphs <data folder> <translation.po> [--glyphs <glyphs.txt>] [--output <glyphs.txt>] [--characters <chars>]");
 Console.WriteLine("      Writes drafts of the glyphs of the characters which the fonts don't have (e.g. É or Ł) to a glyph");
-Console.WriteLine("      file (default glyphs.txt, an existing glyph file is extended). Check and improve them with a text editor.");
+Console.WriteLine("      file (default: next to the translation, e.g. cs.glyphs.txt for cs.po, an existing glyph file is extended). Check and improve them with a text editor.");
 Console.WriteLine("      --characters adds further characters (e.g. all special characters of the language).");
 Console.WriteLine("  Amberstar.Translator import <translation.po or template.pot> <text folder> [--output <file.po>] [--language <code>]");
 Console.WriteLine("      Imports translated texts in the folder format of the text export of the Amberstar tool (ClassNames/001.txt,");
@@ -172,6 +172,7 @@ Console.WriteLine("  Amberstar.Translator create <data folder> <translation.po> 
 Console.WriteLine("      Checks the translation and creates a new game data folder with it (the files of the data");
 Console.WriteLine($"      folder, the translation as {TranslationTool.TranslationFileName} and the glyphs as {GlyphFile.FileName}).");
 Console.WriteLine();
+Console.WriteLine("Without --glyphs, check and create use the glyph file next to the translation (e.g. cs.glyphs.txt for cs.po).");
 Console.WriteLine("The data folders can also be given like English/AmberfilesAmiga (searched upwards from the current directory).");
 return 1;
 
@@ -203,11 +204,24 @@ static Dictionary<string, string> ParseOptions(IEnumerable<string> args, out Lis
 	return options;
 }
 
+// The glyph file of a translation is next to it (e.g. cs.glyphs.txt for cs.po).
+static string DefaultGlyphPath(string translationPath) => Path.ChangeExtension(translationPath, ".glyphs.txt");
+
 // The glyph file is optional for the command glyphs (it is created then).
-static GlyphFile? LoadGlyphs(Dictionary<string, string> options, bool mustExist = true)
+static GlyphFile? LoadGlyphs(Dictionary<string, string> options, string translationPath, bool mustExist = true)
 {
 	if (!options.TryGetValue("glyphs", out var path))
+	{
+		var defaultPath = DefaultGlyphPath(translationPath);
+
+		if (File.Exists(defaultPath))
+		{
+			Console.WriteLine($"Using the glyph file {defaultPath}.");
+			return GlyphFile.Load(defaultPath);
+		}
+
 		return null;
+	}
 
 	if (File.Exists(path))
 		return GlyphFile.Load(path);

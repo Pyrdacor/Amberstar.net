@@ -1,0 +1,129 @@
+# Draft of Á (A with acute), please check it.
+Á
+..##.
+.###.
+##.##
+#####
+##.##
+
+# Draft of É (E with acute), please check it.
+É
+..##.
+#####
+##...
+###..
+#####
+
+# Draft of Í (I with acute), please check it.
+Í
+..##.
+####.
+.##..
+.##..
+####.
+
+# Draft of Ó (O with acute), please check it.
+Ó
+..##.
+.###.
+##.##
+##.##
+.###.
+
+# Draft of Ú (U with acute), please check it.
+Ú
+..##.
+##.##
+##.##
+##.##
+.####
+
+# Draft of Ý (Y with acute), please check it.
+Ý
+..##.
+##.##
+.####
+...##
+####.
+
+# Draft of Č (C with caron), please check it.
+Č
+#...#
+.###.
+##.##
+##...
+.###.
+
+# Draft of Ď (D with caron), please check it.
+Ď
+#...#
+####.
+##.##
+##.##
+####.
+
+# Draft of Ě (E with caron), please check it.
+Ě
+#...#
+#####
+##...
+###..
+#####
+
+# Draft of Ň (N with caron), please check it.
+Ň
+#...#
+#..##
+##.##
+#####
+##..#
+
+# Draft of Ř (R with caron), please check it.
+Ř
+#...#
+####.
+##.##
+####.
+##.##
+
+# Draft of Š (S with caron), please check it.
+Š
+#...#
+.####
+###..
+.###.
+####.
+
+# Draft of Ť (T with caron), please check it.
+Ť
+#...#
+####.
+.##..
+.##..
+.##..
+
+# Draft of Ů (U with ring above), please check it.
+Ů
+..#..
+##.##
+##.##
+##.##
+.####
+
+# Draft of Ž (Z with caron), please check it.
+Ž
+#...#
+#####
+..###
+.###.
+#####
+
+# – looks like -.
+– = -
+
+# “ looks like ".
+“ = "
+
+# „ looks like ".
+„ = "
+

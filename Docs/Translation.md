@@ -7,6 +7,10 @@ for the translators and creates a new game data folder with the translation.
 The original data files are not changed. The translation is the file `TRANSLAT.PO` in the game data folder and the
 game replaces the texts while it loads them. Texts which are not translated stay in the language of the data.
 
+The template and the translations are in the folder [Translations](../Translations) (a `.po` file and a glyph
+file per language). If the texts of the game data or the extraction change, create the template again (a test
+fails if it is outdated) and update the translations with it.
+
 ## Workflow
 
 1. Create the template with all texts (English Amiga, Atari ST and DOS data of the repository, the German texts are
@@ -26,7 +30,8 @@ game replaces the texts while it loads them. Texts which are not translated stay
    ```
 
    If it reports characters without glyph (e.g. é or Ł), create the glyphs for them (see [Glyphs](#glyphs)) and
-   check again with `--glyphs glyphs.txt`.
+   check again. The glyph file next to the translation (e.g. `fr.glyphs.txt` for `fr.po`) is used automatically,
+   another one can be given with `--glyphs`.
 
 4. Create the game data of the new language (a copy of the English data with the translation and the glyphs):
 

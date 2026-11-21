@@ -17,6 +17,23 @@ public class TranslationTests
 		file.Entries.First(predicate);
 
 	[Fact]
+	public void TheTemplateOfTheRepositoryIsUpToDate()
+	{
+		// Translations/amberstar.pot has to be created again when the texts or the extraction change:
+		// dotnet run --project Amberstar.Translator -- extract --output Translations/amberstar.pot
+		var path = Path.Combine(Path.GetDirectoryName(TestData.GetDataPath("English/AmberfilesST"))!, "..", "Translations", "amberstar.pot");
+		var repositoryTemplate = PoFile.Load(path);
+		var template = TranslationTool.CreateTemplate(
+			new[] { "English/AmberfilesAmiga", "English/AmberfilesST", "English/AmberfilesDOS" }.Select(TestData.GetDataPath), []);
+
+		var expected = template.Entries.Select(e => (e.Context, e.Id)).ToHashSet();
+		var actual = repositoryTemplate.Entries.Select(e => (e.Context, e.Id)).ToHashSet();
+
+		Assert.True(expected.SetEquals(actual),
+			$"Translations/amberstar.pot is outdated: {expected.Except(actual).Count()} new texts, {actual.Except(expected).Count()} removed texts.");
+	}
+
+	[Fact]
 	public void PoFileKeepsTheTexts()
 	{
 		var file = new PoFile();
